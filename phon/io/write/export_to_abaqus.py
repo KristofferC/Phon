@@ -79,7 +79,7 @@ def export_to_abaqus(filename, mesh, write_2d_elements=False, f=None):
 
         # Node sets
         for node_set_name in mesh.node_sets.keys():
-            f.write("\n*Elset, elset=" + node_set_name.upper() + "\n")
+            f.write("\n*Nset, nset=" + node_set_name.upper() + "\n")
             write_column_broken_array(mesh.node_sets[node_set_name].getIds(), f)
  
         if not append_to_file:
