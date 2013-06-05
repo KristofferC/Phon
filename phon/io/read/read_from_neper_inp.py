@@ -28,10 +28,14 @@ from phon.mesh_objects.node import Node
 from phon.mesh_objects.mesh import Mesh
 from phon.mesh_objects.node_set import NodeSet
 
+
 def read_from_neper_inp(filename, verbose=0):
     """ Takes a filename containing a .inp file from the software Neper and
     creates a Mesh class instance containing the data in the file. Verbose can
-    be 0, 1, 2 for increasing levels of verbosity. """
+    be 0, 1, 2 for increasing levels of verbosity. 
+    
+    This assumes elements of the same type have come in order in the element 
+    dictionary in the mesh class."""
 
     f = open(filename, "r")
 
@@ -71,6 +75,7 @@ def read_from_neper_inp(filename, verbose=0):
     ######
         
     # Read elements
+
     reading_elements = True
     
     line = f.readline()
@@ -83,10 +88,9 @@ def read_from_neper_inp(filename, verbose=0):
 
     elem_name = re_part.match(line).group(1)
     num_trigs = 0
+    elem_ids = []
     while True:
-        elem_dict = {}
         line = f.readline()
-        # Stop reading triangles upon linebreak
         if (line.strip() == ''):
             break
         num_trigs += 1
@@ -96,10 +100,11 @@ def read_from_neper_inp(filename, verbose=0):
         element_numbers = map(to_number, line.strip().split(','))
         element = Element(elem_name, element_numbers[1:])
         mesh.elements_2d[element_numbers[0]] = element
+        elem_ids.append(element_numbers[0])
+
         if verbose == 2:
             print ("Read {0}.\n".format(tri))
-            
-    
+    mesh.element_2d_indices[elem_name] = elem_ids
             
     line = f.readline()
     re_part = re.compile("\*Element, type=(.*)")
@@ -109,6 +114,7 @@ def read_from_neper_inp(filename, verbose=0):
                 type=XXX', got '" + line + "'.")
     elem_name = re_part.match(line).group(1)
     num_tetras = 0
+    elem_ids = []
     while True:
         elem_dict = {}
         line = f.readline()
@@ -123,20 +129,18 @@ def read_from_neper_inp(filename, verbose=0):
         element_numbers = map(to_number, line.strip().split(','))
         element = Element(elem_name, element_numbers[1:])
         mesh.elements_3d[element_numbers[0]] = element
+        elem_ids.append(element_numbers[0])
 
         if verbose == 2:
             print ("Read {0}.\n".format(tetra))
 
+    mesh.element_3d_indices[elem_name] = elem_ids
     
     # Read sets
 
     re_polyset = re.compile("\*Elset, elset=(poly\d*)")
     re_faceset = re.compile("\*Elset, elset=(face\d*)")
     re_nodeset = re.compile("\*Nset, nset=(.*)")
-
-    ##################
-    # Read 2D sets #
-    ##################
 
     line = f.readline()
     match = re_faceset.match(line)
@@ -202,16 +206,17 @@ def read_from_neper_inp(filename, verbose=0):
         if re_nodeset.match(line.strip()):
             break
         else:
-            raise ReadInpFileError("Error parsing file. Expected either \
-            '*Elset, elset=polyX' or '*Nset, nset=X', got '" + line + "'.")
+            raise ReadInpFileError("Error parsing file. Expected either "
+                                   "*Elset, elset=polyX' or '*Nset, nset=X', got '" + line + "'.")
 
-    ##################
-    # Read node sets #
-    ##################
+    ######
+
+    # Read node sets
+ 
     match = re_nodeset.match(line)
     if not match:
-        raise ReadInpFileError("Error parsing file. Expected '*Nset, \
-                nset=X', got '" + line + "'.")
+        raise ReadInpFileError("Error parsing file. Expected '*Nset, "
+                               "nset=X', got '" + line + "'.")
     num_nodesets = 0
     EOF = False
     while True:
