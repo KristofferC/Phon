@@ -32,7 +32,7 @@ class Element:
         self.vertices = vertices
 
         if tetra is None:
-	    tetra = []
+            tetra = []
         self.tetra = tetra
 
     def __str__(self):
