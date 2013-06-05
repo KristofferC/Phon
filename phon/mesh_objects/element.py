@@ -37,4 +37,4 @@ class Element:
 
     def __str__(self):
         return("Element of type {0} containing the vertices with "
-                "id {2}.".format(self.name, self.vertices))
+                "id {1}.".format(self.elem_type, self.vertices))
