@@ -28,19 +28,18 @@ class ElementSet:
         self.name = name
 
         #: The ids of the elements contained in the set
-	if ids == None:
-		ids = []
+        if ids == None:
+            ids = []
         self.ids = ids
 
         #: The polyhedras that the elementset contain
-	if polys == None:
-		polys = []
+        if polys == None:
+            polys = []
         self.polys = polys
 
     def __str__(self):
-
-        return("Element set with name {0} containing elements with the \
-        following ids {1}".format(self.name, self.getIds()))
+        return("Element set with name {0} containing elements with the "
+               "following ids {1}".format(self.name, self.getIds()))
 
     def getIds(self):
         return self.ids
