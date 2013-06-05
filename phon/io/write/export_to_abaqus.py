@@ -26,6 +26,9 @@ from phon.mesh_objects.node import Node
 from phon.mesh_objects.mesh import Mesh
 from phon.mesh_objects.node_set import NodeSet
 
+from phon.io.element_name_dictionary import element_2d_dictionary
+from phon.io.element_name_dictionary import element_3d_dictionary
+
 
 def export_to_abaqus(filename, mesh, write_2d_elements=False, f=None):
 
@@ -50,20 +53,22 @@ def export_to_abaqus(filename, mesh, write_2d_elements=False, f=None):
         # Two dimensional elements
         if write_2d_elements:   
             for element_type in mesh.element_2d_indices.keys():
-                f.write("*Element, type=" + element_type + "\n")
+                element_name = element_2d_dictionary[(element_type, "abaqus")]
+                f.write("*Element, type=" + element_name + "\n")
                 for element_id in mesh.element_2d_indices[element_type]:
                      f.write("%d, " % (element_id))
                      # Code below changes "[1,2,3]" to "1, 2, 3"
-                     f.write(''.join('{},'.format(k) for k in mesh.elements_2d[element_id].vertices)[:-2])
+                     f.write(''.join('{},'.format(k) for k in mesh.elements_2d[element_id].vertices)[:-1])
                      f.write("\n")
 
         # Three dimensional elements
         for element_type in mesh.element_3d_indices.keys():
-            f.write("*Element, type=" + element_type + "\n")
+            element_name = element_3d_dictionary[(element_type, "abaqus")]
+            f.write("*Element, type=" + element_name + "\n")
             for element_id in mesh.element_3d_indices[element_type]:
                 f.write("%d, " % (element_id))
                 # Code below changes "[1,2,3]" to "1, 2, 3"
-                f.write(''.join('{},'.format(k) for k in mesh.elements_3d[element_id].vertices)[:-2])    
+                f.write(''.join('{},'.format(k) for k in mesh.elements_3d[element_id].vertices)[:-1])    
                 f.write("\n")    
         
         # Two dimensional element sets
