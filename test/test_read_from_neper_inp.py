@@ -28,7 +28,6 @@ class Test(unittest.TestCase):
 
         # Test 3d elements
         self.assertEqual(len(self.mesh.elements_3d), 999)
-        #print self.mesh.elements_3d
         self.assertTrue((self.mesh.elements_3d[686].elem_type == "C3D4") or
                         (self.mesh.elements_3d[686].elem_type == "C3D10"))
         self.assertEqual(self.mesh.elements_3d[685].vertices, [44, 155, 61, 154])
@@ -53,10 +52,6 @@ class Test(unittest.TestCase):
     def test_to_number(self):
         self.assertEqual(to_number("1.3"), 1.3)
         self.assertEqual(to_number("1"), 1)
-
-        
-
-        
 
 if __name__ == "__main__":
     unittest.main()
