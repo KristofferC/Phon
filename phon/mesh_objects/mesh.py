@@ -20,34 +20,53 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
+from collections import OrderedDict
+
 class Mesh:
     """ Represents a mesh which includes nodes, elements, element sets
     and node sets.
     """
 
-    def __init__(self, name, nodes=None, nodeSets=None,
-                 element_sets_2d=None, element_sets_3d=None,
-                 cohesiveElems=None, cohesiveSets=None,
-                 volumes=None, materials=None):
+    def __init__(self,
+                 name=None, 
+                 nodes=None, 
+                 elements_3ds=None,
+                 elements_2=None, 
+                 element_3d_indices=None,
+                 element_2d_indices=None,
+                 element_sets_3d=None,
+                 element_sets_2d=None,
+                 node_sets=None):
 
         #: Name of the mesh
         self.name = name
 
         # Nodes
-        self.nodes = {}
-
-
-        # 2D elements in the mesh
-        # Represented by a int : list dictionary
-        self.elements_2d = {}
+        # {1 : node1,
+        #  2 : node2,
+        #  3 : node3}
+        self.nodes = OrderedDict()
 
         # 3D elements in the mesh
-        self.elements_3d = {}
+        # {1 : element1,
+        #  2 : element2,
+        #  3 : element3}
+        self.elements_3d = OrderedDict()
+        self.elements_2d = OrderedDict()
+
+        # {"C3D : 1,2,3, ..., indices,
+        #  "C6D : 1,2,3, ..., indices}
+        self.element_3d_indices = OrderedDict()
+        self.element_2d_indices = OrderedDict()
 
         # Element sets
-        self.element_sets_2d = {}
-        self.element_sets_3d = {}
+        # {Poly1 : id1, id2, ...,
+        #  Poly2 : id1, id2, ...}
+        self.element_sets_2d = OrderedDict()
+        self.element_sets_3d = OrderedDict()
 
         # Node sets
-        self.node_sets = {}
+        # {X0 : id1, id2, ...,
+        #  X1 : id1, id2, ...}
+        self.node_sets = OrderedDict()
 
