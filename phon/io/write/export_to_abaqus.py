@@ -20,110 +20,77 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
-def export_to_abaqus(filename, trigs=False, f=None):
-        write_no_end = False	
-        if f == None:
+from phon.mesh_objects.element import Element
+from phon.mesh_objects.element_set import ElementSet
+from phon.mesh_objects.node import Node
+from phon.mesh_objects.mesh import Mesh
+from phon.mesh_objects.node_set import NodeSet
+
+
+def export_to_abaqus(filename, mesh, write_2d_elements=False, f=None):
+
+        append_to_file = False	
+        if f is None:
             f = open(filename, 'w')
-	else:
-            write_no_end = True
+        else:
+            append_to_file = True
 
-        # Header
-        f.write('*Part, name=' + self.name.upper() + "\n")
+        # Write header
+        f.write('*Part, name=' + mesh.name.upper())
 
 
-        # Nodes
-        f.write('*Node\n')
-        for node in mesh.nodes:
-            f.write("%d, " % (node.id))
+        # Write nodes
+        f.write('\n*Node\n')
+        for node_id in sorted(mesh.nodes.keys()):
+            node = mesh.nodes[node_id]
+            f.write("%d, " % (node_id))
             f.write("%.12f, %.12f, %.12f\n" % (node.x, node.y, node.z))
 
 
         # Two dimensional elements
-        if trigs:
-            f.write("\n*Element, type=")
-            if len(self.tris[0].vertices) == 3:
-                f.write("CPE3\n")
-            if len(self.tris[0].vertices) == 6:
-                f.write("CPE6\n")
-            for tri in self.tris:
-                f.write("%d, " % format(tri.id))
-                # Code below changes "[1,2,3]" to "1, 2, 3"
-                f.write(''.join('{},'.format(k) for k in tri.vertices)[:-2])
-                f.write('\n')
+        if write_2d_elements:   
+            for element_type in mesh.element_2d_indices.keys():
+                f.write("*Element, type=" + element_type + "\n")
+                for element_id in mesh.element_2d_indices[element_type]:
+                     f.write("%d, " % (element_id))
+                     # Code below changes "[1,2,3]" to "1, 2, 3"
+                     f.write(''.join('{},'.format(k) for k in mesh.elements_2d[element_id].vertices)[:-2])
+                     f.write("\n")
 
         # Three dimensional elements
-        f.write("\n*Element, type=")
-        if len(self.tetras[0].vertices) == 4:
-            f.write("C3D4\n"),
-        if len(self.tetras[0].vertices) == 10:
-            f.write("C3D10\n")
-
-        for tetra in self.tetras:
-                f.write("{0}, ".format(tetra.id))
+        for element_type in mesh.element_3d_indices.keys():
+            f.write("*Element, type=" + element_type + "\n")
+            for element_id in mesh.element_3d_indices[element_type]:
+                f.write("%d, " % (element_id))
                 # Code below changes "[1,2,3]" to "1, 2, 3"
-                f.write(''.join('{}, '.format(k) for k in tetra.vertices)[:-2])
-                f.write('\n')
+                f.write(''.join('{},'.format(k) for k in mesh.elements_3d[element_id].vertices)[:-2])    
+                f.write("\n")    
+        
+        # Two dimensional element sets
+        if write_2d_elements:
+            for element_set_name in mesh.element_sets_2d.keys():
+                f.write("\n*Elset, elset=" + element_set_name.upper() + "\n")
+                write_column_broken_array(mesh.element_sets_2d[element_set_name].getIds(), f)
 
-        if not len(self.cohesiveElems) == 0:
-            if len(self.cohesiveElems[0].vertices) == 6:
-                f.write('*Element, type=COH3D6\n')
-            if len(self.cohesiveElems[0].vertices) == 15:
-                f.write('*Element, type=C3D15\n')
-            for cohesive in self.cohesiveElems:
-                    f.write("{0}, ".format(cohesive.id))
-                    f.write(''.join('{}, '.format(k) for k in
-                                            cohesive.vertices)[:-2])
-                    f.write('\n')
-        f.write('\n')
+        # Three dimensional element sets
+        for element_set_name in mesh.element_sets_3d.keys():
+            f.write("\n*Elset, elset=" + element_set_name.upper() + "\n")
+            write_column_broken_array(mesh.element_sets_3d[element_set_name].getIds(), f)
 
-        for idx, cohset in enumerate(self.cohesiveSets):
-            f.write("*Elset, elset=" + cohset.name.upper() + "\n")
-            ids = cohset.getIds()
-            for idx, i in enumerate(ids):
-                if (idx + 1) % 15 == 0:
-                    f.write('\n')
-                if idx == (len(ids) - 1):
-                    f.write(str(i) + "\n\n")
-                else:
-                    f.write(str(i) + ", ")
-        f.write("\n")
-
-        if trigs:
-            for idx, faceset in enumerate(self.faceSets):
-                f.write("*Elset, elset=" + faceset.name.upper() + "\n")
-                ids = faceset.getIds()
-                for idx, i in enumerate(ids):
-                    if (idx + 1) % 15 == 0:
-                        f.write('\n')
-                    if idx == (len(ids) - 1):
-                        f.write(str(i) + "\n\n")
-                    else:
-                        f.write(str(i) + ", ")
-            f.write("\n")
-
-        for idx, polyset in enumerate(self.polySets):
-            f.write("*Elset, elset=" + polyset.name.upper() + "\n")
-            ids = polyset.getIds()
-            for idx, i in enumerate(ids):
-                if (idx + 1) % 15 == 0:
-                    f.write('\n')
-                if idx == (len(ids) - 1):
-                    f.write(str(i) + "\n\n")
-                else:
-                    f.write(str(i) + ", ")
-        f.write("\n")
-
-        for idx, nodeset in enumerate(self.nodeSets):
-            f.write("*Nset, nset=" + nodeset.name.upper() + "\n")
-            ids = nodeset.getIds()
-            for idx, i in enumerate(ids):
-                if (idx + 1) % 15 == 0:
-                    f.write('\n')
-                if idx == (len(ids) - 1):
-                    f.write(str(i) + "\n\n")
-                else:
-                    f.write(str(i) + ", ")
-
-        if not write_no_end:
+        # Node sets
+        for node_set_name in mesh.node_sets.keys():
+            f.write("\n*Elset, elset=" + node_set_name.upper() + "\n")
+            write_column_broken_array(mesh.node_sets[node_set_name].getIds(), f)
+ 
+        if not append_to_file:
             f.write("*End Part")
-            f.close(
+            f.close()
+
+def write_column_broken_array(array, f):
+    for idx, i in enumerate(array):
+        if (idx + 1) % 15 == 0:
+            f.write('\n')
+        if idx == (len(array) - 1):
+            f.write(str(i) + "\n\n")
+        else:
+            f.write(str(i) + ", ")
