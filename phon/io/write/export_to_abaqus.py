@@ -26,8 +26,10 @@ from phon.mesh_objects.node import Node
 from phon.mesh_objects.mesh import Mesh
 from phon.mesh_objects.node_set import NodeSet
 
-from phon.io.element_name_dictionary import element_2d_dictionary
-from phon.io.element_name_dictionary import element_3d_dictionary
+from phon.io.element_name_dictionary import element_dictionary
+from phon.io.element_name_dictionary import element_dictionary_inverse
+from phon.io.element_name_dictionary import elements_2d 
+from phon.io.element_name_dictionary import elements_3d
 
 
 def export_to_abaqus(filename, mesh, write_2d_elements=False, f=None):
@@ -49,42 +51,28 @@ def export_to_abaqus(filename, mesh, write_2d_elements=False, f=None):
             f.write("%d, " % (node_id))
             f.write("%.12f, %.12f, %.12f\n" % (node.x, node.y, node.z))
 
-
-        # Two dimensional elements
-        if write_2d_elements:   
-            for element_type in mesh.element_2d_indices.keys():
-                element_name = element_2d_dictionary[(element_type, "abaqus")]
-                f.write("*Element, type=" + element_name + "\n")
-                for element_id in mesh.element_2d_indices[element_type]:
-                     f.write("%d, " % (element_id))
-                     # Code below changes "[1,2,3]" to "1, 2, 3"
-                     f.write(''.join('{},'.format(k) for k in mesh.elements_2d[element_id].vertices)[:-1])
-                     f.write("\n")
-
-        # Three dimensional elements
-        for element_type in mesh.element_3d_indices.keys():
+        # Elements
+        for element_type in mesh.element_indices.keys():
+            if (write_2d_elements == False) and (element_dictionary_inverse[(element_type, "abaqus")] in elements_2d):
+                    continue
             element_name = element_3d_dictionary[(element_type, "abaqus")]
-            f.write("*Element, type=" + element_name + "\n")
+            f.write("\n*Element, type=" + element_name + "\n")
             for element_id in mesh.element_3d_indices[element_type]:
                 f.write("%d, " % (element_id))
                 # Code below changes "[1,2,3]" to "1, 2, 3"
                 f.write(''.join('{},'.format(k) for k in mesh.elements_3d[element_id].vertices)[:-1])    
                 f.write("\n")    
-        
-        # Two dimensional element sets
-        if write_2d_elements:
-            for element_set_name in mesh.element_sets_2d.keys():
-                f.write("\n*Elset, elset=" + element_set_name.upper() + "\n")
-                write_column_broken_array(mesh.element_sets_2d[element_set_name].getIds(), f)
 
-        # Three dimensional element sets
-        for element_set_name in mesh.element_sets_3d.keys():
-            f.write("\n*Elset, elset=" + element_set_name.upper() + "\n")
-            write_column_broken_array(mesh.element_sets_3d[element_set_name].getIds(), f)
+        # Element sets
+        for element_set_name in mesh.element_sets.keys():
+            if (write_2d_elements == False) and (mesh.element_sets[element_set_name].getDimension() == 2):
+                    continue
+            f.write("\n*Elset, elset=" + element_set_name + "\n")
+            write_column_broken_array(mesh.element_sets[element_set_name].getIds(), f)
 
         # Node sets
         for node_set_name in mesh.node_sets.keys():
-            f.write("\n*Nset, nset=" + node_set_name.upper() + "\n")
+            f.write("\n*Nset, nset=" + node_set_name + "\n")
             write_column_broken_array(mesh.node_sets[node_set_name].getIds(), f)
  
         if not append_to_file:
