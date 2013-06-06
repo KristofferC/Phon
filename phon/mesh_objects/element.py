@@ -23,17 +23,13 @@ THE SOFTWARE.
 class Element:
     """ Represents a finite element """
 
-    def __init__(self, elem_type, vertices, tetra=None):
+    def __init__(self, elem_type, vertices):
         
         #: The name of the element
         self.elem_type = elem_type
 
         # The vertices of the element
         self.vertices = vertices
-
-        if tetra is None:
-            tetra = []
-        self.tetra = tetra
 
     def __str__(self):
         return("Element of type {0} containing the vertices with "
