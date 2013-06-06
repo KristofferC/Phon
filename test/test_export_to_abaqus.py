@@ -14,12 +14,15 @@ class Test(unittest.TestCase):
     def test_export_to_abaqus(self):
         """Test Phons reader for neper inp files."""
         export_to_abaqus("test_file.inp", self.mesh)
+        read_from_neper_inp("test_file.inp")
+        export_to_abaqus("test_file_2.inp", self.mesh)
     
     def tearDown(self):
         pass
-        #if os.path.isfile("test_file.inp"):
-         #   os.remove("test_file.inp")
-
+        if os.path.isfile("test_file.inp"):
+            os.remove("test_file.inp")
+        if os.path.isfile("test_file_2.inp"):
+            os.remove("test_file_2.inp")
 
 if __name__ == "__main__":
     unittest.main()
