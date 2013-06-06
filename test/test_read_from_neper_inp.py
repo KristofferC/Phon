@@ -8,7 +8,7 @@ class Test(unittest.TestCase):
     """Unit tests for read_from_neper_inp."""
 
     def setUp(self):
-        self.mesh = read_from_neper_inp("n10-id1.inp")
+        self.mesh = read_from_neper_inp("n10-id1.inp", verbose = 0)
 
     def test_read_from_neper_inp(self):
         """Test Phons reader for neper inp files."""
@@ -19,29 +19,25 @@ class Test(unittest.TestCase):
         self.assertTrue(self.mesh.nodes[1].y - 0.0 < 10E-9)
         self.assertTrue(self.mesh.nodes[289].z - 0.886838138103 < 10E-9)
 
-        # Test 2d elements
-        self.assertEqual(len(self.mesh.elements_2d), 684)
-        self.assertTrue((self.mesh.elements_2d[1].elem_type == "CPE3") or
-                        (self.mesh.elements_2d[1].elem_type == "CPE6"))
-        self.assertEqual(self.mesh.elements_2d[5].vertices, [43, 39, 40])
-        self.assertEqual(self.mesh.elements_2d[684].vertices, [38, 5, 52])
+        # Test elements
+        self.assertEqual(len(self.mesh.elements), 1683)
+        self.assertTrue((self.mesh.elements[1].elem_type == "CPE3") or
+                        (self.mesh.elements[1].elem_type == "CPE6"))
+        self.assertEqual(self.mesh.elements[5].vertices, [43, 39, 40])
+        self.assertEqual(self.mesh.elements[684].vertices, [38, 5, 52])
 
-        # Test 3d elements
-        self.assertEqual(len(self.mesh.elements_3d), 999)
-        self.assertTrue((self.mesh.elements_3d[686].elem_type == "C3D4") or
-                        (self.mesh.elements_3d[686].elem_type == "C3D10"))
-        self.assertEqual(self.mesh.elements_3d[685].vertices, [44, 155, 61, 154])
-        self.assertEqual(self.mesh.elements_3d[1683].vertices, [283, 127, 246, 284])
+        self.assertTrue((self.mesh.elements[686].elem_type == "C3D4") or
+                        (self.mesh.elements[686].elem_type == "C3D10"))
+        self.assertEqual(self.mesh.elements[685].vertices, [44, 155, 61, 154])
+        self.assertEqual(self.mesh.elements[1683].vertices, [283, 127, 246, 284])
 
-        # Test 2d element sets
-        self.assertEqual(len(self.mesh.element_sets_2d), 56)
-        self.assertEqual(self.mesh.element_sets_2d["face22"].name, "face22")
-        self.assertEqual(self.mesh.element_sets_2d["face36"].ids[3], 434)
+        # Test element sets
+        self.assertEqual(len(self.mesh.element_sets), 66)
+        self.assertEqual(self.mesh.element_sets["face22"].name, "face22")
+        self.assertEqual(self.mesh.element_sets["face36"].ids[3], 434)
                          
-        # Test 3d element sets
-        self.assertEqual(len(self.mesh.element_sets_3d), 10)
-        self.assertEqual(self.mesh.element_sets_3d["poly6"].name, "poly6")
-        self.assertEqual(self.mesh.element_sets_3d["poly10"].ids[8], 1584)
+        self.assertEqual(self.mesh.element_sets["poly6"].name, "poly6")
+        self.assertEqual(self.mesh.element_sets["poly10"].ids[8], 1584)
 
         # Test node sets
         self.assertEqual(len(self.mesh.node_sets), 44)
