@@ -28,8 +28,8 @@ class NodeSet:
         self.name = name
 
         #: The elements contained in the set
-	if ids == None:
-		ids = []
+        if ids == None:
+            ids = []
         self.ids = ids
 
     def getIds(self):
