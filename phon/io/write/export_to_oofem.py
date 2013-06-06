@@ -26,8 +26,7 @@ from phon.mesh_objects.node import Node
 from phon.mesh_objects.mesh import Mesh
 from phon.mesh_objects.node_set import NodeSet
 
-from phon.io.element_name_dictionary import element_2d_dictionary
-from phon.io.element_name_dictionary import element_3d_dictionary
+from phon.io.element_name_dictionary import element_dictionary
 
 def export_to_oofem(filename, mesh, write_2d_elements=False, f=None):
 
