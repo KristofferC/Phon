@@ -30,12 +30,9 @@ class Mesh:
     def __init__(self,
                  name=None, 
                  nodes=None, 
-                 elements_3ds=None,
-                 elements_2=None, 
-                 element_3d_indices=None,
-                 element_2d_indices=None,
+                 elements=None,
+                 element_indices=None,
                  element_sets_3d=None,
-                 element_sets_2d=None,
                  node_sets=None):
 
         #: Name of the mesh
@@ -51,22 +48,18 @@ class Mesh:
         # {1 : element1,
         #  2 : element2,
         #  3 : element3}
-        self.elements_3d = OrderedDict()
-        self.elements_2d = OrderedDict()
+        self.elements = OrderedDict()
 
         # {"C3D : 1,2,3, ..., indices,
         #  "C6D : 1,2,3, ..., indices}
-        self.element_3d_indices = OrderedDict()
-        self.element_2d_indices = OrderedDict()
+        self.element_indices = OrderedDict()
 
         # Element sets
         # {Poly1 : id1, id2, ...,
         #  Poly2 : id1, id2, ...}
-        self.element_sets_2d = OrderedDict()
-        self.element_sets_3d = OrderedDict()
+        self.element_sets = OrderedDict()
 
         # Node sets
         # {X0 : id1, id2, ...,
         #  X1 : id1, id2, ...}
         self.node_sets = OrderedDict()
-
