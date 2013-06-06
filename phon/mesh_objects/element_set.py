@@ -23,19 +23,20 @@ THE SOFTWARE.
 class ElementSet:
     """ Represents a set of elements """
 
-    def __init__(self, name, ids=None, polys=None):
+    def __init__(self, name, dimension, ids=None):
         #: Name of the element set
         self.name = name
+
+        # 1D, 2D, 3D
+        self.dimension = dimension 
+
+    def getDimension(self):
+        return self.dimension
 
         #: The ids of the elements contained in the set
         if ids == None:
             ids = []
         self.ids = ids
-
-        #: The polyhedras that the elementset contain
-        if polys == None:
-            polys = []
-        self.polys = polys
 
     def __str__(self):
         return("Element set with name {0} containing elements with the "
