@@ -13,6 +13,7 @@ class Test(unittest.TestCase):
 
     def test_export_to_abaqus(self):
         """Test Phons reader for neper inp files."""
+        print self.mesh.element_indices
         export_to_abaqus("test_file.inp", self.mesh, write_2d_elements=True)
         read_from_neper_inp("test_file.inp")
         export_to_abaqus("test_file_2.inp", self.mesh)
