@@ -28,13 +28,13 @@ from phon.mesh_objects.node_set import NodeSet
 
 from phon.io.element_name_dictionary import element_dictionary
 from phon.io.element_name_dictionary import element_dictionary_inverse
-from phon.io.element_name_dictionary import elements_2d 
+from phon.io.element_name_dictionary import elements_2d
 from phon.io.element_name_dictionary import elements_3d
 
 
 def export_to_abaqus(filename, mesh, write_2d_elements=False, f=None):
 
-        append_to_file = False	
+        append_to_file = False
         if f is None:
             f = open(filename, 'w')
         else:
@@ -42,7 +42,6 @@ def export_to_abaqus(filename, mesh, write_2d_elements=False, f=None):
 
         # Write header
         f.write('*Part, name=' + mesh.name.upper())
-
 
         # Write nodes
         f.write('\n*Node\n')
@@ -53,19 +52,21 @@ def export_to_abaqus(filename, mesh, write_2d_elements=False, f=None):
 
         # Elements
         for element_type in mesh.element_indices.keys():
-            if (write_2d_elements == False) and (element_dictionary_inverse[(element_type, "abaqus")] in elements_2d):
+            if ((write_2d_elements is False) and
+               (element_dictionary_inverse[(element_type, "abaqus")] in elements_2d)):
                     continue
-            element_name = element_3d_dictionary[(element_type, "abaqus")]
+            element_name = element_dictionary[(element_type, "abaqus")]
             f.write("\n*Element, type=" + element_name + "\n")
-            for element_id in mesh.element_3d_indices[element_type]:
+            for element_id in mesh.element_indices[element_type]:
                 f.write("%d, " % (element_id))
                 # Code below changes "[1,2,3]" to "1, 2, 3"
-                f.write(''.join('{},'.format(k) for k in mesh.elements_3d[element_id].vertices)[:-1])    
-                f.write("\n")    
+                f.write(''.join('{},'.format(k) for k in mesh.elements[element_id].vertices)[:-1])
+                f.write("\n")
 
         # Element sets
         for element_set_name in mesh.element_sets.keys():
-            if (write_2d_elements == False) and (mesh.element_sets[element_set_name].getDimension() == 2):
+            if ((write_2d_elements is False) and
+               (mesh.element_sets[element_set_name].dimension == 2)):
                     continue
             f.write("\n*Elset, elset=" + element_set_name + "\n")
             write_column_broken_array(mesh.element_sets[element_set_name].getIds(), f)
@@ -74,16 +75,17 @@ def export_to_abaqus(filename, mesh, write_2d_elements=False, f=None):
         for node_set_name in mesh.node_sets.keys():
             f.write("\n*Nset, nset=" + node_set_name + "\n")
             write_column_broken_array(mesh.node_sets[node_set_name].getIds(), f)
- 
+
         if not append_to_file:
             f.write("*End Part")
             f.close()
+
 
 def write_column_broken_array(array, f):
     for idx, i in enumerate(array):
         if (idx + 1) % 15 == 0:
             f.write('\n')
         if idx == (len(array) - 1):
-            f.write(str(i) + "\n\n")
+            f.write(str(i) + "\n")
         else:
             f.write(str(i) + ", ")
