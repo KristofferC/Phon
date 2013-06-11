@@ -30,9 +30,6 @@ class ElementSet:
         # 1D, 2D, 3D
         self.dimension = dimension 
 
-    def getDimension(self):
-        return self.dimension
-
         #: The ids of the elements contained in the set
         if ids == None:
             ids = []
