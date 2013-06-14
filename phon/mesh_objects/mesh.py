@@ -21,6 +21,9 @@ THE SOFTWARE.
 """
 
 from collections import OrderedDict
+from phon.io.element_name_dictionary import elements_2d
+from phon.io.element_name_dictionary import elements_3d
+from phon.io.element_name_dictionary import element_dictionary_inverse
 
 class Mesh:
     """ Represents a mesh which includes nodes, elements, element sets
@@ -32,7 +35,7 @@ class Mesh:
                  nodes=None, 
                  elements=None,
                  element_indices=None,
-                 element_sets_3d=None,
+                 element_sets=None,
                  node_sets=None):
 
         #: Name of the mesh
@@ -44,11 +47,13 @@ class Mesh:
         #  3 : node3}
         self.nodes = OrderedDict()
 
+
         # 3D elements in the mesh
         # {1 : element1,
         #  2 : element2,
         #  3 : element3}
         self.elements = OrderedDict()
+        
 
         # {"C3D : 1,2,3, ..., indices,
         #  "C6D : 1,2,3, ..., indices}
@@ -63,3 +68,18 @@ class Mesh:
         # {X0 : id1, id2, ...,
         #  X1 : id1, id2, ...}
         self.node_sets = OrderedDict()
+
+    def get_number_of_2d_elements(self):
+        number_of_2d_elements = 0
+        for element_type in self.element_indices.keys():
+            print element_type
+            if element_dictionary_inverse[(element_type, "abaqus")] in elements_2d:
+                number_of_2d_elements += len(self.element_indices[element_type])
+        return number_of_2d_elements
+
+    def get_number_of_3d_elements(self):
+        number_of_3d_elements = 0
+        for element_type in self.element_indices.keys():
+            if element_dictionary_inverse[(element_type, "abaqus")] in elements_3d:
+                number_of_3d_elements += len(self.element_indices[element_type])
+        return number_of_3d_elements

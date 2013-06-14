@@ -27,23 +27,20 @@ from phon.mesh_objects.mesh import Mesh
 from phon.mesh_objects.node_set import NodeSet
 
 from phon.io.element_name_dictionary import element_dictionary
+from phon.io.element_name_dictionary import element_dictionary_inverse
+from phon.io.element_name_dictionary import elements_2d
+from phon.io.element_name_dictionary import elements_3d
 
-def export_to_oofem(filename, mesh, write_2d_elements=False, f=None):
-
-        append_to_file = False	
-        if f is None:
-            f = open(filename, 'w')
-        else:
-            append_to_file = True
+def export_to_oofem(filename, mesh, write_2d_elements=False):
+        f = open(filename, "w")
 
         # Lengths
         n_nodes = len(mesh.nodes)
-        n_elements_3d = len(mesh.elements_3d)
-        n_elements_2d = len(mesh.elements_2d)
 
-        n_elements = n_elements_3d
         if write_2d_elements:
-            n_elements += n_elements_2d
+            n_elements = mesh.get_number_of_2d_elements() + mesh.get_number_of_3d_elements()
+        else:
+            n_elements = mesh.get_number_of_3d_elements()
 
 
         # Output file record
@@ -71,64 +68,57 @@ def export_to_oofem(filename, mesh, write_2d_elements=False, f=None):
         f.write("nic 0" + " ")
         f.write("nltf 1\n")
 
-
         # Write nodes
         for node_id in sorted(mesh.nodes.keys()):
             node = mesh.nodes[node_id]
             f.write("node %d " % (node_id))
             f.write("coords 3 %.12f %.12f %.12f " % (node.x, node.y, node.z))
-            f.write("bc 3 1 1 1\n")
+            f.write("\n")
+            #f.write("bc 3 1 1 1\n")
 
-
-        # Two dimensional elements
-        if write_2d_elements:   
-            for element_type in mesh.element_2d_indices.keys():
-                element_name = element_2d_dictionary[(element_type, "oofem")]
-                for element_id in mesh.element_2d_indices[element_type]:
-                    f.write(element_name + " %d " % (element_id)) 
-                    f.write("nodes " + str(len(mesh.elements_2d[element_id].vertices)) + " ")
-                    # Code below changes "[1,2,3]" to "1 2 3"
-                    f.write(''.join('{} '.format(k) for k in mesh.elements_2d[element_id].vertices)[:-1])
-                    f.write( "mat 1")
-                    f.write("\n")
-
-        # Three dimensional elements
-        for element_type in mesh.element_3d_indices.keys():
-            element_name = element_3d_dictionary[(element_type, "oofem")]
-            for element_id in mesh.element_3d_indices[element_type]:
+        #  Elements
+        for element_type in mesh.element_indices.keys():
+            if ((write_2d_elements is False) and
+               (element_dictionary_inverse[(element_type, "abaqus")] in elements_2d)):
+                    continue
+            element_name = element_dictionary[(element_type, "oofem")]
+            for element_id in mesh.element_indices[element_type]:
                 f.write(element_name + " %d " % (element_id)) 
-                f.write("nodes " + str(len(mesh.elements_3d[element_id].vertices)) + " ")
-                # Code below changes "[1,2,3]" to "1, 2, 3"
-                f.write(''.join('{} '.format(k) for k in mesh.elements_3d[element_id].vertices)[:-1])   
+                f.write("nodes " + str(len(mesh.elements[element_id].vertices)) + " ")
+                # Code below changes "[1,2,3]" to "1 2 3"
+                f.write(''.join('{} '.format(k) for k in mesh.elements[element_id].vertices)[:-1])
                 f.write(" mat 1 crossSect 1")
-                f.write("\n")    
+                f.write("\n")
+
+        ## Sets
+        set_id = 0
+        # Element sets
+        for element_set_name in mesh.element_sets.keys():
+            element_set = mesh.element_sets[element_set_name]
+            if ((write_2d_elements is False) and
+               (element_set.dimension == 2)):
+                    continue
+            set_id += 1
+            f.write("# " + element_set_name)
+            f.write("\nSet " + str(set_id) + " elements " + str(len(element_set.ids)) + " ")
+            f.write(''.join('{} '.format(k) for k in element_set.ids)[:-1])
+            f.write("\n")
         
-        """
-        # Two dimensional element sets
-        if write_2d_elements:
-            for element_set_name in mesh.element_sets_2d.keys():
-                f.write("\n*Elset, elset=" + element_set_name.upper() + "\n")
-                write_column_broken_array(mesh.element_sets_2d[element_set_name].getIds(), f)
-
-        # Three dimensional element sets
-        for element_set_name in mesh.element_sets_3d.keys():
-            f.write("\n*Elset, elset=" + element_set_name.upper() + "\n")
-            write_column_broken_array(mesh.element_sets_3d[element_set_name].getIds(), f)
-
         # Node sets
         for node_set_name in mesh.node_sets.keys():
-            f.write("\n*Nset, nset=" + node_set_name.upper() + "\n")
-            write_column_broken_array(mesh.node_sets[node_set_name].getIds(), f)
-        """
+            node_set = mesh.node_sets[node_set_name]
+            set_id += 1
+            f.write("\n# " + node_set_name)
+            f.write("\nSet " + str(set_id) + " nodes " + str(len(node_set.ids)) + " ")
+            f.write(''.join('{} '.format(k) for k in node_set.ids)[:-1])
 
-        f.write("SimpleCS 1\n")
+
+        # For testing
+        f.write("\nSimpleCS 1\n")
         f.write("IsoLE 1 d 1. E 30.e6 n 0.2 tAlpha 1.2e-5\n")
         f.write("BoundaryCondition  1 loadTimeFunction 1 prescribedvalue 0.0\n")
         f.write("PeakFunction 1 t 1.0 f(t) 1.\n")
 
-        if not append_to_file:
-            #f.write("*End Part")
-            f.close()
 
 def write_column_broken_array(array, f):
     for idx, i in enumerate(array):
