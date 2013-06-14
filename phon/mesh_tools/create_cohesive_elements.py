@@ -94,7 +94,7 @@ def create_cohesive_elements(mesh):
            
 
 
-def _get_grains_connected_to_face(mesh, face_set,  original_n_nodes):
+def _get_grains_connected_to_face(mesh, face_set, original_n_nodes):
     """
     This function find the grain connected to the face set given as argument.
 
@@ -107,21 +107,18 @@ def _get_grains_connected_to_face(mesh, face_set,  original_n_nodes):
     grains_connected_to_face = []
     triangle_element = mesh.elements[face_set.ids[0]]
 
-    print triangle_element
-
     for node_id in triangle_element.vertices:
         grains_with_node_id = _get_grains_containing_node_id(mesh, node_id,  original_n_nodes)
-        grains_connected_to_face.extend(grains_with_node_id)
+        grains_connected_to_face.append(set(grains_with_node_id))
 
-    return list(set(grains_connected_to_face))
+    return list(set.intersection(*grains_connected_to_face))
 
 def _get_grains_containing_node_id(mesh, node_id, original_n_nodes):
     """
     This function finds all the grains that contain the
-    node with node identifier node_id
+    node with node identifier node_id.
     """
 
-    
     grain_ids_with_node_id = []
 
     for element_set_name in mesh.element_sets.keys():
@@ -129,17 +126,11 @@ def _get_grains_containing_node_id(mesh, node_id, original_n_nodes):
             continue
         element_set = mesh.element_sets[element_set_name]
         for element_id in element_set.ids:
-            vert_mod = [(x - 1) % original_n_nodes + 1 for x in mesh.elements[element_id].vertices]
+            vert_mod = [x % original_n_nodes for x in mesh.elements[element_id].vertices]
             if node_id in vert_mod:
                 grain_ids_with_node_id.append(int(element_set_name[4:]))
                 break
-
     grain_ids_with_node_id = list(set(grain_ids_with_node_id))
-    if len(grain_ids_with_node_id) == 0:
-        print mesh.elements[703]
-        print len(mesh.nodes)
-        print [(x - 1) % original_n_nodes + 1 for x in mesh.elements[703].vertices]
-        raise ValueError("Every node gotta have a grain lawlaw")
     return grain_ids_with_node_id
 
 
