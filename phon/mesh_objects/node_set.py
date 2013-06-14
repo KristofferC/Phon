@@ -32,10 +32,8 @@ class NodeSet:
             ids = []
         self.ids = ids
 
-    def getIds(self):
-        return self.ids
 
     def __str__(self):
         return("Node set with name {0} containing nodes with the"
-               "following ids {1}".format(self.name, self.getIds()))
+               "following ids {1}".format(self.name, self.ids))
 
