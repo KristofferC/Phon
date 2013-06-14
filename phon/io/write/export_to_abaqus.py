@@ -58,7 +58,6 @@ def export_to_abaqus(filename, mesh, write_2d_elements=False, f=None):
             element_name = element_dictionary[(element_type, "abaqus")]
             f.write("\n*Element, type=" + element_name + "\n")
             for element_id in mesh.element_indices[element_type]:
-                print element_id
                 f.write("%d, " % (element_id))
                 # Code below changes "[1,2,3]" to "1, 2, 3"
                 f.write(''.join('{},'.format(k) for k in mesh.elements[element_id].vertices)[:-1])
