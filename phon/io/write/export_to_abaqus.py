@@ -68,12 +68,12 @@ def export_to_abaqus(filename, mesh, write_2d_elements=False, f=None):
             if (write_2d_elements == False) and (mesh.element_sets[element_set_name].getDimension() == 2):
                     continue
             f.write("\n*Elset, elset=" + element_set_name + "\n")
-            write_column_broken_array(mesh.element_sets[element_set_name].getIds(), f)
+            write_column_broken_array(mesh.element_sets[element_set_name].ids, f)
 
         # Node sets
         for node_set_name in mesh.node_sets.keys():
             f.write("\n*Nset, nset=" + node_set_name + "\n")
-            write_column_broken_array(mesh.node_sets[node_set_name].getIds(), f)
+            write_column_broken_array(mesh.node_sets[node_set_name].ids, f)
  
         if not append_to_file:
             f.write("*End Part")
