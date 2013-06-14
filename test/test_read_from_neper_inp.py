@@ -43,7 +43,7 @@ class Test(unittest.TestCase):
         self.assertEqual(len(self.mesh.node_sets), 44)
         self.assertEqual(len(self.mesh.node_sets["z0"].ids), 44)
         self.assertEqual(self.mesh.node_sets["x1z1body"].ids[1], 116)
-        self.assertEqual(self.mesh.node_sets["x1y0z1"].getIds(), [32])               
+        self.assertEqual(self.mesh.node_sets["x1y0z1"].ids, [32])               
         
     def test_to_number(self):
         self.assertEqual(to_number("1.3"), 1.3)
