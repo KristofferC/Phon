@@ -30,17 +30,25 @@ class ElementSet:
         # 1D, 2D, 3D
         self.dimension = dimension 
 
-    def getDimension(self):
-        return self.dimension
-
         #: The ids of the elements contained in the set
-        if ids == None:
+        if ids is None:
             ids = []
         self.ids = ids
 
+
+    def getDimension(self):
+        return self.dimension
+
+
     def __str__(self):
         return("Element set with name {0} containing elements with the "
-               "following ids {1}".format(self.name, self.getIds()))
+               "following ids {1}".format(self.name, self.ids))
 
-    def getIds(self):
-        return self.ids
+
+    def get_all_node_ids(self, mesh):
+        all_node_ids = []
+
+        for element_id in self.ids:
+            all_node_ids += mesh.elements[element_id].vertices
+
+        return list(set(all_node_ids))
