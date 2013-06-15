@@ -20,18 +20,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
+
 class NodeSet:
     """ Represents a set of nodes """
 
     def __init__(self, name, ids=None):
-        #: Name of the element set
+        """
+        Creates a :class:`NodeSet` class.
+
+        :param name: The name of the node set.
+        :type name: str
+        :param ids: The identifiers of the nodes
+        :type ids: list of ints
+        """
         self.name = name
 
         #: The elements contained in the set
-        if ids == None:
+        if ids is None:
             ids = []
         self.ids = ids
-
 
     def __str__(self):
         return("Node set with name {0} containing nodes with the"

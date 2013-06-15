@@ -20,21 +20,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
+
 class Node:
-    """ Represents a node in 3D"""
+    """ Represents a node."""
 
     def __init__(self, x, y, z):
+        """
+        Creates a new :class:`Node` class.
 
-        #: The x coordinate of the node
+        :param x: The x coordinate of the node.
+        :type x: float
+        :param y:  The x coordinate of the node.
+        :type y: float
+        :param z:  The x coordinate of the node.
+        :type z: float
+
+        """
         self.x = x
-
-        #: The y coordinate of the node
         self.y = y
-
-        #: The z coordinate of the node
         self.z = z
 
     def __str__(self):
+        """
+        Returns a string representation of the node.
+
+        :return: The string representation.
+        :rtype: str
+        """
         return ("Node with located at (%f, %f, %f):" % (self.x,
-            self.y, self.z))
+                self.y, self.z))
 

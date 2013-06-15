@@ -20,32 +20,59 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
+
 class ElementSet:
     """ Represents a set of elements """
 
     def __init__(self, name, dimension, ids=None):
-        #: Name of the element set
+        """
+        Creates a new :class:`ElementSet` class
+
+        :param name: Name of the element set.
+        :type name: str
+        :param dimension: The dimension of the elements in the set
+        :type dimension: int
+        :param ids: Identifiers of the elements in the set.
+        :type ids: list of ints
+
+        """
         self.name = name
+        self.dimension = dimension
 
-        # 1D, 2D, 3D
-        self.dimension = dimension 
-
-        #: The ids of the elements contained in the set
         if ids is None:
             ids = []
         self.ids = ids
 
-
     def getDimension(self):
+        """
+        Get the dimension of the element set.
+
+        :return: The dimension.
+        :rtype: int
+
+        """
         return self.dimension
 
-
     def __str__(self):
-        return("Element set with name {0} containing elements with the "
-               "following ids {1}".format(self.name, self.ids))
+        """
+        Returns a string representation of the element set.
 
+        :return: The string representation
+        :rtype: str
+
+        """
+        return ("Element set with name {0} containing elements with the "
+                "following ids {1}".format(self.name, self.ids))
 
     def get_all_node_ids(self, mesh):
+        """
+        Gets all the nodes identifiers for the elements in the element set.
+
+        :param mesh: The mesh
+        :type mesh: :class:`Mesh`
+        :return: The node identifiers
+        :rtype: list of ints
+        """
         all_node_ids = []
 
         for element_id in self.ids:

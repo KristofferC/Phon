@@ -23,6 +23,5 @@ setup(name='phon',
                    'Natural Language :: English',
                    'Operating System :: OS Independent',
                    'Programming Language :: Python :: 2',
-                   'Topic :: Scientific/Engineering :: GIS',
-                  ],
-     )
+                   'Topic :: Scientific/Engineering :: GIS'],
+      )

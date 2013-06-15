@@ -16,9 +16,8 @@ class Test(unittest.TestCase):
         export_to_oofem("test_file.oof", self.mesh, write_2d_elements=True)
     
     def tearDown(self):
-        pass
-        #if os.path.isfile("test_file.inp"):
-        #    os.remove("test_file.inp")
+        if os.path.isfile("test_file.inp"):
+            os.remove("test_file.inp")
 
 if __name__ == "__main__":
     unittest.main()

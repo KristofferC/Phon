@@ -24,12 +24,15 @@ from phon.mesh_objects.element import Element
 from phon.mesh_objects.element_set import ElementSet
 from phon.mesh_objects.node import Node
 
+
 def create_cohesive_elements(mesh):
     """
     Creates and inserts cohesive elements between the grains in the mesh.
+    The element sets, ordering of vertices in elements etc etc need to
+    follow the convention from Neper.
 
-    Just use neper with order = 1 and import with read_from_neper and everything
-    will be fine.
+    :param mesh: The mesh
+    :type mesh: :class:`Mesh`
     """
 
     n_nodes = len(mesh.nodes)
@@ -41,7 +44,6 @@ def create_cohesive_elements(mesh):
             continue
         face_set = mesh.element_sets[element_set_name]
         grains_connected_to_face = _get_grains_connected_to_face(mesh, face_set, n_nodes)
-        
 
         # Ignore sets at boundary
         if len(grains_connected_to_face) == 1:
@@ -68,7 +70,7 @@ def create_cohesive_elements(mesh):
             for grain_id, tetra_id in zip(grain_ids, tetra_ids):
                 idx = mesh.elements[tetra_id].vertices.index(node_id)
                 mesh.elements[tetra_id].vertices[idx] = node_id + n_nodes * grain_id
-  
+
             # If we are adding nodes at the boundary these need to be 
             # added to the correct boundary node set.
             for node_set_name in mesh.node_sets.keys():
@@ -81,17 +83,16 @@ def create_cohesive_elements(mesh):
             triangle_element = mesh.elements[triangle_element_id]
             cohesive_index_order = [1, 0, 2, 4, 3, 5]
             vertices_cohesive = [0, 0, 0, 0, 0, 0]
-            
+
             for i, node_id in enumerate(triangle_element.vertices):
                 vertices_cohesive[cohesive_index_order[i]] = node_id + n_nodes * grain_id_1
                 vertices_cohesive[cohesive_index_order[i + 3]] = node_id + n_nodes * grain_id_2
-           
+
             cohesive_element = Element("COH3D6", vertices_cohesive)
             mesh.elements[cohesive_id_offset] = cohesive_element
             mesh.element_indices["COH3D6"].append(cohesive_id_offset)
             mesh.element_sets[cohesive_set_name].ids.append(cohesive_id_offset)
             cohesive_id_offset += 1
-           
 
 
 def _get_grains_connected_to_face(mesh, face_set, original_n_nodes):
@@ -102,21 +103,40 @@ def _get_grains_connected_to_face(mesh, face_set, original_n_nodes):
     in which case the grain face is on the boundary or by two grains. It
     is therefore sufficient to look at the set of grains contained by any 
     three nodes in the face set and take the intersection of these sets.
+
+    :param mesh: The mesh
+    :type mesh: :class:`Mesh`
+    :param face_set: The face set to find grains connected to
+    :type: face_set: :class:`ELementSet`
+    :param original_n_nodes: The number of nodes in the mesh before any duplication
+                             of nodes has taken place.
+    :type: original_n_nodes: int
+    :return: The grain identifiers that intersect the face.
+    :rtype: list of ints
     """
 
     grains_connected_to_face = []
     triangle_element = mesh.elements[face_set.ids[0]]
 
     for node_id in triangle_element.vertices:
-        grains_with_node_id = _get_grains_containing_node_id(mesh, node_id,  original_n_nodes)
+        grains_with_node_id = _get_grains_containing_node_id(mesh, node_id, original_n_nodes)
         grains_connected_to_face.append(set(grains_with_node_id))
 
     return list(set.intersection(*grains_connected_to_face))
+
 
 def _get_grains_containing_node_id(mesh, node_id, original_n_nodes):
     """
     This function finds all the grains that contain the
     node with node identifier node_id.
+
+    :param mesh: The mesh
+    :type: mesh: :class:`Mesh`
+    :param node_id: The identifier of the node
+    :type node_id: int
+    :param original_n_nodes: The number of nodes in the mesh before any duplication
+                             of nodes has taken place.
+    :type original_n_nodes: int
     """
 
     grain_ids_with_node_id = []
@@ -134,39 +154,26 @@ def _get_grains_containing_node_id(mesh, node_id, original_n_nodes):
     return grain_ids_with_node_id
 
 
-def _renumber_nodes(mesh):
-    """
-    Renumbers nodes so that they are "dense" on the number line. 
-    For example, if the mesh consist of four nodes with identifiers
-    1, 2, 5, 7 this would change them to 1, 2, 3, 4. This method also
-    updates the elements to use the renumbered node identifiers.
 
-    TODO: This might be a useful function in general for the mesh class
-    so it could be moved to be a method of the mesh class.
-    """
-
-    # Create dictionary of old and renumberd node identifiers
-    node_renumber_dict = {}
-    for i, node in enumerate(mesh.nodes.keys()):
-        node_renumber_dict[node] = i
-
-    # Update node identifiers in elements
-    for element_id in mesh.elements.keys():
-        for element in mesh.elements[element_id]:
-            for i, node_id in enumerate(element.vertices):
-                element.vertices[i] = node_renumber_dict[node_id]
-
-    # Update node identifiers in node sets
-    for node_set_name in mesh.node_sets.keys():
-        node_set = mesh.node_sets[node_set_name]
-        for i, node_id in enumerate(node_set.ids):
-            node_set.ids[i] = node_renumber_dict[node_id]
 
 
 def _get_tetra_and_grain_with_node_id(mesh, node_id, grain_id_1, grain_id_2):
     """
-    Find the tetrahedrons in the grain with grain identifier grain_id_1 or graind_id_2 
-    that has one vertex with the node identifier node_id
+    Find the tetrahedrons that has one vertex with the node identifier node_id
+    and if it belongs to grain with identifier grain_id_1 or grain_id_2
+
+    :param mesh: The mesh.
+    :type mesh: :class:`Mesh`
+    :param node_id: THe node to find the tet
+    :type node_id: int
+    :param grain_id_1: Identifier for the first grain.
+    :type grain_id_1: int
+    :param grain_id_2: Identifier for the second grain.
+    :type grain_id_2: int
+    :return: Returns a tuple of the grain identifier the tetrahedron is
+             in and the identifier of the element.
+    :rtype: tuple (int, int)
+
     """
     tetras = []
     grains = []
@@ -178,7 +185,4 @@ def _get_tetra_and_grain_with_node_id(mesh, node_id, grain_id_1, grain_id_2):
                 tetras.append(element_id)
                 grains.append(grain_id)
 
-    return (grains, tetras)
-
-     
-
+    return grains, tetras

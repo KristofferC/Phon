@@ -20,17 +20,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
+
 class Element:
-    """ Represents a finite element """
+    """ Represents a finite element. """
 
     def __init__(self, elem_type, vertices):
-        
-        #: The name of the element
-        self.elem_type = elem_type
+        """
+        Create a new :class:`Element`.
 
-        # The vertices of the element
+        :param elem_type: The type of the element in Abaqus format.
+        :type elem_type: str
+        :param vertices: The vertices of the element given as node identifiers.
+        :type vertices: list of ints
+
+        """
+        self.elem_type = elem_type
         self.vertices = vertices
 
     def __str__(self):
-        return("Element of type {0} containing the vertices with "
+        """
+        Returns a string representation of the element.
+
+        :return: The string representation
+        :rtype: string
+        """
+        return ("Element of type {0} containing the vertices with "
                 "id {1}.".format(self.elem_type, self.vertices))
