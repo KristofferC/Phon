@@ -11,11 +11,6 @@ features:
 * Can insert cohesive elements between grains in a Voronoi tesselated mesh.
 * Can currently export the mesh in formats readable by Abaqus and OOFEM
 
-Currently only support
-for reading files from Neper (http://neper.sourceforge.net/) and
-exporting to Abaqus and OOFEM.
-
-
 Contact Information
 -------------------
 Author: Kristoffer Carlsson
