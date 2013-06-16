@@ -26,8 +26,6 @@ class ElementSet:
 
     def __init__(self, name, dimension, ids=None):
         """
-        Creates a new :class:`ElementSet` class
-
         :param name: Name of the element set.
         :type name: str
         :param dimension: The dimension of the elements in the set
@@ -69,9 +67,10 @@ class ElementSet:
         Gets all the nodes identifiers for the elements in the element set.
 
         :param mesh: The mesh
-        :type mesh: :class:`Mesh`
+            :type mesh: :class:`phon.mesh_objects.mesh.Mesh()`
         :return: The node identifiers
         :rtype: list of ints
+
         """
         all_node_ids = []
 

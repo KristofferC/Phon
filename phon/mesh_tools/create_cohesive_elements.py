@@ -43,7 +43,7 @@ def create_cohesive_elements(mesh):
         if not element_set_name[0:4] == "face":
             continue
         face_set = mesh.element_sets[element_set_name]
-        grains_connected_to_face = _get_grains_connected_to_face(mesh, face_set, n_nodes)
+        grains_connected_to_face = get_grains_connected_to_face(mesh, face_set, n_nodes)
 
         # Ignore sets at boundary
         if len(grains_connected_to_face) == 1:
@@ -66,7 +66,7 @@ def create_cohesive_elements(mesh):
 
             # Reconnect the tetrahedron with a vertex in the node that is being duplicated
             # to one of the new nodes.
-            grain_ids, tetra_ids = _get_tetra_and_grain_with_node_id(mesh, node_id, grain_id_1, grain_id_2)
+            grain_ids, tetra_ids = get_tetra_and_grain_with_node_id(mesh, node_id, grain_id_1, grain_id_2)
             for grain_id, tetra_id in zip(grain_ids, tetra_ids):
                 idx = mesh.elements[tetra_id].vertices.index(node_id)
                 mesh.elements[tetra_id].vertices[idx] = node_id + n_nodes * grain_id
@@ -95,7 +95,7 @@ def create_cohesive_elements(mesh):
             cohesive_id_offset += 1
 
 
-def _get_grains_connected_to_face(mesh, face_set, original_n_nodes):
+def get_grains_connected_to_face(mesh, face_set, original_n_nodes):
     """
     This function find the grain connected to the face set given as argument.
 
@@ -119,13 +119,13 @@ def _get_grains_connected_to_face(mesh, face_set, original_n_nodes):
     triangle_element = mesh.elements[face_set.ids[0]]
 
     for node_id in triangle_element.vertices:
-        grains_with_node_id = _get_grains_containing_node_id(mesh, node_id, original_n_nodes)
+        grains_with_node_id = get_grains_containing_node_id(mesh, node_id, original_n_nodes)
         grains_connected_to_face.append(set(grains_with_node_id))
 
     return list(set.intersection(*grains_connected_to_face))
 
 
-def _get_grains_containing_node_id(mesh, node_id, original_n_nodes):
+def get_grains_containing_node_id(mesh, node_id, original_n_nodes):
     """
     This function finds all the grains that contain the
     node with node identifier node_id.
@@ -154,10 +154,7 @@ def _get_grains_containing_node_id(mesh, node_id, original_n_nodes):
     return grain_ids_with_node_id
 
 
-
-
-
-def _get_tetra_and_grain_with_node_id(mesh, node_id, grain_id_1, grain_id_2):
+def get_tetra_and_grain_with_node_id(mesh, node_id, grain_id_1, grain_id_2):
     """
     Find the tetrahedrons that has one vertex with the node identifier node_id
     and if it belongs to grain with identifier grain_id_1 or grain_id_2

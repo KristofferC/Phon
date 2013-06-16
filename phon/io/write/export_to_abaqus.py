@@ -26,25 +26,25 @@ Module that contains the method of writing a mesh to a file that Abaqus can
 """
 
 from phon.mesh_objects.mesh import Mesh
-from phon.io.element_name_dictionary import element_dictionary
-from phon.io.element_name_dictionary import element_dictionary_inverse
-from phon.io.element_name_dictionary import elements_2d
+from phon.io import element_dictionary
+from phon.io import element_dictionary_inverse
+from phon.io import elements_2d
 
 
 def export_to_abaqus(filename, mesh, write_2d_elements=False, f=None):
     """
     Writes a mesh to a file in a format such that Abaqus can read it.
 
-    :param filename: Path to the file to write the mesh to
+    :param filename: Path to the file to write the mesh to.
     :type filename: string
-    :param mesh: The mesh to write to the file
+    :param mesh: The mesh to write to the file.
     :type mesh: :class:`Mesh`
     :param write_2d_elements: Determines if two dimensional elements and
-                              element sets should be written to the file
+                              element sets should be written to the file.
     :type write_2d_elements: boolean
     :param f: If given as an argument the mesh is appended to this file
-              instead of openeing a new one
-    :type f" file object
+              instead of opening a new one.
+    :type f:" file object
     """
 
     if f is None:

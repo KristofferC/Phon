@@ -6,10 +6,24 @@
 Welcome to Phon's documentation!
 ================================
 
+Phon is a Python package that provides the functionality to read
+and export mesh files to different software's. It has the following
+features:
+
+* Parses generated mesh files from Neper (http://neper.sourceforge.net/) and stores it
+  into a class based representation.
+* Can insert cohesive elements between grains in a Voronoi tesselated mesh.
+* Can currently export the mesh to formats readable by Abaqus and OOFEM.
+
+
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
+
+   Installation <installation/index.rst>
+   Examples <examples/index.rst>
+   Library <library/index.rst>
 
 
 
@@ -20,3 +34,11 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
+
+Information
+-----------
+
+:Author: Kristoffer Carlsson
+:Version: 0.1
+:License: MIT License
+:Source: https://github.com/KristofferC/phon

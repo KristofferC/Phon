@@ -1,19 +1,22 @@
-Phon 0.1
-15 June 2013
-README
-=================
+Phon
+-----
 
-This is a Python package that provides the functionality to read a
-and export mesh files to different softwares. It has the following
+This is a Python package that provides the functionality to read
+and export mesh files to different software's. It has the following
 features:
 
-* Reads a generated mesh file from Neper (http://neper.sourceforge.net/)
-* Can insert cohesive elements between grains in a Voronoi tesselated mesh.
-* Can currently export the mesh in formats readable by Abaqus and OOFEM
+* Parses generated mesh files from Neper (http://neper.sourceforge.net/) and stores it
+  into a class based representation.
+* Can insert cohesive elements between grains in a Voronoi tessellated mesh.
+* Can currently export the mesh to formats readable by Abaqus and OOFEM.
+
+Phon is a very recent project and is therefore being changed and updated frequently. No regards
+are taken to keep any backwards compatibility.
 
 Contact Information
 -------------------
 Author: Kristoffer Carlsson
+
 E-mail: kcarlsson89@gmail.com
 
 Copyright and Licensing

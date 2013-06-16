@@ -32,6 +32,7 @@ class NodeSet:
         :type name: str
         :param ids: The identifiers of the nodes
         :type ids: list of ints
+
         """
         self.name = name
 
@@ -41,6 +42,13 @@ class NodeSet:
         self.ids = ids
 
     def __str__(self):
-        return("Node set with name {0} containing nodes with the"
+        """
+        Returns a string representation of the node.
+
+        :return: The string representation.
+        :rtype: str
+
+        """
+        return("Node set with name {0} containing nodes with the "
                "following ids {1}".format(self.name, self.ids))
 

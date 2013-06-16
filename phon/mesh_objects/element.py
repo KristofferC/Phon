@@ -26,8 +26,6 @@ class Element:
 
     def __init__(self, elem_type, vertices):
         """
-        Create a new :class:`Element`.
-
         :param elem_type: The type of the element in Abaqus format.
         :type elem_type: str
         :param vertices: The vertices of the element given as node identifiers.
@@ -43,6 +41,7 @@ class Element:
 
         :return: The string representation
         :rtype: string
+
         """
         return ("Element of type {0} containing the vertices with "
                 "id {1}.".format(self.elem_type, self.vertices))

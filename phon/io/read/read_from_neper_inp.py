@@ -258,8 +258,6 @@ class ReadInpFileError(Exception):
     """
     Base class for errors in the :mod:`read_from_neper_inp` module.
 
-    The method :method:`read_from_neper_inp` raises this when it
-    reads unexpected syntax.
     """
 
     def __init__(self, status):
@@ -268,7 +266,7 @@ class ReadInpFileError(Exception):
         self.status = status
 
     def __str__(self):
-        """Return a string representation of this :exc:` ReadInpFileError`."""
+        """Return a string representation of the :exc:`ReadInpFileError()`."""
         return str(self.status)
 
 

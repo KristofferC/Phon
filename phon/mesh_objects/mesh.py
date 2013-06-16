@@ -21,9 +21,9 @@ THE SOFTWARE.
 """
 
 from collections import OrderedDict
-from phon.io.element_name_dictionary import elements_2d
-from phon.io.element_name_dictionary import elements_3d
-from phon.io.element_name_dictionary import element_dictionary_inverse
+from phon.io import elements_2d
+from phon.io import elements_3d
+from phon.io import element_dictionary_inverse
 
 
 class Mesh:
@@ -39,8 +39,6 @@ class Mesh:
                  element_sets=None,
                  node_sets=None):
         """
-        Create a new :class:`Mesh` object.
-
         :param name: Name of the mesh.
         :type name: string
         :param nodes: Nodes in the mesh.
@@ -48,7 +46,7 @@ class Mesh:
         :param elements: All elements in the mesh.
         :type elements: dict of format {element_id (int) : :class:`Element`}
         :param element_indices: Elements sorted according to their type
-        :type element:indices: dict of format {element_type (string) : [element_ids (int)]}
+        :type element_indices: dict of format {element_type (string) : [element_ids (int)]}
         :param element_sets: Different element sets
         :type element_sets: dict of format {element_set (string) : [element_ids (int)]}
         :param node_sets:
@@ -79,7 +77,7 @@ class Mesh:
         self.node_sets = node_sets
 
     # TODO: Test this function
-    def _renumber_nodes(self):
+    def renumber_nodes(self):
         """
         Renumbers nodes so that they are "dense" on the number line.
         For example, if the mesh consist of four nodes with identifiers
@@ -113,6 +111,7 @@ class Mesh:
 
         :return: Number of two dimensional elements.
         :rtype: int
+
         """
         number_of_2d_elements = 0
         for element_type in self.element_indices.keys():
@@ -127,6 +126,7 @@ class Mesh:
 
         :return: Number of three dimensional elements
         :rtype: int
+
         """
         number_of_3d_elements = 0
         for element_type in self.element_indices.keys():

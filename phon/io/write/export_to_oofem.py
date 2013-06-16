@@ -21,21 +21,21 @@ THE SOFTWARE.
 """
 
 
-from phon.io.element_name_dictionary import element_dictionary
-from phon.io.element_name_dictionary import element_dictionary_inverse
-from phon.io.element_name_dictionary import elements_2d
+from phon.io import element_dictionary
+from phon.io import element_dictionary_inverse
+from phon.io import elements_2d
 
 
 def export_to_oofem(filename, mesh, write_2d_elements=False):
     """
     Writes a mesh to a file in a format that OOFEM uses.
 
-    :param filename: Path to the file to write the mesh to
+    :param filename: Path to the file to write the mesh to.
     :type filename: string
-    :param mesh: The mesh to write to the file
+    :param mesh: The mesh to write to the file.
     :type mesh: :class:`Mesh`
     :param write_2d_elements: Determines if two dimensional elements and
-                              element sets should be written to the file
+                              element sets should be written to the file.
     :type write_2d_elements: boolean
     """
     f = open(filename, "w")
@@ -53,16 +53,16 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
     f.write(filename + ".out\n")
 
     # Job description record
-    f.write("Voronoi\n")
+    f.write("%s\n".format(mesh.name))
 
     # Analysis record
-    f.write("LinearStatic 1 nsteps 1 nmodules 1\n")
-    f.write("vtkxml tstep_all domain_all primvars 1 1 vars 4 1 2 4 5 stype 1 0\n")
+    #f.write("LinearStatic 1 nsteps 1 nmodules 1\n")
+    #f.write("vtkxml tstep_all domain_all primvars 1 1 vars 4 1 2 4 5 stype 1 0\n")
     # Domain record
-    f.write("domain 3d\n")
+    #f.write("domain 3d\n")
 
     # Output manager record
-    f.write("OutputManager tstep_all dofman_all element_all\n")
+    #f.write("OutputManager tstep_all dofman_all element_all\n")
 
     # Components size record
     f.write("ndofman " + str(n_nodes) + " ")

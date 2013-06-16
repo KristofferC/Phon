@@ -2,6 +2,7 @@
 *.oof
 !phon/test/n10-id1.inp
 
+docs/_build/*
 
 #################
 ## Eclipse

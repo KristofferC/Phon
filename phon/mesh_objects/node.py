@@ -26,8 +26,6 @@ class Node:
 
     def __init__(self, x, y, z):
         """
-        Creates a new :class:`Node` class.
-
         :param x: The x coordinate of the node.
         :type x: float
         :param y:  The x coordinate of the node.
@@ -46,7 +44,8 @@ class Node:
 
         :return: The string representation.
         :rtype: str
+
         """
-        return ("Node with located at (%f, %f, %f):" % (self.x,
+        return ("Node located at (%f, %f, %f):" % (self.x,
                 self.y, self.z))
 
