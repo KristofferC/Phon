@@ -10,13 +10,13 @@ as follows. First the read function is imported and executed::
 The mesh is now stored into a :class:`phon.mesh_objects.mesh()` object. We can now query this object
 for information about the mesh. A few example follows here:
 
-* The number of nodes in the mesh::
+* The number of elements in the mesh::
 
     >>> print len(mesh.elements)
     1683
 
 
-* The number of elements in the mesh::
+* The number of nodes in the mesh::
 
     >>> print len(mesh.nodes)
     289
