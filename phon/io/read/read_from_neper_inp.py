@@ -49,7 +49,7 @@ def read_from_neper_inp(filename, verbose=0):
     
     """
 
-    with open(filename, "r") as f:
+    with open(filename, "rU") as f:
 
         # Read header
         re_part = re.compile("\*Part, name=(.*)")
@@ -70,21 +70,16 @@ def read_from_neper_inp(filename, verbose=0):
             f.seek(start_of_line)
             if keyword == "*Node":
                 _read_nodes(f, mesh, verbose)
-                continue
-            if keyword == "*Element":
+            elif keyword == "*Element":
                 num_elems += _read_elements(f, mesh, num_elems, verbose)
-                continue
-            if keyword == "*Elset":
+            elif keyword == "*Elset":
                 _read_element_set(f, mesh, verbose)
-                continue
-            if keyword == "*Nset":
+            elif keyword == "*Nset":
                 _read_node_set(f, mesh, verbose)
-                continue
-            if keyword == "*End Part":
+            elif keyword == "*End Part":
                 break
             else:
-                raise ReadInpFileError("Keyword '" + str(keyword) +
-                                       "' is not recognized")
+                continue
 
         f.close()
         return mesh
@@ -102,7 +97,6 @@ def _read_nodes(f, mesh, verbose):
     :return: Nothing, but has the side effect of setting the pointer
              in the file object f to the line with the next keyword.
 
-    
     """
     line = f.readline()
     if not (line == "*Node\n"):
@@ -121,8 +115,7 @@ def _read_nodes(f, mesh, verbose):
         num_nodes += 1
         if verbose == 1:
             print ("\rReading nodes, %d nodes read" % num_nodes),
-            # Make line into this list :[id, x, y, z]
-        node_numbers = map(to_number, line.strip().split(','))
+        node_numbers = [to_number(x) for x in line.strip().split(',')]
         node = Node(*node_numbers[1:])
         mesh.nodes[node_numbers[0]] = node
         if verbose == 2:
@@ -193,9 +186,9 @@ def _read_element_set(f, mesh, verbose=0):
 
     element_set_name = re_element_set.match(line).group(1)
 
-    if "face" in element_set_name:
+    if element_set_name.startswith("face"):
         dim = 2
-    elif "poly" in element_set_name:
+    elif element_set_name.startswith("poly"):
         dim = 3
     else:
         dim = None
