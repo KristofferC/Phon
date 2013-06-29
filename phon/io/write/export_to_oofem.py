@@ -74,8 +74,7 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
     f.write("nltf 1\n")
 
     # Write nodes
-    for node_id in sorted(mesh.nodes.keys()):
-        node = mesh.nodes[node_id]
+    for node_id, node in mesh.nodes.iteritems():
         f.write("node {0:d} ".format(node_id))
         f.write("coords 3 {0:.12f} {1:.12f} {2:.12f} ".format(node.x, node.y, node.z))
         f.write("\n")
@@ -96,11 +95,10 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
             f.write(" mat 1 crossSect 1")
             f.write("\n")
 
-    ## Sets
+    # Sets
     set_id = 0
     # Element sets
-    for element_set_name in mesh.element_sets.keys():
-        element_set = mesh.element_sets[element_set_name]
+    for element_set_name, element_set in mesh.element_sets.iteritems():
         if (write_2d_elements is False) and (element_set.dimension == 2):
             continue
         set_id += 1
@@ -110,8 +108,7 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
         f.write("\n")
         
     # Node sets
-    for node_set_name in mesh.node_sets.keys():
-        node_set = mesh.node_sets[node_set_name]
+    for node_set_name, node_set in mesh.node_sets.iteritems():
         set_id += 1
         f.write("\n# " + node_set_name)
         f.write("\nSet %s nodes %s ".format(str(set_id), str(len(node_set.ids))))
