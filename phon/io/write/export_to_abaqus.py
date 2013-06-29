@@ -55,19 +55,18 @@ def export_to_abaqus(filename, mesh, write_2d_elements=False, f=None):
 
     # Write nodes
     f.write('\n*Node\n')
-    for node_id in sorted(mesh.nodes.keys()):
-        node = mesh.nodes[node_id]
-        f.write("%d, " % node_id)
-        f.write("%.12f, %.12f, %.12f\n" % (node.x, node.y, node.z))
+    for node_id, node in mesh.nodes.iteritems():
+        f.write("{0:d}, ".format(node_id))
+        f.write("{0:.12f}, {1:.12f}, {2:.12f}\n".format(node.x, node.y, node.z))
 
     # Elements
-    for element_type in mesh.element_indices.keys():
+    for element_type, elements in mesh.element_indices.iteritems():
         if ((write_2d_elements is False) and
                 (element_dictionary_inverse[(element_type, "abaqus")] in elements_2d)):
             continue
         element_name = element_dictionary[(element_type, "abaqus")]
         f.write("\n*Element, type=" + element_name + "\n")
-        for element_id in mesh.element_indices[element_type]:
+        for element_id in elements:
             f.write("%d, " % element_id)
             # Code below changes "[1,2,3]" to "1, 2, 3"
             f.write(''.join('{},'.format(k) for k in
@@ -75,17 +74,17 @@ def export_to_abaqus(filename, mesh, write_2d_elements=False, f=None):
             f.write("\n")
 
     # Element sets
-    for element_set_name in mesh.element_sets.keys():
+    for element_set_name, element_set in mesh.element_sets.iteritems():
         if ((write_2d_elements is False) and
                 (mesh.element_sets[element_set_name].dimension == 2)):
             continue
         f.write("\n*Elset, elset=" + element_set_name + "\n")
-        write_column_broken_array(mesh.element_sets[element_set_name].ids, f)
+        write_column_broken_array(element_set.ids, f)
 
     # Node sets
-    for node_set_name in mesh.node_sets.keys():
+    for node_set_name, node_set in mesh.node_sets.iteritems():
         f.write("\n*Nset, nset=" + node_set_name + "\n")
-        write_column_broken_array(mesh.node_sets[node_set_name].ids, f)
+        write_column_broken_array(node_set.ids, f)
 
     f.write("*End Part")
     f.close()
