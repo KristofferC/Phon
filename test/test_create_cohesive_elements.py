@@ -25,6 +25,8 @@ import unittest
 from phon.io.read.read_from_neper_inp import read_from_neper_inp
 from phon.io.write.export_to_abaqus import export_to_abaqus
 from phon.mesh_tools.create_cohesive_elements import create_cohesive_elements
+from phon.mesh_tools.create_cohesive_elements import get_grains_connected_to_face
+from phon.mesh_tools.create_cohesive_elements import get_node_id_grain_LUT
 
 
 class Test(unittest.TestCase):
@@ -36,13 +38,22 @@ class Test(unittest.TestCase):
         self.mesh = read_from_neper_inp("n10-id1.inp", verbose=0)
         self.original_n_nodes = len(self.mesh.nodes)
 
-    # TODO: A little bit to few asserts in this test.
+    def test__get_grains_connected_to_face(self):
+        node_id_grain_LUT = get_node_id_grain_LUT(self.mesh)
+        self.assertEqual(get_grains_connected_to_face(self.mesh, self.mesh.element_sets["face35"],
+                                                      node_id_grain_LUT), [6])
+        self.assertEqual(get_grains_connected_to_face(self.mesh, self.mesh.element_sets["face18"],
+                                                      node_id_grain_LUT), [3, 5])
+        self.assertEqual(get_grains_connected_to_face(self.mesh, self.mesh.element_sets["face4"],
+                                                      node_id_grain_LUT), [1, 10])
+
+    # TODO: A little bit too few asserts in this test.
     def test_create_cohesive_elements(self):
         create_cohesive_elements(self.mesh)
         export_to_abaqus("n10-id1_coh.inp", self.mesh, True)
         self.assertEqual(len(self.mesh.element_sets["cohes9_2"].ids), 6)
 
-    # TODO: Add tests for helper functions.
+    # TODO: Add tests for more helper functions.
 
 if __name__ == "__main__":
     unittest.main()
