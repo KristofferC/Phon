@@ -27,14 +27,16 @@ element_dictionary = {("CPE3", "abaqus"): "CPE3",
                       ("CPE3", "oofem"): "TrplaneStrain",
                       ("C3D4", "abaqus"): "C3D4",
                       ("C3D4", "oofem"): "LTRSpace",
-                      ("COH3D6", "abaqus"): "COH3D6"}
+                      ("COH3D6", "abaqus"): "COH3D6",
+                      ("COH3D6", "oofem"): "Interface3dtrlin"}
 
 # Translates between (external_name, software) to internal_name.
 element_dictionary_inverse = {("CPE3", "abaqus"): "CPE3",
                               ("TrplaneStrain", "oofem"): "CPE3",
                               ("C3D4", "abaqus"): "C3D4",
                               ("LTRSpace", "oofem"): "C3D4",
-                              ("COH3D6", "abaqus"): "COH3D6"}
+                              ("COH3D6", "abaqus"): "COH3D6",
+                              ("Interface3dtrlin", "oofem"): "COH3D6"}
 
 # Dimension of elements.
 elements_2d = ["CPE3"]
