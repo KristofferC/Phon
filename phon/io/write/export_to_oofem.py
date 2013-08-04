@@ -53,7 +53,7 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
     f.write(filename + ".out\n")
 
     # Job description record
-    f.write("%s\n".format(mesh.name))
+    f.write("{}\n".format(mesh.name))
 
     # Analysis record
     #f.write("LinearStatic 1 nsteps 1 nmodules 1\n")
@@ -88,11 +88,14 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
         element_name = element_dictionary[(element_type, "oofem")]
         for element_id in mesh.element_indices[element_type]:
             f.write(element_name + " {0:d} ".format(element_id))
-            f.write("nodes %s ".format(str(len(mesh.elements[element_id].vertices))))
+            f.write("nodes {} ".format(str(len(mesh.elements[element_id].vertices))))
             # Code below changes "[1,2,3]" to "1 2 3"
             f.write(''.join('{} '.format(k) 
                             for k in mesh.elements[element_id].vertices)[:-1])
-            f.write(" mat 1 crossSect 1")
+            if element_name == "Interface3dtrlin":
+                f.write(" mat 2 crossSect 1")
+            if element_name == "LTRSpace":
+                f.write(" mat 1 crossSect 1")
             f.write("\n")
 
     # Sets
@@ -103,7 +106,7 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
             continue
         set_id += 1
         f.write("# " + element_set_name)
-        f.write("\nSet %s elements %s ".format(str(set_id), str(len(element_set.ids))))
+        f.write("\nSet {} elements {} ".format(str(set_id), str(len(element_set.ids))))
         f.write(''.join('{} '.format(k) for k in element_set.ids)[:-1])
         f.write("\n")
         
@@ -111,7 +114,7 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
     for node_set_name, node_set in mesh.node_sets.iteritems():
         set_id += 1
         f.write("\n# " + node_set_name)
-        f.write("\nSet %s nodes %s ".format(str(set_id), str(len(node_set.ids))))
+        f.write("\nSet {} nodes {} ".format(str(set_id), str(len(node_set.ids))))
         f.write(''.join('{} '.format(k) for k in node_set.ids)[:-1])
 
 
