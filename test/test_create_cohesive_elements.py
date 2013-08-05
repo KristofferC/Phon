@@ -32,9 +32,7 @@ from phon.mesh_tools.create_cohesive_elements import get_tetra_and_grain_with_no
 
 
 class Test(unittest.TestCase):
-    """
-    Unit tests for test_create_cohesive_elements.
-    """
+    """Unit tests for test_create_cohesive_elements."""
 
     def setUp(self):
         self.mesh = read_from_neper_inp("n10-id1.inp", verbose=0)
@@ -47,12 +45,11 @@ class Test(unittest.TestCase):
 
     def test__get_grains_connected_to_face(self):
         self.assertEqual(get_grains_connected_to_face(self.mesh, self.mesh.element_sets["face35"],
-                                                       self.original_n_nodes), [6])
+                                                      self.original_n_nodes), [6])
         self.assertEqual(get_grains_connected_to_face(self.mesh, self.mesh.element_sets["face18"],
-                                                       self.original_n_nodes), [3, 5])
+                                                      self.original_n_nodes), [3, 5])
         self.assertEqual(get_grains_connected_to_face(self.mesh, self.mesh.element_sets["face4"],
-
-                                                       self.original_n_nodes), [1, 10])
+                                                      self.original_n_nodes), [1, 10])
 
     def test__get_grains_containing_node_id(self):
         self.assertEqual(get_grains_containing_node_id(self.mesh, 244, self.original_n_nodes), [6])
