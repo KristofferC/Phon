@@ -92,7 +92,7 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
             # Code below changes "[1,2,3]" to "1 2 3"
             f.write(''.join('{} '.format(k) 
                             for k in mesh.elements[element_id].vertices)[:-1])
-			f.write(" mat 1 crossSect 1")
+            f.write(" mat 1 crossSect 1")
             """if element_name == "Interface3dtrlin":
                 f.write(" mat 2 crossSect 1")
             if element_name == "LTRSpace":
