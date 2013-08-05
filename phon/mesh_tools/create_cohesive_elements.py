@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
+from collections import defaultdict
+
 from phon.mesh_objects.element import Element
 from phon.mesh_objects.element_set import ElementSet
 from phon.mesh_objects.node import Node
@@ -38,12 +40,16 @@ def create_cohesive_elements(mesh):
     n_nodes = len(mesh.nodes)
     cohesive_id_offset = max(mesh.elements.keys()) + 1
     mesh.element_indices["COH3D6"] = []
+    #nodes_in_face_sets = get_nodes_in_all_face_sets(mesh)
+    node_id_grain_LUT = get_node_id_grain_LUT(mesh)
 
-    for it, element_set_name in enumerate(mesh.element_sets.keys()):
+    for element_set_name in mesh.element_sets.keys():
         if not element_set_name[0:4] == "face":
             continue
         face_set = mesh.element_sets[element_set_name]
-        grains_connected_to_face = get_grains_connected_to_face(mesh, face_set, n_nodes)
+        grains_connected_to_face = get_grains_connected_to_face(mesh,
+                                                                face_set,
+                                                                node_id_grain_LUT)
 
         # Ignore sets at boundary
         if len(grains_connected_to_face) == 1:
@@ -73,8 +79,7 @@ def create_cohesive_elements(mesh):
 
             # If we are adding nodes at the boundary these need to be 
             # added to the correct boundary node set.
-            for node_set_name in mesh.node_sets.keys():
-                node_set = mesh.node_sets[node_set_name]
+            for node_set_name, node_set in mesh.node_sets.iteritems():
                 if node_id in node_set.ids:
                     node_set.ids.extend([new_node_id_1, new_node_id_2])
 
@@ -95,7 +100,23 @@ def create_cohesive_elements(mesh):
             cohesive_id_offset += 1
 
 
-def get_grains_connected_to_face(mesh, face_set, original_n_nodes):
+def get_nodes_in_all_face_sets(mesh):
+    """
+    This function finds all nodes that sits in a face.
+    :param mesh:
+    :type mesh: :class:`Mesh`
+    :return: The node identifiers in all faces
+    :rtype: list[ints]
+    """
+    nodes_in_face_sets = set()
+    for element_set_name, element_set in mesh.element_sets.iteritems():
+        if not element_set_name.startswith("face"):
+            continue
+        nodes_in_face_sets.add(element_set.get_all_node_ids(mesh))
+    return list(nodes_in_face_sets)
+
+
+def get_grains_connected_to_face(mesh, face_set, node_id_grain_LUT):
     """
     This function find the grain connected to the face set given as argument.
 
@@ -108,9 +129,9 @@ def get_grains_connected_to_face(mesh, face_set, original_n_nodes):
     :type mesh: :class:`Mesh`
     :param face_set: The face set to find grains connected to
     :type: face_set: :class:`ELementSet`
-    :param original_n_nodes: The number of nodes in the mesh before any duplication
-                             of nodes has taken place.
-    :type: original_n_nodes: int
+    :param node_id_grain_LUT: Lookup table to find what grains contain
+                              what nodes.
+    :type node_id_grain_LUT: defaultdict
     :return: The grain identifiers that intersect the face.
     :rtype: list of ints
     """
@@ -119,10 +140,35 @@ def get_grains_connected_to_face(mesh, face_set, original_n_nodes):
     triangle_element = mesh.elements[face_set.ids[0]]
 
     for node_id in triangle_element.vertices:
-        grains_with_node_id = get_grains_containing_node_id(mesh, node_id, original_n_nodes)
+        grains_with_node_id = node_id_grain_LUT[node_id]
         grains_connected_to_face.append(set(grains_with_node_id))
 
     return list(set.intersection(*grains_connected_to_face))
+
+
+def get_node_id_grain_LUT(mesh):
+    """
+    This function creates a (default) dictionary that
+    works as a lookup table for what grains contain
+    what nodes.
+    :param mesh: The mesh
+    :type: mesh: :class:`Mesh`
+    :param node_list: The list of node identifiers that is to be used
+                      as keys in the dict
+    :type node_list: list[ints]
+    :return: Dictionary d where d[node_id] gives a set of the grain identifiers
+             that contain the node.
+    :rtype: defaultdict
+    """
+    d = defaultdict(set)
+    for element_set_name, element_set in mesh.element_sets.iteritems():
+        if not element_set_name.startswith("poly"):
+            continue
+        for element_id in element_set.ids:
+            vertices = mesh.elements[element_id].vertices
+            for node_id in vertices:
+                d[node_id].add(int(element_set_name[4:]))
+    return d
 
 
 def get_grains_containing_node_id(mesh, node_id, original_n_nodes):
@@ -141,10 +187,9 @@ def get_grains_containing_node_id(mesh, node_id, original_n_nodes):
 
     grain_ids_with_node_id = []
 
-    for element_set_name in mesh.element_sets.keys():
+    for element_set_name, element_set in mesh.element_sets.iteritems():
         if not element_set_name[0:4] == "poly":
             continue
-        element_set = mesh.element_sets[element_set_name]
         for element_id in element_set.ids:
             vert_mod = [x % original_n_nodes for x in mesh.elements[element_id].vertices]
             if node_id in vert_mod:

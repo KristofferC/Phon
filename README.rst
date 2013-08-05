@@ -1,5 +1,5 @@
 Phon
------
+----
 
 This is a Python package that provides the functionality to read
 and export mesh files to different software's. It has the following
@@ -13,14 +13,19 @@ features:
 Phon is a very recent project and is therefore being changed and updated frequently. No regards
 are taken to keep any backwards compatibility.
 
+Documentation
+=============
+Documentation can either be built from source or found
+at http://web.student.chalmers.se/~kricarl/phon/_build/html/.
+
 Contact Information
--------------------
+====================
 Author: Kristoffer Carlsson
 
 E-mail: kcarlsson89@gmail.com
 
 Copyright and Licensing
------------------------
+=======================
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights

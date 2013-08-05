@@ -1,6 +1,9 @@
 *.inp
 *.oof
 !phon/test/n10-id1.inp
+*.sln
+*.pyproj
+.idea/
 
 docs/_build/*
 
