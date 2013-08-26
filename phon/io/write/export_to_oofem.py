@@ -94,11 +94,13 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
             # Code below changes "[1,2,3]" to "1 2 3"
             f.write(''.join('{} '.format(k) 
                             for k in mesh.elements[element_id].vertices)[:-1])
-            # Different material in different sets
-            for element_set_name, element_set in mesh.element_sets.iteritems():
-                if element_id in element_set.ids:
-                    if element_set_name[0:4] == "poly":
-                        f.write(" mat " + str(element_set_name[4:]) + " crossSect 1 nlgeo 1")
+
+            f.write(" mat 1 crossSect 1")
+            """if element_name == "Interface3dtrlin":
+                f.write(" mat 2 crossSect 1")
+            if element_name == "LTRSpace":
+                f.write(" mat 1 crossSect 1")"""
+
             f.write("\n")
 
     # Write materials

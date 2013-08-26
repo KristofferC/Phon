@@ -30,9 +30,7 @@ from phon.mesh_tools.create_cohesive_elements import get_node_id_grain_LUT
 
 
 class Test(unittest.TestCase):
-    """
-    Unit tests for test_create_cohesive_elements.
-    """
+    """Unit tests for test_create_cohesive_elements."""
 
     def setUp(self):
         self.mesh = read_from_neper_inp("n10-id1.inp", verbose=0)
@@ -40,8 +38,7 @@ class Test(unittest.TestCase):
 
     def test__get_grains_connected_to_face(self):
         node_id_grain_LUT = get_node_id_grain_LUT(self.mesh)
-        self.assertEqual(get_grains_connected_to_face(self.mesh, self.mesh.element_sets["face35"],
-                                                      node_id_grain_LUT), [6])
+        self.assertEqual(get_grains_connected_to_face(self.mesh, self.mesh.element_sets["face35"],                                        node_id_grain_LUT), [6])
         self.assertEqual(get_grains_connected_to_face(self.mesh, self.mesh.element_sets["face18"],
                                                       node_id_grain_LUT), [3, 5])
         self.assertEqual(get_grains_connected_to_face(self.mesh, self.mesh.element_sets["face4"],

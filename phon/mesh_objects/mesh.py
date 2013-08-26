@@ -90,18 +90,22 @@ class Mesh:
 
         # Create dictionary of old and renumbered node identifiers
         node_renumber_dict = {}
+        new_nodes_dict = {}
         for i, node in enumerate(self.nodes.keys()):
-            node_renumber_dict[node] = i
+            node_renumber_dict[node] = i+1
+            new_nodes_dict[i+1] = self.nodes[node]
+        self.nodes = new_nodes_dict
+
+        for i, node in enumerate(self.nodes.keys()):
+            self.nodes[i+1] = self.nodes.pop(node)
 
         # Update node identifiers in elements
-        for element_id in self.elements.keys():
-            for element in self.elements[element_id]:
-                for i, node_id in enumerate(element.vertices):
-                    element.vertices[i] = node_renumber_dict[node_id]
+        for element_id, element in self.elements.iteritems():
+            for i, node_id in enumerate(self.elements[element_id].vertices):
+                element.vertices[i] = node_renumber_dict[node_id]
 
         # Update node identifiers in node sets
-        for node_set_name in self.node_sets.keys():
-            node_set = self.node_sets[node_set_name]
+        for node_set_name, node_set in self.node_sets.iteritems():
             for i, node_id in enumerate(node_set.ids):
                 node_set.ids[i] = node_renumber_dict[node_id]
 
