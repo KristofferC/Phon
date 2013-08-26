@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
+import random
+import math
 
 from phon.io import element_dictionary
 from phon.io import element_dictionary_inverse
@@ -53,7 +55,7 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
     f.write(filename + ".out\n")
 
     # Job description record
-    f.write("%s\n".format(mesh.name))
+    f.write("{}\n".format(mesh.name))
 
     # Analysis record
     #f.write("LinearStatic 1 nsteps 1 nmodules 1\n")
@@ -88,12 +90,40 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
         element_name = element_dictionary[(element_type, "oofem")]
         for element_id in mesh.element_indices[element_type]:
             f.write(element_name + " {0:d} ".format(element_id))
-            f.write("nodes %s ".format(str(len(mesh.elements[element_id].vertices))))
+            f.write("nodes {} ".format(str(len(mesh.elements[element_id].vertices))))
             # Code below changes "[1,2,3]" to "1 2 3"
             f.write(''.join('{} '.format(k) 
                             for k in mesh.elements[element_id].vertices)[:-1])
-            f.write(" mat 1 crossSect 1")
+            # Different material in different sets
+            for element_set_name, element_set in mesh.element_sets.iteritems():
+                if element_id in element_set.ids:
+                    if element_set_name[0:4] == "poly":
+                        f.write(" mat " + str(element_set_name[4:]) + " crossSect 1 nlgeo 1")
             f.write("\n")
+
+    # Write materials
+    
+    def randfunc():
+        return 0.1332
+    
+    n_grains = 10
+    perc_aust = 0.5
+    n_austenite = int(n_grains * perc_aust)
+    n_ferrite = n_grains - n_austenite
+    zeros = [0] * n_austenite
+    ones = [1] * n_ferrite
+    material_array = zeros + ones
+    random.shuffle(material_array)
+    
+    for i in range(n_grains):
+        eul1 = random.uniform(0, 2*math.pi)
+        eul2 = random.uniform(0, 2*math.pi)
+        eul3 = random.uniform(0, 2*math.pi)
+        if material_array[i] == 0:
+            f.write("abaqususermaterial {0} umat \"umat.so\" d 1 numstate 79 properties 21. 184519.774011 0.299435028249 1.0 0.0001 1.0 0.1 75. 100 0.0 2.0 210.0 4000.0 0.0 0.0 0.0 0.0 0.0 0.0 {1} {2} {3}\n".format(i+1, eul1, eul2, eul3))
+        if material_array[i] == 1:
+            f.write("abaqususermaterial {0} umat \"umat.so\" d 1 numstate 79 properties 21. 184519.774011 0.299435028249 1.0 0.001 1.0 1.1 50. 100 0.0 2.0 250.0 100.0 0.0 0.0 0.0 0.0 0.0 0.0 {1} {2} {3}\n".format(i+1, eul1, eul2, eul3))
+
 
     # Sets
     set_id = 0
@@ -103,7 +133,7 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
             continue
         set_id += 1
         f.write("# " + element_set_name)
-        f.write("\nSet %s elements %s ".format(str(set_id), str(len(element_set.ids))))
+        f.write("\nSet {} elements {} ".format(str(set_id), str(len(element_set.ids))))
         f.write(''.join('{} '.format(k) for k in element_set.ids)[:-1])
         f.write("\n")
         
@@ -111,8 +141,12 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
     for node_set_name, node_set in mesh.node_sets.iteritems():
         set_id += 1
         f.write("\n# " + node_set_name)
-        f.write("\nSet %s nodes %s ".format(str(set_id), str(len(node_set.ids))))
+        f.write("\nSet {} nodes {} ".format(str(set_id), str(len(node_set.ids))))
         f.write(''.join('{} '.format(k) for k in node_set.ids)[:-1])
+
+   
+   
+    
 
 
     # For testing
