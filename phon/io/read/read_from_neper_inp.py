@@ -51,24 +51,16 @@ def read_from_neper_inp(filename, verbose=0):
 
     with open(filename, "rU") as f:
 
-        # Read header
-        re_part = re.compile("\*Part, name=(.*)")
-        line = f.readline()
-        match = re_part.match(line)
-        if not match:
-            raise ReadInpFileError("Error parsing file. Expected '*Part, "
-                                   "name=XXX', read '" + line + "'.")
-
-        # Initiate a mesh class with the same name as the part
-        mesh = Mesh(match.group(1))
-
         # Read mesh objects
         num_elems = 0
         while True:
             start_of_line = f.tell()
             keyword = f.readline().strip().split(",")[0]
             f.seek(start_of_line)
-            if keyword == "*Node":
+
+            if keyword == "*Part":
+                mesh = _read_part(f, verbose)
+            elif keyword == "*Node":
                 _read_nodes(f, mesh, verbose)
             elif keyword == "*Element":
                 num_elems += _read_elements(f, mesh, num_elems, verbose)
@@ -79,10 +71,37 @@ def read_from_neper_inp(filename, verbose=0):
             elif keyword == "*End Part":
                 break
             else:
+                f.readline()
                 continue
 
         f.close()
         return mesh
+
+
+def _read_part(f, verbose):
+    """Reads the part name and creates a mesh with that name.
+
+    :param f: The file from where to read the nodes from.
+    :type f: file object at the nodes
+    :param verbose: Determines what level of print out to the console.
+    :type verbose: 0, 1 or 2
+    :return: Nothing, but has the side effect of setting the pointer
+             in the file object f to the line with the next keyword.
+
+    """
+
+    re_part = re.compile("\*Part, name=(.*)")
+    line = f.readline()
+    match = re_part.match(line)
+    if not match:
+        raise ReadInpFileError("Error parsing file. Expected '*Part, "
+                               "name=XXX', read '" + line + "'.")
+
+    part_name = match.group(1)
+    if verbose == 1 or 2:
+        print("Read part with name " + str(part_name))
+    # Initiate a mesh class with the same name as the part
+    return Mesh(part_name)
 
 
 def _read_nodes(f, mesh, verbose):
