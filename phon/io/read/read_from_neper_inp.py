@@ -259,11 +259,15 @@ def _read_node_set(f, mesh, verbose=0):
         if line.strip() == '':
             continue
         if line[0] == '*':
-            node_set.ids = map(to_number, full_str.split(','))
+            # Remove empty strings
+            node_list = full_str.split(',')
+             # Remove empty strings
+            node_list = [item for item in node_list if item]
+            node_set.ids = map(to_number, node_list)
             mesh.node_sets[node_set_name] = node_set
             f.seek(start_of_line)
             return
-        full_str += line.strip()
+        full_str += line.strip() + ","
 
 
 class ReadInpFileError(Exception):
