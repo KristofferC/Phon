@@ -221,13 +221,14 @@ def _read_element_set(f, mesh, verbose=0):
         if line.strip() == '':
             continue
         if line[0] == '*':
-            element_set.ids = map(to_number, full_str.split(','))
+            element_list = full_str.split(',')
+            element_list = [item for item in element_list if item]
+            element_set.ids = map(to_number, element_list)
             mesh.element_sets[element_set_name] = element_set
             f.seek(start_of_line)
             return
             # Read element ids until empty line
         full_str += line.strip()
-
 
 def _read_node_set(f, mesh, verbose=0):
     """Reads node sets from the file.

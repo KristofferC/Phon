@@ -20,12 +20,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
-<<<<<<< HEAD
-=======
-import random
-import math
-
->>>>>>> devel
 from phon.io import element_dictionary
 from phon.io import element_dictionary_inverse
 from phon.io import elements_2d
