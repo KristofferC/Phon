@@ -106,7 +106,6 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
 
             f.write("\n")
 
- 
     # Sets
     set_id = 0
     # Element sets
