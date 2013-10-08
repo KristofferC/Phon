@@ -20,9 +20,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
+<<<<<<< HEAD
+=======
 import random
 import math
 
+>>>>>>> devel
 from phon.io import element_dictionary
 from phon.io import element_dictionary_inverse
 from phon.io import elements_2d
@@ -103,30 +106,7 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
 
             f.write("\n")
 
-    # Write materials
-    
-    def randfunc():
-        return 0.1332
-    
-    n_grains = 10
-    perc_aust = 0.5
-    n_austenite = int(n_grains * perc_aust)
-    n_ferrite = n_grains - n_austenite
-    zeros = [0] * n_austenite
-    ones = [1] * n_ferrite
-    material_array = zeros + ones
-    random.shuffle(material_array)
-    
-    for i in range(n_grains):
-        eul1 = random.uniform(0, 2*math.pi)
-        eul2 = random.uniform(0, 2*math.pi)
-        eul3 = random.uniform(0, 2*math.pi)
-        if material_array[i] == 0:
-            f.write("abaqususermaterial {0} umat \"umat.so\" d 1 numstate 79 properties 21. 184519.774011 0.299435028249 1.0 0.0001 1.0 0.1 75. 100 0.0 2.0 210.0 4000.0 0.0 0.0 0.0 0.0 0.0 0.0 {1} {2} {3}\n".format(i+1, eul1, eul2, eul3))
-        if material_array[i] == 1:
-            f.write("abaqususermaterial {0} umat \"umat.so\" d 1 numstate 79 properties 21. 184519.774011 0.299435028249 1.0 0.001 1.0 1.1 50. 100 0.0 2.0 250.0 100.0 0.0 0.0 0.0 0.0 0.0 0.0 {1} {2} {3}\n".format(i+1, eul1, eul2, eul3))
-
-
+ 
     # Sets
     set_id = 0
     # Element sets
@@ -145,10 +125,6 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
         f.write("\n# " + node_set_name)
         f.write("\nSet {} nodes {} ".format(str(set_id), str(len(node_set.ids))))
         f.write(''.join('{} '.format(k) for k in node_set.ids)[:-1])
-
-   
-   
-    
 
 
     # For testing
