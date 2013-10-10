@@ -24,7 +24,7 @@ THE SOFTWARE.
 class Node:
     """ Represents a node."""
 
-    def __init__(self, x, y, z):
+    def __init__(self, x, y=0, z=0):
         """
         :param x: The x coordinate of the node.
         :type x: float
