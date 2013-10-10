@@ -213,22 +213,33 @@ def _read_element_set(f, mesh, verbose=0):
         dim = None
     if verbose == 1 or verbose == 2:
         print ("\rReading element set {0:s}.".format(element_set_name)),
-    element_set = ElementSet(element_set_name, dim)
+    
     full_str = ""
-    while True:
-        start_of_line = f.tell()
-        line = f.readline()
-        if line.strip() == '':
-            continue
-        if line[0] == '*':
-            element_list = full_str.split(',')
-            element_list = [item for item in element_list if item]
-            element_set.ids = map(to_number, element_list)
-            mesh.element_sets[element_set_name] = element_set
-            f.seek(start_of_line)
-            return
-            # Read element ids until empty line
-        full_str += line.strip()
+    if element_set_name.endswith("generate"):
+        element_set_name = element_set_name[0:-10]
+        element_set = ElementSet(element_set_name, dim)
+        line = f.readline().strip()
+        generate_info = map(to_number, line.split(','))
+        start, stop, step = generate_info[0], generate_info[1], generate_info[2]
+        element_set.ids = range(start, stop+1, step)
+        mesh.element_sets[element_set_name] = element_set
+        return         
+    else:
+        element_set = ElementSet(element_set_name, dim)
+        while True:
+            start_of_line = f.tell()
+            line = f.readline()
+            if line.strip() == '':
+                continue
+            if line[0] == '*':
+                element_list = full_str.split(',')
+                element_list = [item for item in element_list if item]
+                element_set.ids = map(to_number, element_list)
+                mesh.element_sets[element_set_name] = element_set
+                f.seek(start_of_line)
+                return
+                # Read element ids until empty line
+            full_str += line.strip()
 
 def _read_node_set(f, mesh, verbose=0):
     """Reads node sets from the file.
@@ -254,21 +265,32 @@ def _read_node_set(f, mesh, verbose=0):
     if verbose == 1 or verbose == 2:
         print ("\rReading node set {0:s}.".format(node_set_name)),
     full_str = ""
-    while True:
-        start_of_line = f.tell()
-        line = f.readline()
-        if line.strip() == '':
-            continue
-        if line[0] == '*':
-            # Remove empty strings
-            node_list = full_str.split(',')
-             # Remove empty strings
-            node_list = [item for item in node_list if item]
-            node_set.ids = map(to_number, node_list)
-            mesh.node_sets[node_set_name] = node_set
-            f.seek(start_of_line)
-            return
-        full_str += line.strip() + ","
+    if node_set_name.endswith("generate"):
+        node_set_name = node_set_name[0:-10]
+        node_set = NodeSet(node_set_name)
+        line = f.readline().strip()
+        generate_info = map(to_number, line.split(','))
+        start, stop, step = generate_info[0], generate_info[1], generate_info[2]
+        node_set.ids = range(start, stop+1, step)
+        mesh.node_sets[node_set_name] = node_set
+        return         
+    else:
+        node_set = NodeSet(node_set_name)
+        while True:
+            start_of_line = f.tell()
+            line = f.readline()
+            if line.strip() == '':
+                continue
+            if line[0] == '*':
+                # Remove empty strings
+                node_list = full_str.split(',')
+                 # Remove empty strings
+                node_list = [item for item in node_list if item]
+                node_set.ids = map(to_number, node_list)
+                mesh.node_sets[node_set_name] = node_set
+                f.seek(start_of_line)
+                return
+            full_str += line.strip() + ","
 
 
 class ReadInpFileError(Exception):
