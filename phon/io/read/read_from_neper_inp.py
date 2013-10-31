@@ -239,7 +239,7 @@ def _read_element_set(f, mesh, verbose=0):
                 f.seek(start_of_line)
                 return
                 # Read element ids until empty line
-            full_str += line.strip()
+            full_str += line.strip() + ","
 
 def _read_node_set(f, mesh, verbose=0):
     """Reads node sets from the file.
