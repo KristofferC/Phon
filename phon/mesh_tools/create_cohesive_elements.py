@@ -78,9 +78,11 @@ def create_cohesive_elements(mesh):
                 mesh.elements[tetra_id].vertices[idx] = node_id + n_nodes * grain_id
 
             # If we are adding nodes at the boundary these need to be 
-            # added to the correct boundary node set.
+            # added to the correct boundary node set. We also need to
+            # remove old nodes from the node sets.
             for node_set_name, node_set in mesh.node_sets.iteritems():
                 if node_id in node_set.ids:
+                    node_set.ids.remove(node_id)
                     node_set.ids.extend([new_node_id_1, new_node_id_2])
 
         # Create the cohesive elements
