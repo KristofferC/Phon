@@ -98,7 +98,7 @@ def _read_part(f, verbose):
                                "name=XXX', read '" + line + "'.")
 
     part_name = match.group(1)
-    if verbose == 1 or 2:
+    if verbose == 1 or verbose == 2:
         print("Read part with name " + str(part_name))
     # Initiate a mesh class with the same name as the part
     return Mesh(part_name)
@@ -240,6 +240,7 @@ def _read_element_set(f, mesh, verbose=0):
                 return
                 # Read element ids until empty line
             full_str += line.strip() + ","
+
 
 def _read_node_set(f, mesh, verbose=0):
     """Reads node sets from the file.
