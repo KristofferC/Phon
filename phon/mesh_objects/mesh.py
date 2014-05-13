@@ -21,6 +21,7 @@ THE SOFTWARE.
 """
 
 from collections import OrderedDict
+
 from phon.io import elements_2d
 from phon.io import elements_3d
 from phon.io import element_dictionary_inverse
@@ -83,8 +84,9 @@ class Mesh:
         For example, if the mesh consist of four nodes with identifiers
         1, 2, 5, 7 this would change them to 1, 2, 3, 4. This method also
         updates the elements to use the renumbered node identifiers.
-        TODO: This might be a useful function in general for the mesh class
-        so it could be moved to be a method of the mesh class.
+
+        Currently only updates nodes for 3d elements so don't do anything with 2d elements
+        after calling this.
 
         """
 
@@ -94,20 +96,24 @@ class Mesh:
         for i, node in enumerate(self.nodes.keys()):
             node_renumber_dict[node] = i+1
             new_nodes_dict[i+1] = self.nodes[node]
+
         self.nodes = new_nodes_dict
 
-        for i, node in enumerate(self.nodes.keys()):
-            self.nodes[i+1] = self.nodes.pop(node)
-
         # Update node identifiers in elements
-        for element_id, element in self.elements.iteritems():
-            for i, node_id in enumerate(self.elements[element_id].vertices):
-                element.vertices[i] = node_renumber_dict[node_id]
+        for element_type, elements in self.element_indices.iteritems():
+            if (element_dictionary_inverse[(element_type, "abaqus")] in elements_2d):
+                continue
+            for element_id in elements:
+                element = self.elements[element_id]
+                for i, node_id in enumerate(self.elements[element_id].vertices):
+                    element.vertices[i] = node_renumber_dict[node_id]
 
         # Update node identifiers in node sets
         for node_set_name, node_set in self.node_sets.iteritems():
             for i, node_id in enumerate(node_set.ids):
                 node_set.ids[i] = node_renumber_dict[node_id]
+
+        self.nodes = new_nodes_dict
 
     def get_number_of_2d_elements(self):
         """
