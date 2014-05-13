@@ -69,8 +69,8 @@ def export_to_abaqus(filename, mesh, write_2d_elements=False, f=None):
         for element_id in elements:
             f.write("%d, " % element_id)
             # Code below changes "[1,2,3]" to "1, 2, 3"
-            f.write(''.join('{},'.format(k) for k in
-                            mesh.elements[element_id].vertices)[:-1])
+            f.write(''.join('{}, '.format(k) for k in
+                            mesh.elements[element_id].vertices)[:-2])
             f.write("\n")
 
     # Element sets
@@ -90,7 +90,7 @@ def export_to_abaqus(filename, mesh, write_2d_elements=False, f=None):
     f.close()
 
 
-def write_column_broken_array(array, f):
+def write_column_broken_array(int_array, f):
     """
     Writes an array to a file and inserts a new line every fifteen element
     as required by Abaqus.
@@ -101,10 +101,10 @@ def write_column_broken_array(array, f):
     :type f: file object
 
     """
-    for idx, i in enumerate(array):
+    for idx, i in enumerate(int_array):
         if (idx + 1) % 15 == 0:
             f.write('\n')
-        if idx == (len(array) - 1):
+        if idx == (len(int_array) - 1):
             f.write(str(i) + "\n")
         else:
             f.write(str(i) + ", ")
