@@ -22,6 +22,8 @@ THE SOFTWARE.
 
 __all__ = ["element_name_dictionary", "read", "write"]
 
+# This stuff here need to be done in a better way...
+
 # Translates between (internal_name, "software) to external_name.
 element_dictionary = {("CPE3", "abaqus"): "CPE3",
                       ("CPE3", "oofem"): "TrplaneStrain",
@@ -32,7 +34,9 @@ element_dictionary = {("CPE3", "abaqus"): "CPE3",
                       ("STRI65", "abaqus"): "STRI65",
                       ("STRI65", "oofem"): "tr2shell7",
                       ("CPS4R", "abaqus"): "CPS4R",
-                      ("CPS4R", "oofem"): "tr2shell7"}
+                      ("CPS4R", "oofem"): "tr2shell7",
+                      ("COH3D6", "abaqus"): "COH3D6",
+                      ("COH3D6", "oofem"): "Interface3dtrquad"}
 
 # Translates between (external_name, software) to internal_name.
 element_dictionary_inverse = {("CPE3", "abaqus"): "CPE3",
@@ -44,8 +48,10 @@ element_dictionary_inverse = {("CPE3", "abaqus"): "CPE3",
                               ("STRI65", "abaqus"): "STRI65",
                               ("tr2shell7", "oofem"): "STRI65",
                               ("CPS4R", "abaqus"): "CPS4R",
-                              ("tr2shell7", "oofem"): "CPS4R"}
+                              ("tr2shell7", "oofem"): "CPS4R",
+                              ("COH3D12", "abaqus"): "COH3D12",
+                              ("Interface3dtrquad", "oofem"): "COH3D12"}
 
 # Dimension of elements.
 elements_2d = ["CPE3", "STRI65", "CPS4R"]
-elements_3d = ["C3D4", "COH3D6"]
+elements_3d = ["C3D4", "COH3D6", "COH3D12"]
