@@ -26,23 +26,31 @@ __all__ = ["element_name_dictionary", "read", "write"]
 
 # Translates between (internal_name, "software) to external_name.
 element_dictionary = {("CPE3", "abaqus"): "CPE3",
-                      ("CPE3", "oofem"): "TrplaneStrain",
+                      ("CPE3", "oofem"): "TrPlaneStress2d",
+                      ("CPE6", "abaqus"): "CPE6",
+                      ("CPE6", "oofem"): "QTrPlStr",
                       ("C3D4", "abaqus"): "C3D4",
                       ("C3D4", "oofem"): "LTRSpace",
+                      ("C3D10", "abaqus"): "C3D10",
+                      ("C3D10", "oofem"): "QTRSpace",
                       ("COH3D6", "abaqus"): "COH3D6",
                       ("COH3D6", "oofem"): "Interface3dtrlin",
                       ("STRI65", "abaqus"): "STRI65",
                       ("STRI65", "oofem"): "tr2shell7",
                       ("CPS4R", "abaqus"): "CPS4R",
                       ("CPS4R", "oofem"): "tr2shell7",
-                      ("COH3D6", "abaqus"): "COH3D6",
-                      ("COH3D6", "oofem"): "Interface3dtrquad"}
+                      ("COH3D12", "abaqus"): "COH3D12",
+                      ("COH3D12", "oofem"): "Interface3dtrquad"}
 
 # Translates between (external_name, software) to internal_name.
 element_dictionary_inverse = {("CPE3", "abaqus"): "CPE3",
-                              ("TrplaneStrain", "oofem"): "CPE3",
+                              ("TrPlaneStress2d", "oofem"): "CPE3",
+                              ("CPE6", "abaqus"): "CPE6",
+                              ("QTrPlStr", "oofem"): "CPE6",
                               ("C3D4", "abaqus"): "C3D4",
                               ("LTRSpace", "oofem"): "C3D4",
+                              ("C3D10", "abaqus"): "C3D10",
+                              ("QTRSpace", "oofem"): "C3D10",
                               ("COH3D6", "abaqus"): "COH3D6",
                               ("Interface3dtrlin", "oofem"): "COH3D6",
                               ("STRI65", "abaqus"): "STRI65",
@@ -53,5 +61,5 @@ element_dictionary_inverse = {("CPE3", "abaqus"): "CPE3",
                               ("Interface3dtrquad", "oofem"): "COH3D12"}
 
 # Dimension of elements.
-elements_2d = ["CPE3", "STRI65", "CPS4R"]
-elements_3d = ["C3D4", "COH3D6", "COH3D12"]
+elements_2d = ["CPE3", "STRI65", "CPS4R", "CPE6"]
+elements_3d = ["C3D4", "C3D10", "COH3D6", "COH3D12"]
