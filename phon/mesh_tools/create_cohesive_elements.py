@@ -21,13 +21,14 @@ THE SOFTWARE.
 """
 
 from collections import defaultdict
+import numpy as np
 
 from phon.mesh_objects.element import Element
 from phon.mesh_objects.element_set import ElementSet
 from phon.mesh_objects.node import Node
 
 
-def create_cohesive_elements(mesh):
+def create_cohesive_elements(mesh, order):
     """
     Creates and inserts cohesive elements between the grains in the mesh.
     The element sets, ordering of vertices in elements etc etc need to
@@ -37,11 +38,22 @@ def create_cohesive_elements(mesh):
     :type mesh: :class:`Mesh`
     """
 
+    test_n = 100000
     n_nodes = len(mesh.nodes)
     cohesive_id_offset = max(mesh.elements.keys()) + 1
-    mesh.element_indices["COH3D6"] = []
-    #nodes_in_face_sets = get_nodes_in_all_face_sets(mesh)
-    node_id_grain_LUT = get_node_id_grain_LUT(mesh)
+    if order == 1:
+        element_name = "COH3D6"
+        trig_coh_name = "CPE3"
+    elif order == 2:
+        element_name = "COH3D12"
+        trig_coh_name = "CPE6"
+    else:
+        #TODO: Should raise error message
+        print "Only order 1 or 2 possible"
+        return
+
+    mesh.element_indices[element_name] = []
+    node_id_grain_lut = get_node_id_grain_lut(mesh)
 
     for element_set_name in mesh.element_sets.keys():
         if not element_set_name[0:4] == "face":
@@ -49,7 +61,7 @@ def create_cohesive_elements(mesh):
         face_set = mesh.element_sets[element_set_name]
         grains_connected_to_face = get_grains_connected_to_face(mesh,
                                                                 face_set,
-                                                                node_id_grain_LUT)
+                                                                node_id_grain_lut)
 
         # Ignore sets at boundary
         if len(grains_connected_to_face) == 1:
@@ -62,7 +74,20 @@ def create_cohesive_elements(mesh):
         cohesive_set = ElementSet(cohesive_set_name, dimension=3)
         mesh.element_sets[cohesive_set_name] = cohesive_set
 
+        # Create two new element sets that will represent the triangles
+        # in the new faces. This is not strictly needed but is usefull
+        # information to have.
+        face_set_coh_name_1 = "coh_face_" + str(grain_id_1) + "_" + str(grain_id_2) + "_1"
+        face_set_coh_name_2 = "coh_face_" + str(grain_id_1) + "_" + str(grain_id_2) + "_2"
+
+        face_set_coh_1 = ElementSet(face_set_coh_name_1, dimension=2)
+        face_set_coh_2 = ElementSet(face_set_coh_name_2, dimension=2)
+
+        mesh.element_sets[face_set_coh_name_1] = face_set_coh_1
+        mesh.element_sets[face_set_coh_name_2] = face_set_coh_2
+
         # For each node in face make two new at the same place
+        #print face_set.get_all_node_ids(mesh)
         for node_id in face_set.get_all_node_ids(mesh):
             original_node = mesh.nodes[node_id]
             new_node_id_1 = node_id + n_nodes * grain_id_1
@@ -77,29 +102,150 @@ def create_cohesive_elements(mesh):
                 idx = mesh.elements[tetra_id].vertices.index(node_id)
                 mesh.elements[tetra_id].vertices[idx] = node_id + n_nodes * grain_id
 
-            # If we are adding nodes at the boundary these need to be 
-            # added to the correct boundary node set. We also need to
-            # remove old nodes from the node sets.
-            for node_set_name, node_set in mesh.node_sets.iteritems():
-                if node_id in node_set.ids:
-                    node_set.ids.remove(node_id)
-                    node_set.ids.extend([new_node_id_1, new_node_id_2])
-
         # Create the cohesive elements
         for triangle_element_id in face_set.ids:
+
+
+
             triangle_element = mesh.elements[triangle_element_id]
-            cohesive_index_order = [1, 0, 2, 4, 3, 5]
-            vertices_cohesive = [0, 0, 0, 0, 0, 0]
+            if order == 1:
+                cohesive_index_order = [1, 0, 2, 4, 3, 5]
+                vertices_cohesive = [0] * 6
+
+                cohesive_trig_index_order = [1, 0, 2]
+                vertices_coh_trig_1 = [0] * 3
+                vertices_coh_trig_2 = [0] * 3
+                offset = 3
+            if order == 2:
+                #TODO: Check this ordering
+                cohesive_index_order = [1, 0, 2, 4, 3, 5, 7, 6, 8, 10, 9, 11, 12, 13, 14]
+                vertices_cohesive = [0] * 15
+
+                cohesive_trig_index_order = [1, 0, 2, 4, 3, 5]
+                vertices_coh_trig_1 = [0] * 6
+                vertices_coh_trig_2 = [0] * 6
+                offset = 6
 
             for i, node_id in enumerate(triangle_element.vertices):
                 vertices_cohesive[cohesive_index_order[i]] = node_id + n_nodes * grain_id_1
-                vertices_cohesive[cohesive_index_order[i + 3]] = node_id + n_nodes * grain_id_2
+                vertices_coh_trig_1[i] = node_id + n_nodes * grain_id_1
 
-            cohesive_element = Element("COH3D6", vertices_cohesive)
+                vertices_cohesive[cohesive_index_order[i + offset]] = node_id + n_nodes * grain_id_2
+                vertices_coh_trig_2[cohesive_trig_index_order[i]] = node_id + n_nodes * grain_id_2
+
+            if order == 2:
+                for i in range(0,3):
+                    test_n += 1
+                    vertices_cohesive[2 * offset + i] = test_n
+
+            cohesive_element = Element(element_name, vertices_cohesive)
             mesh.elements[cohesive_id_offset] = cohesive_element
-            mesh.element_indices["COH3D6"].append(cohesive_id_offset)
+            mesh.element_indices[element_name].append(cohesive_id_offset)
             mesh.element_sets[cohesive_set_name].ids.append(cohesive_id_offset)
             cohesive_id_offset += 1
+
+            triangle_coh_element_1 = Element(face_set_coh_name_1, vertices_coh_trig_1)
+            mesh.elements[cohesive_id_offset] = triangle_coh_element_1
+            mesh.element_indices[trig_coh_name].append(cohesive_id_offset)
+            mesh.element_sets[face_set_coh_name_1].ids.append(cohesive_id_offset)
+            cohesive_id_offset += 1
+
+            triangle_coh_element_2 = Element(face_set_coh_name_2, vertices_coh_trig_2)
+            mesh.elements[cohesive_id_offset] = triangle_coh_element_2
+            mesh.element_indices[trig_coh_name].append(cohesive_id_offset)
+            mesh.element_sets[face_set_coh_name_2].ids.append(cohesive_id_offset)
+            cohesive_id_offset += 1
+
+            # We need to check that we got the normals right, else elements will be
+            # inside out. This can be done by comparing the normal of the face of
+            # the cohesive element to the normal to the element it is connected to.
+            # If these are in the same direction we need to flip the element.
+            tetra_id, tetra = get_tetra_in_grain_containing_triangle(mesh, cohesive_element, grain_id_1)
+            idxs = find_index(tetra, cohesive_element)
+
+            if set(idxs) == {0, 3, 1}:
+                norm_tetra = _calculate_normal(mesh, tetra.vertices[0], tetra.vertices[3], tetra.vertices[1])
+            elif set(idxs) == {0, 1, 2}:
+                norm_tetra = _calculate_normal(mesh, tetra.vertices[0], tetra.vertices[1], tetra.vertices[2])
+            elif set(idxs) == {0, 2, 3}:
+                norm_tetra = _calculate_normal(mesh, tetra.vertices[0], tetra.vertices[2], tetra.vertices[3])
+            elif set(idxs) == {1, 3, 2}:
+                norm_tetra = _calculate_normal(mesh, tetra.vertices[1], tetra.vertices[3], tetra.vertices[2])
+
+
+            norm_cohes = _calculate_normal(mesh, cohesive_element.vertices[0], cohesive_element.vertices[1],
+                                        cohesive_element.vertices[2])
+
+            # Normals are in same direction -> flip element
+            if np.dot(norm_tetra, norm_cohes) > 0:
+                for i, node_id in enumerate(triangle_element.vertices):
+                    vertices_cohesive[cohesive_index_order[i]] = node_id + n_nodes * grain_id_2
+                    vertices_coh_trig_1[i] = node_id + n_nodes * grain_id_2
+                    vertices_cohesive[cohesive_index_order[i + offset]] = node_id + n_nodes * grain_id_1
+                    vertices_coh_trig_2[cohesive_trig_index_order[i]] = node_id + n_nodes * grain_id_1
+
+
+
+    # Delete the old nodes from the mesh and from the node sets.
+    # Currently the 2d elements that are used to create the cohesive sets are not
+    # deleted. After this they therefore have deleted nodes as vertices.
+    for element_set_name in mesh.element_sets.keys():
+        if not element_set_name[0:4] == "face":
+            continue
+        face_set = mesh.element_sets[element_set_name]
+        grains_connected_to_face = get_grains_connected_to_face(mesh,
+                                                                face_set,
+                                                                node_id_grain_lut)
+
+        # Ignore sets at boundary
+        if len(grains_connected_to_face) == 1:
+            continue
+        grain_id_1 = grains_connected_to_face[0]
+        grain_id_2 = grains_connected_to_face[1]
+        for node_id in face_set.get_all_node_ids(mesh):
+
+            new_node_id_1 = node_id + n_nodes * grain_id_1
+            new_node_id_2 = node_id + n_nodes * grain_id_2
+
+            for node_set_name, node_set in mesh.node_sets.iteritems():
+                if node_id in node_set.ids:
+                    #node_set.ids.remove(node_id)
+                    #if node_id in mesh.nodes:
+                    #    del mesh.nodes[node_id]
+                    if new_node_id_1 not in node_set.ids:
+                        node_set.ids.extend([new_node_id_1])
+                    if new_node_id_2 not in node_set.ids:
+                        node_set.ids.extend([new_node_id_2])
+
+    # Finish of with renumbering the nodes so the node ids are not spread out.
+    #if renumber_nodes:
+    #    mesh.renumber_nodes()
+
+
+def _calculate_normal(mesh, node_id_1, node_id_2, node_id_3):
+    """
+    Calculates the normal from three node ids.
+
+    """
+
+    node_1 = mesh.nodes[node_id_1]
+    node_2 = mesh.nodes[node_id_2]
+    node_3 = mesh.nodes[node_id_3]
+
+    point_1 = np.array([node_1.x, node_1.y, node_1.z])
+    point_2 = np.array([node_2.x, node_2.y, node_2.z])
+    point_3 = np.array([node_3.x, node_3.y, node_3.z])
+
+    crs = np.cross(point_2 - point_1, point_3 - point_1)
+    return crs / np.linalg.norm(crs)
+
+
+def find_index(tetra, cohesive_element):
+    idx = []
+    for node in cohesive_element.vertices[0:3]:
+        idx.append(tetra.vertices.index(node))
+
+    return idx
 
 
 def get_nodes_in_all_face_sets(mesh):
@@ -118,7 +264,7 @@ def get_nodes_in_all_face_sets(mesh):
     return list(nodes_in_face_sets)
 
 
-def get_grains_connected_to_face(mesh, face_set, node_id_grain_LUT):
+def get_grains_connected_to_face(mesh, face_set, node_id_grain_lut):
     """
     This function find the grain connected to the face set given as argument.
 
@@ -130,7 +276,7 @@ def get_grains_connected_to_face(mesh, face_set, node_id_grain_LUT):
     :param mesh: The mesh
     :type mesh: :class:`Mesh`
     :param face_set: The face set to find grains connected to
-    :type: face_set: :class:`ELementSet`
+    :type: face_set: :class:`ElementSet`
     :param node_id_grain_LUT: Lookup table to find what grains contain
                               what nodes.
     :type node_id_grain_LUT: defaultdict
@@ -142,22 +288,19 @@ def get_grains_connected_to_face(mesh, face_set, node_id_grain_LUT):
     triangle_element = mesh.elements[face_set.ids[0]]
 
     for node_id in triangle_element.vertices:
-        grains_with_node_id = node_id_grain_LUT[node_id]
+        grains_with_node_id = node_id_grain_lut[node_id]
         grains_connected_to_face.append(set(grains_with_node_id))
 
     return list(set.intersection(*grains_connected_to_face))
 
 
-def get_node_id_grain_LUT(mesh):
+def get_node_id_grain_lut(mesh):
     """
     This function creates a (default) dictionary that
     works as a lookup table for what grains contain
     what nodes.
     :param mesh: The mesh
     :type: mesh: :class:`Mesh`
-    :param node_list: The list of node identifiers that is to be used
-                      as keys in the dict
-    :type node_list: list[ints]
     :return: Dictionary d where d[node_id] gives a set of the grain identifiers
              that contain the node.
     :rtype: defaultdict
@@ -199,6 +342,20 @@ def get_grains_containing_node_id(mesh, node_id, original_n_nodes):
                 break
     grain_ids_with_node_id = list(set(grain_ids_with_node_id))
     return grain_ids_with_node_id
+
+def get_tetra_in_grain_containing_triangle(mesh, cohesive, grain):
+    """
+    Find the tetrahedron that contains the triangle and sits in the
+    grain given as argument.
+
+
+    """
+
+    for element_id in mesh.element_sets["poly" + str(grain)].ids:
+        element = mesh.elements[element_id]
+        if all(nodes in element.vertices for nodes in cohesive.vertices[0:3]):
+            return element_id, element
+
 
 
 def get_tetra_and_grain_with_node_id(mesh, node_id, grain_id_1, grain_id_2):
