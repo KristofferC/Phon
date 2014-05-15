@@ -27,13 +27,12 @@ from phon.mesh_tools.create_cohesive_elements import create_cohesive_elements
 
 #TODO: Rewrite this with numpy...
 
-def create_fence_elements(mesh, thickness, order):
+def create_matrix(mesh, thickness, order):
     """
     This method creates elements that are similar to the cohesive
     elements except that they have a finite width. The cohesive
     elements are made thicker by pulling them apart in the normal
     direction of the cohesive element.
-
 
     :param thickness: Thickness of the generated elements
     :type mesh: Number
@@ -41,10 +40,12 @@ def create_fence_elements(mesh, thickness, order):
     :type mesh: :class:`Mesh`
 
     """
+
     if order == 1:
         offset = 3
     elif order == 2:
-        offset = 6
+        print "order = 2 currently not supported"
+        return
     else:
         #TODO: Should raise error here
         print "Only order 1 or 2 supported."
@@ -60,18 +61,20 @@ def create_fence_elements(mesh, thickness, order):
     face_sets = ["x0", "x1", "y0", "y1", "z0", "z1"]
 
     # Loop over every cohesive element set:
-    create_cohesive_elements(mesh, order)
+    create_cohesive_elements(mesh, order, False)
 
-    # TODO: Need to move nodes in the border a different way.
+    normal_vec = {}
+    # Pre calculate the normals
     for element_set_name in mesh.element_sets.keys():
-        if "coh" in element_set_name:
-
-            # Should not move a node twice in the same set.
+        if "coh_face" in element_set_name:
             element_set = mesh.element_sets[element_set_name]
-            node_already_moved = []
+            for element_id in element_set.ids:
 
-            # Sufficient to calculate normal for one element in the set
-            normal_vec = _calculate_normal(mesh, mesh.elements[element_set.ids[0]])
+                normal_vec[element_id] = _calculate_normal(mesh, mesh.elements[element_id])
+    for element_set_name in mesh.element_sets.keys():
+        if "coh_face" in element_set_name:
+            node_already_moved = []
+            element_set = mesh.element_sets[element_set_name]
 
             # Loop over elements in face set
             for element_id in element_set.ids:
@@ -79,25 +82,33 @@ def create_fence_elements(mesh, thickness, order):
 
                 # Loop over the nodes in the element
                 for i, node_id in enumerate(element.vertices):
+
                     if node_id in node_already_moved:
-                        break
+                        continue
                     node_already_moved.append(node_id)
                     node = mesh.nodes[node_id]
 
-                    if i < offset:
-                        direct = 1
-                    else:
-                        direct = -1
-
                     r = find_displacement_vector(mesh, node_id, corner_sets,
-                                                 edge_sets, face_sets, normal_vec, thickness)
+                                                 edge_sets, face_sets, normal_vec[element_id], thickness)
 
-                    node.x += r[0] * direct
-                    node.y += r[1] * direct
-                    node.z += r[2] * direct
+                    node.x += r[0]
+                    node.y += r[1]
+                    node.z += r[2]
+
+                   # if node.x > 1.0 or node.x < 0.0:
+                   #     node.x -= r[0]
+                   # if abs(node.y) > 1.0 or node.y < 0.0:
+                   #     node.y -= r[1]
+                   # if abs(node.z) > 1.0 or node.z < 0.0:
+                   #     node.z -= r[2]
 
 
 def find_displacement_vector(mesh, node_id, corner_sets, edge_sets, face_sets, normal_vec, thickness):
+
+    # For now ignore projection stuff
+    # TODO: Fix
+
+    return normal_vec * thickness / 2.0
 
     for node_set_name in corner_sets:
         if node_id in mesh.node_sets[node_set_name].ids:
@@ -105,42 +116,42 @@ def find_displacement_vector(mesh, node_id, corner_sets, edge_sets, face_sets, n
 
     for node_set_name in edge_sets:
         if node_id in mesh.node_sets[node_set_name].ids:
+
             return project_on_line(node_set_name, normal_vec, thickness)
 
     for node_set_name in face_sets:
         if node_id in mesh.node_sets[node_set_name].ids:
+            if node_id == 2942:
+                print "hejj"
             return project_on_plane(node_set_name, normal_vec, thickness)
-
-    return normal_vec * thickness / 2.0
 
 
 def project_on_line(node_set_name, normal_gb, thickness):
     line_dirs = {"x0y1": np.array([0, 0, 1]),
-                     "x0z1": np.array([0, 1, 0]),
-                     "x0y0": np.array([0, 0, 1]),
-                     "x1z0": np.array([0, 1, 0]),
-                     "x1y0": np.array([0, 0, 1]),
-                     "x1z1": np.array([0, 1, 0]),
-                     "x1y1": np.array([0, 0, 1]),
-                     "x1z0": np.array([0, 1, 0]),
-                     "y0z1": np.array([1, 0, 0]),
-                     "y0z0": np.array([1, 0, 0]),
-                     "y1z0": np.array([1, 0, 0]),
-                     "y1z1": np.array([1, 0, 0])}
+                 "x0z1": np.array([0, 1, 0]),
+                 "x0y0": np.array([0, 0, 1]),
+                 "x0z0": np.array([0, 1, 0]),
+                 "x1y0": np.array([0, 0, 1]),
+                 "x1z1": np.array([0, 1, 0]),
+                 "x1y1": np.array([0, 0, 1]),
+                 "x1z0": np.array([0, 1, 0]),
+                 "y0z1": np.array([1, 0, 0]),
+                 "y0z0": np.array([1, 0, 0]),
+                 "y1z0": np.array([1, 0, 0]),
+                 "y1z1": np.array([1, 0, 0])}
 
     line_dir = line_dirs[node_set_name]
     length_line = thickness / 2.0 / np.dot(line_dir, normal_gb)
     return line_dir * length_line
 
 
-
 def project_on_plane(node_set_name, normal_gb, thickness):
     normal_planes = {"z0": np.array([0, 0, -1]),
                      "z1": np.array([0, 0, 1]),
-                     "x0": np.array([-1, 0, 1]),
-                     "x1": np.array([1, 0, 1]),
+                     "x0": np.array([-1, 0, 0]),
+                     "x1": np.array([1, 0, 0]),
                      "y0": np.array([0, -1, 0]),
-                     "y1": np.array([0, 1, 1])}
+                     "y1": np.array([0, 1, 0])}
 
     normal_plane = normal_planes[node_set_name]
 
@@ -173,4 +184,3 @@ def _calculate_normal(mesh, element):
 
     crs = np.cross(point_2 - point_1, point_3 - point_1)
     return crs / np.linalg.norm(crs)
-
