@@ -26,29 +26,35 @@ from phon.io.read.read_from_neper_inp import read_from_neper_inp
 from phon.io.write.export_to_abaqus import export_to_abaqus
 from phon.mesh_tools.create_cohesive_elements import create_cohesive_elements
 from phon.mesh_tools.create_cohesive_elements import get_grains_connected_to_face
-from phon.mesh_tools.create_cohesive_elements import get_node_id_grain_LUT
+from phon.mesh_tools.create_cohesive_elements import get_node_id_grain_lut
 
-
+# TODO: Add test for order = 2
 class Test(unittest.TestCase):
     """Unit tests for test_create_cohesive_elements."""
 
     def setUp(self):
         self.mesh = read_from_neper_inp("n10-id1.inp", verbose=0)
-        self.original_n_nodes = len(self.mesh.nodes)
+        self.mesh_order_2 = read_from_neper_inp("n10-id1_order_2.inp", verbose=0)
 
-    def test__get_grains_connected_to_face(self):
-        node_id_grain_LUT = get_node_id_grain_LUT(self.mesh)
-        self.assertEqual(get_grains_connected_to_face(self.mesh, self.mesh.element_sets["face35"],                                        node_id_grain_LUT), [6])
+    def test_get_grains_connected_to_face(self):
+        node_id_grain_lut = get_node_id_grain_lut(self.mesh)
+        self.assertEqual(get_grains_connected_to_face(self.mesh, self.mesh.element_sets["face35"],
+                                                      node_id_grain_lut), [6])
         self.assertEqual(get_grains_connected_to_face(self.mesh, self.mesh.element_sets["face18"],
-                                                      node_id_grain_LUT), [3, 5])
+                                                      node_id_grain_lut), [3, 5])
         self.assertEqual(get_grains_connected_to_face(self.mesh, self.mesh.element_sets["face4"],
-                                                      node_id_grain_LUT), [1, 10])
+                                                      node_id_grain_lut), [1, 10])
 
     # TODO: A little bit too few asserts in this test.
     def test_create_cohesive_elements(self):
-        create_cohesive_elements(self.mesh)
-        export_to_abaqus("n10-id1_coh.inp", self.mesh, True)
+        order = 1
+        create_cohesive_elements(self.mesh, order)
+        export_to_abaqus("n10-id1_coh.inp", self.mesh, False)
         self.assertEqual(len(self.mesh.element_sets["cohes9_2"].ids), 6)
+
+        #order = 2
+        #create_cohesive_elements(self.mesh_order_2, order)
+        #export_to_abaqus("n10-id1_coh_order_2.inp", self.mesh_order_2, False)
 
     # TODO: Add tests for more helper functions.
 
