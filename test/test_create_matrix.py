@@ -24,7 +24,7 @@ import unittest
 
 from phon.io.read.read_from_neper_inp import read_from_neper_inp
 from phon.io.write.export_to_abaqus import export_to_abaqus
-from phon.mesh_tools.create_fence_elements import create_fence_elements
+from phon.mesh_tools.create_matrix import create_matrix
 
 
 class Test(unittest.TestCase):
@@ -40,9 +40,8 @@ class Test(unittest.TestCase):
 
         # Test fence with order 1
         order = 1
-        create_fence_elements(self.mesh, thickness, order)
-        export_to_abaqus("n10-id1_fence.inp", self.mesh, False)
-
+        create_matrix(self.mesh, thickness, order)
+        export_to_abaqus("n10-id1_fence.inp", self.mesh)
         # Test fence with order 2
         #order = 2
         #create_fence_elements(self.mesh_order_2, thickness, order)
