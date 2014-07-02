@@ -64,13 +64,11 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
     #f.write("OutputManager tstep_all dofman_all element_all\n")
 
     # Components size record
+    f.write("ncrosssect 1 nmat 1 nbc 1 nic 0 nltf 1 ") # Should should be left for the resp of the input file to decide
     f.write("ndofman " + str(n_nodes) + " ")
     f.write("nelem " + str(n_elements) + " ")
-    f.write("ncrosssect 1" + " ")
-    f.write("nmat 1" + " ")
-    f.write("nbc 1" + " ")
-    f.write("nic 0" + " ")
-    f.write("nltf 1\n")
+    f.write("nset " + str(len(mesh.element_sets) + len(mesh.node_sets)) + " ");
+    f.write("\n");
 
     # Write nodes
     for node_id, node in mesh.nodes.iteritems():
@@ -91,13 +89,6 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
             # Code below changes "[1,2,3]" to "1 2 3"
             f.write(''.join('{} '.format(k) 
                             for k in mesh.elements[element_id].vertices)[:-1])
-
-            f.write(" mat 1 crossSect 1")
-            """if element_name == "Interface3dtrlin":
-                f.write(" mat 2 crossSect 1")
-            if element_name == "LTRSpace":
-                f.write(" mat 1 crossSect 1")"""
-
             f.write("\n")
 
     # Sets
