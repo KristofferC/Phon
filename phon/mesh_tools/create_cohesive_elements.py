@@ -28,7 +28,7 @@ from phon.mesh_objects.element_set import ElementSet
 from phon.mesh_objects.node import Node
 
 
-def create_cohesive_elements(mesh, order):
+def create_cohesive_elements(mesh):
     """
     Creates and inserts cohesive elements between the grains in the mesh.
     The element sets, ordering of vertices in elements etc etc need to
@@ -41,18 +41,11 @@ def create_cohesive_elements(mesh, order):
     test_n = 100000
     n_nodes = len(mesh.nodes)
     cohesive_id_offset = max(mesh.elements.keys()) + 1
-    if order == 1:
-        element_name = "COH3D6"
-        trig_coh_name = "CPE3"
-    elif order == 2:
-        element_name = "COH3D12"
-        trig_coh_name = "CPE6"
-    else:
-        #TODO: Should raise error message
-        print "Only order 1 or 2 possible"
-        return
 
-    mesh.element_indices[element_name] = []
+    mesh.element_indices["CPE3"] = []
+    mesh.element_indices["CPE6"] = []
+    mesh.element_indices["COH3D6"] = []
+    mesh.element_indices["COH3D12"] = []
     node_id_grain_lut = get_node_id_grain_lut(mesh)
 
     for element_set_name in mesh.element_sets.keys():
@@ -108,35 +101,34 @@ def create_cohesive_elements(mesh, order):
 
 
             triangle_element = mesh.elements[triangle_element_id]
-            if order == 1:
+            num_t_nodes = len(triangle_element.vertices)
+
+            trig_coh_name = triangle_element.elem_type # e.g. "CPE3"
+            element_name = "COH3D" + str(num_t_nodes*2) # e.g. "COH3D6"
+
+            if num_t_nodes == 3:
                 cohesive_index_order = [1, 0, 2, 4, 3, 5]
-                vertices_cohesive = [0] * 6
-
                 cohesive_trig_index_order = [1, 0, 2]
-                vertices_coh_trig_1 = [0] * 3
-                vertices_coh_trig_2 = [0] * 3
-                offset = 3
-            if order == 2:
+            if num_t_nodes == 6:
                 #TODO: Check this ordering
-                cohesive_index_order = [1, 0, 2, 4, 3, 5, 7, 6, 8, 10, 9, 11, 12, 13, 14]
-                vertices_cohesive = [0] * 15
-
+                cohesive_index_order = [1, 0, 2, 4, 3, 5, 7, 6, 8, 10, 9, 11]
                 cohesive_trig_index_order = [1, 0, 2, 4, 3, 5]
-                vertices_coh_trig_1 = [0] * 6
-                vertices_coh_trig_2 = [0] * 6
-                offset = 6
+
+            vertices_cohesive = [0] * num_t_nodes * 2
+            vertices_coh_trig_1 = [0] * num_t_nodes
+            vertices_coh_trig_2 = [0] * num_t_nodes
 
             for i, node_id in enumerate(triangle_element.vertices):
                 vertices_cohesive[cohesive_index_order[i]] = node_id + n_nodes * grain_id_1
                 vertices_coh_trig_1[i] = node_id + n_nodes * grain_id_1
 
-                vertices_cohesive[cohesive_index_order[i + offset]] = node_id + n_nodes * grain_id_2
+                vertices_cohesive[cohesive_index_order[i + num_t_nodes]] = node_id + n_nodes * grain_id_2
                 vertices_coh_trig_2[cohesive_trig_index_order[i]] = node_id + n_nodes * grain_id_2
 
-            if order == 2:
+            if num_t_nodes == 6:
                 for i in range(0,3):
                     test_n += 1
-                    vertices_cohesive[2 * offset + i] = test_n
+                    vertices_cohesive[2 * num_t_nodes + i] = test_n
 
             cohesive_element = Element(element_name, vertices_cohesive)
             mesh.elements[cohesive_id_offset] = cohesive_element
@@ -163,16 +155,7 @@ def create_cohesive_elements(mesh, order):
             tetra_id, tetra = get_tetra_in_grain_containing_triangle(mesh, cohesive_element, grain_id_1)
             idxs = find_index(tetra, cohesive_element)
 
-            if set(idxs) == {0, 3, 1}:
-                norm_tetra = _calculate_normal(mesh, tetra.vertices[0], tetra.vertices[3], tetra.vertices[1])
-            elif set(idxs) == {0, 1, 2}:
-                norm_tetra = _calculate_normal(mesh, tetra.vertices[0], tetra.vertices[1], tetra.vertices[2])
-            elif set(idxs) == {0, 2, 3}:
-                norm_tetra = _calculate_normal(mesh, tetra.vertices[0], tetra.vertices[2], tetra.vertices[3])
-            elif set(idxs) == {1, 3, 2}:
-                norm_tetra = _calculate_normal(mesh, tetra.vertices[1], tetra.vertices[3], tetra.vertices[2])
-
-
+            norm_tetra = _calculate_normal(mesh, tetra.vertices[idxs[0]], tetra.vertices[idxs[1]], tetra.vertices[idxs[2]])
             norm_cohes = _calculate_normal(mesh, cohesive_element.vertices[0], cohesive_element.vertices[1],
                                         cohesive_element.vertices[2])
 
@@ -181,7 +164,7 @@ def create_cohesive_elements(mesh, order):
                 for i, node_id in enumerate(triangle_element.vertices):
                     vertices_cohesive[cohesive_index_order[i]] = node_id + n_nodes * grain_id_2
                     vertices_coh_trig_1[i] = node_id + n_nodes * grain_id_2
-                    vertices_cohesive[cohesive_index_order[i + offset]] = node_id + n_nodes * grain_id_1
+                    vertices_cohesive[cohesive_index_order[i + num_t_nodes]] = node_id + n_nodes * grain_id_1
                     vertices_coh_trig_2[cohesive_trig_index_order[i]] = node_id + n_nodes * grain_id_1
 
 
