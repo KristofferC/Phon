@@ -75,21 +75,19 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
         f.write("node {0:d} ".format(node_id))
         f.write("coords 3 {0:.12f} {1:.12f} {2:.12f} ".format(node.x, node.y, node.z))
         f.write("\n")
-        #f.write("bc 3 1 1 1\n")
 
     #  Elements
-    for element_type in mesh.element_indices.keys():
+    for element_id, element in mesh.elements.iteritems():
         if (write_2d_elements is False) and \
-                (element_dictionary_inverse[(element_type, "abaqus")] in elements_2d):
+                (element_dictionary_inverse[(element.elem_type, "abaqus")] in elements_2d):
             continue
-        element_name = element_dictionary[(element_type, "oofem")]
-        for element_id in mesh.element_indices[element_type]:
-            f.write(element_name + " {0:d} ".format(element_id))
-            f.write("nodes {} ".format(str(len(mesh.elements[element_id].vertices))))
-            # Code below changes "[1,2,3]" to "1 2 3"
-            f.write(''.join('{} '.format(k) 
-                            for k in mesh.elements[element_id].vertices)[:-1])
-            f.write("\n")
+        element_name = element_dictionary[(element.elem_type, "oofem")]
+        f.write(element_name + " {0:d} ".format(element_id))
+        f.write("nodes {} ".format(str(len(element.vertices))))
+        # Code below changes "[1,2,3]" to "1 2 3"
+        f.write(''.join('{} '.format(k) 
+                        for k in element.vertices)[:-1])
+        f.write("\n")
 
     # Sets
     set_id = 0

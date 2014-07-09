@@ -25,6 +25,9 @@ Module that contains the method of writing a mesh to a file that Abaqus can
  read.
 """
 
+from collections import defaultdict
+from collections import OrderedDict
+
 from phon.mesh_objects.mesh import Mesh
 from phon.io import element_dictionary
 from phon.io import element_dictionary_inverse
@@ -59,8 +62,13 @@ def export_to_abaqus(filename, mesh, write_2d_elements=False, f=None):
         f.write("{0:d}, ".format(node_id))
         f.write("{0:.12f}, {1:.12f}, {2:.12f}\n".format(node.x, node.y, node.z))
 
+    # Recreate element indices
+    element_indices = defaultdict(lambda:[],OrderedDict())
+    for i, element in mesh.elements.iteritems():
+        element_indices[element.elem_type].append(i)
+
     # Elements
-    for element_type, elements in mesh.element_indices.iteritems():
+    for element_type, elements in element_indices.iteritems():
         if ((write_2d_elements is False) and
                 (element_dictionary_inverse[(element_type, "abaqus")] in elements_2d)):
             continue

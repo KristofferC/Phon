@@ -162,7 +162,6 @@ def _read_elements(f, mesh, num_elems, verbose):
         type=XXX', got '" + line + "'.")
 
     element_name = re_element.match(line).group(1)
-    elem_ids = []
     while True:
         start_of_line = f.tell()
         line = f.readline()
@@ -170,7 +169,6 @@ def _read_elements(f, mesh, num_elems, verbose):
             continue
         if line[0] == '*':
             f.seek(start_of_line)
-            mesh.element_indices[element_name] = elem_ids
             return num_elems
         num_elems += 1
         if verbose == 1:
@@ -180,7 +178,6 @@ def _read_elements(f, mesh, num_elems, verbose):
         element_numbers = map(to_number, line.strip().split(','))
         element = Element(element_name, element_numbers[1:])
         mesh.elements[element_numbers[0]] = element
-        elem_ids.append(element_numbers[0])
 
 
 def _read_element_set(f, mesh, verbose=0):

@@ -36,7 +36,6 @@ class Mesh:
                  name,
                  nodes=None,
                  elements=None,
-                 element_indices=None,
                  element_sets=None,
                  node_sets=None):
         """
@@ -46,8 +45,6 @@ class Mesh:
         :type nodes: dict of format {node_id (int) : :class:`Node`}
         :param elements: All elements in the mesh.
         :type elements: dict of format {element_id (int) : :class:`Element`}
-        :param element_indices: Elements sorted according to their type
-        :type element_indices: dict of format {element_type (string) : [element_ids (int)]}
         :param element_sets: Different element sets
         :type element_sets: dict of format {element_set (string) : [element_ids (int)]}
         :param node_sets:
@@ -64,10 +61,6 @@ class Mesh:
         if elements is None:
             elements = OrderedDict()
         self.elements = elements
-
-        if element_indices is None:
-            element_indices = OrderedDict()
-        self.element_indices = element_indices
 
         if element_sets is None:
             element_sets = OrderedDict()
@@ -100,20 +93,16 @@ class Mesh:
         self.nodes = new_nodes_dict
 
         # Update node identifiers in elements
-        for element_type, elements in self.element_indices.iteritems():
-            if (element_dictionary_inverse[(element_type, "abaqus")] in elements_2d):
-                continue
-            for element_id in elements:
-                element = self.elements[element_id]
-                for i, node_id in enumerate(self.elements[element_id].vertices):
-                    element.vertices[i] = node_renumber_dict[node_id]
+        for element_id, element in self.elements.iteritems():
+            #if (element_dictionary_inverse[(element.elem_type, "abaqus")] in elements_2d):
+            #    continue
+            for i, node_id in enumerate(element.vertices):
+                element.vertices[i] = node_renumber_dict[node_id]
 
         # Update node identifiers in node sets
         for node_set_name, node_set in self.node_sets.iteritems():
             for i, node_id in enumerate(node_set.ids):
                 node_set.ids[i] = node_renumber_dict[node_id]
-
-        self.nodes = new_nodes_dict
 
     def get_number_of_2d_elements(self):
         """
@@ -124,10 +113,9 @@ class Mesh:
 
         """
         number_of_2d_elements = 0
-        for element_type in self.element_indices.keys():
-            print element_type
-            if element_dictionary_inverse[(element_type, "abaqus")] in elements_2d:
-                number_of_2d_elements += len(self.element_indices[element_type])
+        for element in self.elements.values():
+            if element_dictionary_inverse[(element.elem_type, "abaqus")] in elements_2d:
+                number_of_2d_elements += 1
         return number_of_2d_elements
 
     def get_number_of_3d_elements(self):
@@ -139,7 +127,7 @@ class Mesh:
 
         """
         number_of_3d_elements = 0
-        for element_type in self.element_indices.keys():
-            if element_dictionary_inverse[(element_type, "abaqus")] in elements_3d:
-                number_of_3d_elements += len(self.element_indices[element_type])
+        for element in self.elements.values():
+            if element_dictionary_inverse[(element.elem_type, "abaqus")] in elements_3d:
+                number_of_3d_elements += 1
         return number_of_3d_elements
