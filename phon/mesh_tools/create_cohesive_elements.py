@@ -38,7 +38,6 @@ def create_cohesive_elements(mesh):
     :type mesh: :class:`Mesh`
     """
 
-    test_n = 100000
     n_nodes = len(mesh.nodes)
     cohesive_id_offset = max(mesh.elements.keys()) + 1
 
@@ -102,43 +101,20 @@ def create_cohesive_elements(mesh):
 
             if num_t_nodes == 3:
                 cohesive_index_order = [1, 0, 2, 4, 3, 5]
-                cohesive_trig_index_order = [1, 0, 2]
             if num_t_nodes == 6:
                 #TODO: Check this ordering
                 cohesive_index_order = [1, 0, 2, 4, 3, 5, 7, 6, 8, 10, 9, 11]
-                cohesive_trig_index_order = [1, 0, 2, 4, 3, 5]
 
             vertices_cohesive = [0] * num_t_nodes * 2
-            vertices_coh_trig_1 = [0] * num_t_nodes
-            vertices_coh_trig_2 = [0] * num_t_nodes
 
             for i, node_id in enumerate(triangle_element.vertices):
                 vertices_cohesive[cohesive_index_order[i]] = node_id + n_nodes * grain_id_1
-                vertices_coh_trig_1[i] = node_id + n_nodes * grain_id_1
-
                 vertices_cohesive[cohesive_index_order[i + num_t_nodes]] = node_id + n_nodes * grain_id_2
-                vertices_coh_trig_2[cohesive_trig_index_order[i]] = node_id + n_nodes * grain_id_2
-
-            if num_t_nodes == 6:
-                for i in range(0,3):
-                    test_n += 1
-                    vertices_cohesive[2 * num_t_nodes + i] = test_n
 
             cohesive_element = Element(element_name, vertices_cohesive)
             mesh.elements[cohesive_id_offset] = cohesive_element
             mesh.element_sets[cohesive_set_name].ids.append(cohesive_id_offset)
             cohesive_id_offset += 1
-
-            if False:
-                triangle_coh_element_1 = Element(face_set_coh_name_1, vertices_coh_trig_1)
-                mesh.elements[cohesive_id_offset] = triangle_coh_element_1
-                mesh.element_sets[face_set_coh_name_1].ids.append(cohesive_id_offset)
-                cohesive_id_offset += 1
-
-                triangle_coh_element_2 = Element(face_set_coh_name_2, vertices_coh_trig_2)
-                mesh.elements[cohesive_id_offset] = triangle_coh_element_2
-                mesh.element_sets[face_set_coh_name_2].ids.append(cohesive_id_offset)
-                cohesive_id_offset += 1
 
             # We need to check that we got the normals right, else elements will be
             # inside out. This can be done by comparing the normal of the face of
@@ -155,9 +131,7 @@ def create_cohesive_elements(mesh):
             if np.dot(norm_tetra, norm_cohes) > 0:
                 for i, node_id in enumerate(triangle_element.vertices):
                     vertices_cohesive[cohesive_index_order[i]] = node_id + n_nodes * grain_id_2
-                    vertices_coh_trig_1[i] = node_id + n_nodes * grain_id_2
                     vertices_cohesive[cohesive_index_order[i + num_t_nodes]] = node_id + n_nodes * grain_id_1
-                    vertices_coh_trig_2[cohesive_trig_index_order[i]] = node_id + n_nodes * grain_id_1
 
     # Delete the old nodes from the mesh and from the node sets.
     # Currently the 2d elements that are used to create the cohesive sets are not
