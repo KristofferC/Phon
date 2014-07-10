@@ -99,17 +99,10 @@ def create_cohesive_elements(mesh):
             trig_coh_name = triangle_element.elem_type # e.g. "CPE3"
             element_name = "COH3D" + str(num_t_nodes*2) # e.g. "COH3D6"
 
-            if num_t_nodes == 3:
-                cohesive_index_order = [1, 0, 2, 4, 3, 5]
-            if num_t_nodes == 6:
-                #TODO: Check this ordering
-                cohesive_index_order = [1, 0, 2, 4, 3, 5, 7, 6, 8, 10, 9, 11]
-
             vertices_cohesive = [0] * num_t_nodes * 2
-
             for i, node_id in enumerate(triangle_element.vertices):
-                vertices_cohesive[cohesive_index_order[i]] = node_id + n_nodes * grain_id_1
-                vertices_cohesive[cohesive_index_order[i + num_t_nodes]] = node_id + n_nodes * grain_id_2
+                vertices_cohesive[i] = node_id + n_nodes * grain_id_1
+                vertices_cohesive[i + num_t_nodes] = node_id + n_nodes * grain_id_2
 
             cohesive_element = Element(element_name, vertices_cohesive)
             mesh.elements[cohesive_id_offset] = cohesive_element
@@ -127,11 +120,11 @@ def create_cohesive_elements(mesh):
             norm_cohes = _calculate_normal(mesh, cohesive_element.vertices[0], cohesive_element.vertices[1],
                                         cohesive_element.vertices[2])
 
-            # Normals are in same direction -> flip element
-            if np.dot(norm_tetra, norm_cohes) > 0:
+            # Normals are in opposite direction -> flip element
+            if np.dot(norm_tetra, norm_cohes) < 0:
                 for i, node_id in enumerate(triangle_element.vertices):
-                    vertices_cohesive[cohesive_index_order[i]] = node_id + n_nodes * grain_id_2
-                    vertices_cohesive[cohesive_index_order[i + num_t_nodes]] = node_id + n_nodes * grain_id_1
+                    vertices_cohesive[i] = node_id + n_nodes * grain_id_2
+                    vertices_cohesive[i + num_t_nodes] = node_id + n_nodes * grain_id_1
 
     # Delete the old nodes from the mesh and from the node sets.
     # Currently the 2d elements that are used to create the cohesive sets are not
