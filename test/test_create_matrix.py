@@ -42,10 +42,8 @@ class Test(unittest.TestCase):
         order = 1
         create_matrix(self.mesh, thickness, order)
         export_to_abaqus("n10-id1_fence.inp", self.mesh)
-        # Test fence with order 2
-        #order = 2
-        #create_fence_elements(self.mesh_order_2, thickness, order)
-        #export_to_abaqus("n10-id1_fence_order_2.inp", self.mesh_order_2, False)
+
+        #TODO: Test matrix with order 2
 
     # TODO: Add tests for the helper functions.
 

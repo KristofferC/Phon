@@ -35,21 +35,11 @@ def create_matrix(mesh, thickness, order):
     direction of the cohesive element.
 
     :param thickness: Thickness of the generated elements
-    :type mesh: Number
+    :type thickness: Float
     :param mesh: The mesh
     :type mesh: :class:`Mesh`
 
     """
-
-    if order == 1:
-        offset = 3
-    elif order == 2:
-        print "order = 2 currently not supported"
-        return
-    else:
-        #TODO: Should raise error here
-        print "Only order 1 or 2 supported."
-        return
 
     corner_sets = ["x0y0z0", "x0y0z1", "x0y1z0", "x0y1z1",
                    "x1y0z0", "x1y0z1", "x1y1z0", "x1y1z1"]
@@ -61,7 +51,7 @@ def create_matrix(mesh, thickness, order):
     face_sets = ["x0", "x1", "y0", "y1", "z0", "z1"]
 
     # Loop over every cohesive element set:
-    create_cohesive_elements(mesh, order, False)
+    create_cohesive_elements(mesh)
 
     normal_vec = {}
     # Pre calculate the normals
@@ -109,6 +99,7 @@ def find_displacement_vector(mesh, node_id, corner_sets, edge_sets, face_sets, n
     # TODO: Fix
 
     return normal_vec * thickness / 2.0
+
 
     for node_set_name in corner_sets:
         if node_id in mesh.node_sets[node_set_name].ids:

@@ -45,16 +45,16 @@ class Test(unittest.TestCase):
         self.assertEqual(get_grains_connected_to_face(self.mesh, self.mesh.element_sets["face4"],
                                                       node_id_grain_lut), [1, 10])
 
-    # TODO: A little bit too few asserts in this test.
+    # TODO: A little bit too few asserts in this test...
     def test_create_cohesive_elements(self):
         order = 1
-        create_cohesive_elements(self.mesh, order)
+        create_cohesive_elements(self.mesh)
         export_to_abaqus("n10-id1_coh.inp", self.mesh, False)
         self.assertEqual(len(self.mesh.element_sets["cohes9_2"].ids), 6)
 
         #order = 2
-        #create_cohesive_elements(self.mesh_order_2, order)
-        #export_to_abaqus("n10-id1_coh_order_2.inp", self.mesh_order_2, False)
+        create_cohesive_elements(self.mesh_order_2)
+        export_to_abaqus("n10-id1_coh_order_2.inp", self.mesh_order_2, False)
 
     # TODO: Add tests for more helper functions.
 
