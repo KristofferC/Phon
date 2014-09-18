@@ -70,7 +70,6 @@ class Mesh:
             node_sets = OrderedDict()
         self.node_sets = node_sets
 
-    # TODO: Test this function
     def renumber_nodes(self):
         """
         Renumbers nodes so that they are "dense" on the number line.
@@ -94,8 +93,9 @@ class Mesh:
 
         # Update node identifiers in elements
         for element_id, element in self.elements.iteritems():
-            #if (element_dictionary_inverse[(element.elem_type, "abaqus")] in elements_2d):
-            #    continue
+            # Don't reorder 2d elements for now.
+            if (element_dictionary_inverse[(element.elem_type, "abaqus")] in elements_2d):
+                continue
             for i, node_id in enumerate(element.vertices):
                 element.vertices[i] = node_renumber_dict[node_id]
 
