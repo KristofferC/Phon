@@ -96,8 +96,7 @@ def create_cohesive_elements(mesh):
             triangle_element = mesh.elements[triangle_element_id]
             num_t_nodes = len(triangle_element.vertices)
 
-            trig_coh_name = triangle_element.elem_type # e.g. "CPE3"
-            element_name = "COH3D" + str(num_t_nodes*2) # e.g. "COH3D6"
+            element_name = "COH3D" + str(num_t_nodes*2)  # e.g. "COH3D6"
 
             vertices_cohesive = [0] * num_t_nodes * 2
             for i, node_id in enumerate(triangle_element.vertices):
@@ -118,7 +117,7 @@ def create_cohesive_elements(mesh):
 
             norm_tetra = _calculate_normal(mesh, tetra.vertices[idxs[0]], tetra.vertices[idxs[1]], tetra.vertices[idxs[2]])
             norm_cohes = _calculate_normal(mesh, cohesive_element.vertices[0], cohesive_element.vertices[1],
-                                        cohesive_element.vertices[2])
+                                           cohesive_element.vertices[2])
 
             # Normals are in opposite direction -> flip element
             if np.dot(norm_tetra, norm_cohes) < 0:
@@ -149,23 +148,30 @@ def create_cohesive_elements(mesh):
 
             for node_set_name, node_set in mesh.node_sets.iteritems():
                 if node_id in node_set.ids:
-                    #node_set.ids.remove(node_id)
-                    #if node_id in mesh.nodes:
-                    #    del mesh.nodes[node_id]
+                    node_set.ids.remove(node_id)
+                    if node_id in mesh.nodes:
+                        del mesh.nodes[node_id]
                     if new_node_id_1 not in node_set.ids:
                         node_set.ids.extend([new_node_id_1])
                     if new_node_id_2 not in node_set.ids:
                         node_set.ids.extend([new_node_id_2])
 
     # Finish of with renumbering the nodes so the node ids are not spread out.
-    #if renumber_nodes:
-    #    mesh.renumber_nodes()
+    mesh.renumber_nodes()
 
 
 def _calculate_normal(mesh, node_id_1, node_id_2, node_id_3):
     """
     Calculates the normal from three node ids.
 
+    :param mesh: The mesh
+    :type mesh: :class:`Mesh`
+    :param node_id_1: Node 1
+    :type node_id_1: Int
+    :param node_id_2: Node 2
+    :type node_id_2: Int
+    :param node_id_3: Node 3
+    :type node_id_3: Int
     """
 
     node_1 = mesh.nodes[node_id_1]
@@ -283,6 +289,7 @@ def get_grains_containing_node_id(mesh, node_id, original_n_nodes):
     grain_ids_with_node_id = list(set(grain_ids_with_node_id))
     return grain_ids_with_node_id
 
+
 def get_tetra_in_grain_containing_triangle(mesh, cohesive, grain):
     """
     Find the tetrahedron that contains the triangle and sits in the
@@ -295,7 +302,6 @@ def get_tetra_in_grain_containing_triangle(mesh, cohesive, grain):
         element = mesh.elements[element_id]
         if all(nodes in element.vertices for nodes in cohesive.vertices[0:3]):
             return element_id, element
-
 
 
 def get_tetra_and_grain_with_node_id(mesh, node_id, grain_id_1, grain_id_2):
