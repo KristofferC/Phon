@@ -2,8 +2,6 @@ from distutils.core import setup
 import sys
 
 sys.path.append('phon')
-import phon
-
 
 setup(name='phon',
       version='0.1.0',
@@ -22,4 +20,5 @@ setup(name='phon',
                    'Operating System :: OS Independent',
                    'Programming Language :: Python :: 2',
                    'Topic :: Scientific/Engineering :: GIS'],
+      install_requires=['Numpy']
       )
