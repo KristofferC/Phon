@@ -41,7 +41,7 @@ class ElementSet:
             ids = []
         self.ids = ids
 
-    def getDimension(self):
+    def get_dimension(self):
         """
         Get the dimension of the element set.
 

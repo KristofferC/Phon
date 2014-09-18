@@ -48,4 +48,3 @@ class Node:
         """
         return ("Node located at (%f, %f, %f):" % (self.x,
                 self.y, self.z))
-

@@ -51,4 +51,3 @@ class NodeSet:
         """
         return("Node set with name {0} containing nodes with the "
                "following ids {1}".format(self.name, self.ids))
-

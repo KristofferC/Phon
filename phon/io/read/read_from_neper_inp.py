@@ -259,7 +259,6 @@ def _read_node_set(f, mesh, verbose=0):
         raise ReadInpFileError("Error parsing file. Expected '*Nset, "
                                "nset=X', got '" + line + "'.")
     node_set_name = re_node_set.match(line).group(1)
-    node_set = NodeSet(node_set_name)
     if verbose == 1 or verbose == 2:
         print ("\rReading node set {0:s}.".format(node_set_name)),
     full_str = ""
