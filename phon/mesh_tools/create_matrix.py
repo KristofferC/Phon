@@ -27,6 +27,7 @@ from phon.mesh_tools.create_cohesive_elements import create_cohesive_elements
 
 #TODO: Rewrite this with numpy...
 
+
 def create_matrix(mesh, thickness, order):
     """
     This method creates elements that are similar to the cohesive
@@ -99,7 +100,6 @@ def find_displacement_vector(mesh, node_id, corner_sets, edge_sets, face_sets, n
     # TODO: Fix
 
     return normal_vec * thickness / 2.0
-
 
     for node_set_name in corner_sets:
         if node_id in mesh.node_sets[node_set_name].ids:

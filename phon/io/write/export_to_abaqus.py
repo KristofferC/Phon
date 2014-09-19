@@ -47,7 +47,7 @@ def export_to_abaqus(filename, mesh, write_2d_elements=False, f=None):
     :type write_2d_elements: boolean
     :param f: If given as an argument the mesh is appended to this file
               instead of opening a new one.
-    :type f:" file object
+    :type f:  file object
     """
 
     if f is None:

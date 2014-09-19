@@ -245,7 +245,8 @@ def get_node_id_grain_lut(mesh):
     This function creates a (default) dictionary that
     works as a lookup table for what grains contain
     what nodes.
-    :param mesh: The mesh
+
+    :param: mesh: The mesh
     :type: mesh: :class:`Mesh`
     :return: Dictionary d where d[node_id] gives a set of the grain identifiers
              that contain the node.
