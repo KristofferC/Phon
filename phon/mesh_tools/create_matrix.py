@@ -25,10 +25,8 @@ import numpy as np
 from phon.mesh_objects.element import Element
 from phon.mesh_tools.create_cohesive_elements import create_cohesive_elements
 
-#TODO: Rewrite this with numpy...
 
-
-def create_matrix(mesh, thickness, order):
+def create_matrix(mesh, thickness):
     """
     This method creates elements that are similar to the cohesive
     elements except that they have a finite width. The cohesive

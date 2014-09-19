@@ -39,8 +39,7 @@ class Test(unittest.TestCase):
         thickness = 0.05
 
         # Test fence with order 1
-        order = 1
-        create_matrix(self.mesh, thickness, order)
+        create_matrix(self.mesh, thickness)
         export_to_abaqus("n10-id1_fence.inp", self.mesh)
 
         #TODO: Test matrix with order 2
