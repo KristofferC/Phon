@@ -3,3 +3,4 @@
 !phon/test/n10-id1.inp
 *.pyc
 /.idea
+/docs/_build
