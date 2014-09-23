@@ -51,8 +51,6 @@ class Test(unittest.TestCase):
         create_cohesive_elements(self.mesh)
         export_to_abaqus("n10-id1_coh.inp", self.mesh, False)
         self.assertEqual(len(self.mesh.element_sets["cohes9_2"].ids), 6)
-
-        #order = 2
         create_cohesive_elements(self.mesh_order_2)
         export_to_abaqus("n10-id1_coh_order_2.inp", self.mesh_order_2, False)
 
