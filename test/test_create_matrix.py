@@ -34,15 +34,14 @@ class Test(unittest.TestCase):
         self.mesh = read_from_neper_inp("n10-id1.inp", verbose=0)
         self.mesh_order_2 = read_from_neper_inp("n10-id1_order_2.inp", verbose=0)
 
-    # TODO: Right now only testing compilation errors...
+    # TODO: Right now only testing runtime errors... Add real tests
     def test_create_fence_elements(self):
         thickness = 0.05
 
-        # Test fence with order 1
+        # Test finite thickness cohesive with order 1
         create_matrix(self.mesh, thickness)
         export_to_abaqus("n10-id1_fence.inp", self.mesh)
 
-        #TODO: Test matrix with order 2
 
     # TODO: Add tests for the helper functions.
 
