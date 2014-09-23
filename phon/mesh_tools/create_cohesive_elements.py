@@ -115,7 +115,16 @@ def create_cohesive_elements(mesh):
             tetra_id, tetra = get_tetra_in_grain_containing_triangle(mesh, cohesive_element, grain_id_1)
             idxs = find_index(tetra, cohesive_element)
 
-            norm_tetra = _calculate_normal(mesh, tetra.vertices[idxs[0]], tetra.vertices[idxs[1]], tetra.vertices[idxs[2]])
+            # Based on the index, find the corresponding face of the tetrahedron, then compute the normal of that face
+            if set(idxs) == {0, 1, 3}:
+                norm_tetra = _calculate_normal(mesh, tetra.vertices[0], tetra.vertices[1], tetra.vertices[3])
+            elif set(idxs) == {0, 2, 1}:
+                norm_tetra = _calculate_normal(mesh, tetra.vertices[0], tetra.vertices[2], tetra.vertices[1])
+            elif set(idxs) == {0, 3, 2}:
+                norm_tetra = _calculate_normal(mesh, tetra.vertices[0], tetra.vertices[3], tetra.vertices[2])
+            elif set(idxs) == {1, 2, 3}:
+                norm_tetra = _calculate_normal(mesh, tetra.vertices[1], tetra.vertices[2], tetra.vertices[3])
+
             norm_cohes = _calculate_normal(mesh, cohesive_element.vertices[0], cohesive_element.vertices[1],
                                            cohesive_element.vertices[2])
 
