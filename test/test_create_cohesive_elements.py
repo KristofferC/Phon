@@ -33,21 +33,25 @@ class Test(unittest.TestCase):
     """Unit tests for test_create_cohesive_elements."""
 
     def setUp(self):
+
+        #self.mesh_quads = read_from_neper_inp("quads.inp")
         self.mesh = read_from_neper_inp("n10-id1.inp", verbose=0)
         self.mesh_order_2 = read_from_neper_inp("n10-id1_order_2.inp", verbose=0)
 
     def test_get_grains_connected_to_face(self):
         node_id_grain_lut = get_node_id_grain_lut(self.mesh)
         self.assertEqual(get_grains_connected_to_face(self.mesh, self.mesh.element_sets["face35"],
-                                                      node_id_grain_lut), [6])
+                                                     node_id_grain_lut), [6])
         self.assertEqual(get_grains_connected_to_face(self.mesh, self.mesh.element_sets["face18"],
-                                                      node_id_grain_lut), [3, 5])
+                                                     node_id_grain_lut), [3, 5])
         self.assertEqual(get_grains_connected_to_face(self.mesh, self.mesh.element_sets["face4"],
-                                                      node_id_grain_lut), [1, 10])
+                                                    node_id_grain_lut), [1, 10])
 
     # TODO: A little bit too few asserts in this test...
     def test_create_cohesive_elements(self):
         order = 1
+        #create_cohesive_elements(self.mesh_quads)
+        #export_to_abaqus("quads_coh.inp", self.mesh_quads, False)
         create_cohesive_elements(self.mesh)
         export_to_abaqus("n10-id1_coh.inp", self.mesh, False)
         self.assertEqual(len(self.mesh.element_sets["cohes9_2"].ids), 6)

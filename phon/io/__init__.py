@@ -40,7 +40,10 @@ element_dictionary = {("CPE3", "abaqus"): "CPE3",
                       ("CPS4R", "abaqus"): "CPS4R",
                       ("CPS4R", "oofem"): "tr2shell7",
                       ("COH3D12", "abaqus"): "COH3D12",
-                      ("COH3D12", "oofem"): "Interface3dtrquad"}
+                      ("COH3D12", "oofem"): "Interface3dtrquad",
+                      ("C3D8", "abaqus"): "C3D8",
+                      ("COH3D8", "abaqus"): "COH3D8",
+                      ("S4R", "abaqus"): "S4R"}
 
 # Translates between (external_name, software) to internal_name.
 element_dictionary_inverse = {("CPE3", "abaqus"): "CPE3",
@@ -58,8 +61,11 @@ element_dictionary_inverse = {("CPE3", "abaqus"): "CPE3",
                               ("CPS4R", "abaqus"): "CPS4R",
                               ("tr2shell7", "oofem"): "CPS4R",
                               ("COH3D12", "abaqus"): "COH3D12",
-                              ("Interface3dtrquad", "oofem"): "COH3D12"}
+                              ("Interface3dtrquad", "oofem"): "COH3D12",
+                              ("C3D8", "abaqus"): "C3D8",
+                              ("COH3D8", "abaqus"): "COH3D8",
+                              ("S4R", "abaqus"): "S4R"}
 
 # Dimension of elements.
-elements_2d = ["CPE3", "STRI65", "CPS4R", "CPE6"]
-elements_3d = ["C3D4", "C3D10", "COH3D6", "COH3D12"]
+elements_2d = ["CPE3", "STRI65", "CPS4R", "CPE6", "S4R"]
+elements_3d = ["C3D4", "C3D10", "C3D10", "COH3D6", "COH3D12", "COH3D8"]
