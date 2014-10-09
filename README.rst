@@ -22,7 +22,7 @@ Contact Information
 ====================
 Author: Kristoffer Carlsson
 
-E-mail: kcarlsson89@gmail.com
+E-mail: kristoffer.carlsson@chalmers.se
 
 Copyright and Licensing
 =======================
