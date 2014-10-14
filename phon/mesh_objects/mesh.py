@@ -37,6 +37,7 @@ class Mesh:
                  nodes=None,
                  elements=None,
                  element_sets=None,
+                 element_side_sets=None,
                  node_sets=None):
         """
         :param name: Name of the mesh.
@@ -47,6 +48,8 @@ class Mesh:
         :type elements: dict of format {element_id (int) : :class:`Element`}
         :param element_sets: Different element sets
         :type element_sets: dict of format {element_set (string) : [element_ids (int)]}
+        :param element_side_sets: Different element side sets
+        :type element_side_sets: dict of format {element_set (string) : [element_ids (int)]}
         :param node_sets:
         :type node_sets: dict of format {node_set (string) : [node_ids (int)]}
 
@@ -65,6 +68,10 @@ class Mesh:
         if element_sets is None:
             element_sets = OrderedDict()
         self.element_sets = element_sets
+
+        if element_side_sets is None:
+            element_side_sets = OrderedDict()
+        self.element_side_sets = element_side_sets
 
         if node_sets is None:
             node_sets = OrderedDict()

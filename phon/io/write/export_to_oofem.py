@@ -55,25 +55,27 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
     f.write("{}\n".format(mesh.name))
 
     # Analysis record
-    #f.write("LinearStatic 1 nsteps 1 nmodules 1\n")
-    #f.write("vtkxml tstep_all domain_all primvars 1 1 vars 4 1 2 4 5 stype 1 0\n")
+    #f.write("StaticStructural 1 nsteps 1 nmodules 1\n")
+    #f.write("vtkxml tstep_all domain_all primvars 1 1 cellvars 4 1 2 4 5\n")
     # Domain record
     #f.write("domain 3d\n")
 
     # Output manager record
-    #f.write("OutputManager tstep_all dofman_all element_all\n")
+    #f.write("OutputManager\n")
 
     # Components size record
-    f.write("ncrosssect 1 nmat 1 nbc 1 nic 0 nltf 1 ") # Should should be left for the resp of the input file to decide
-    f.write("ndofman " + str(n_nodes) + " ")
+    f.write("ncrosssect " + str(len(mesh.element_sets)) + " ")
+    f.write("ndofman " + str(len(mesh.nodes)) + " ")
     f.write("nelem " + str(n_elements) + " ")
-    f.write("nset " + str(len(mesh.element_sets) + len(mesh.node_sets)) + " ");
+    f.write("nset " + str(len(mesh.element_sets) + len(mesh.element_side_sets) + len(mesh.node_sets)) + " ");
+    f.write("nmat " + str(len(mesh.element_sets)) + " ")
+    f.write("nbc ? nic 0 nltf ? ") # Should should be left for the resp of the input file to decide
     f.write("\n");
 
     # Write nodes
     for node_id, node in mesh.nodes.iteritems():
         f.write("node {0:d} ".format(node_id))
-        f.write("coords 3 {0:.12f} {1:.12f} {2:.12f} ".format(node.x, node.y, node.z))
+        f.write("coords 3 {0:.12e} {1:.12e} {2:.12e} ".format(node.x, node.y, node.z))
         f.write("\n")
 
     #  Elements
@@ -89,6 +91,20 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
                         for k in element.vertices)[:-1])
         f.write("\n")
 
+    # Crosssections
+    cs_id = 0
+    for element_set_name, element_set in mesh.element_sets.iteritems():
+        if element_set_name[:4] == "poly":
+            cs_id += 1
+            f.write("SimpleCS {} material {} set {}\n".format(str(cs_id), str(cs_id), element_set_name[4:]))
+        elif element_set_name[:4] == "coh":
+            cs_id += 1
+            f.write("InterfaceCS {} material {} set {}\n".format(str(cs_id), str(cs_id), element_set_name[4:]))
+
+    f.write("######### Materials here\n")
+    f.write("######### Boundary conditions here\n")
+    f.write("######### Load time functions here\n")
+
     # Sets
     set_id = 0
     # Element sets
@@ -100,13 +116,22 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
         f.write("\nSet {} elements {} ".format(str(set_id), str(len(element_set.ids))))
         f.write(''.join('{} '.format(k) for k in element_set.ids)[:-1])
         f.write("\n")
-        
+
+    # Element side sets
+    for side_set_name, side_set in mesh.element_side_sets.iteritems():
+        set_id += 1
+        f.write("# " + side_set_name)
+        f.write("\nSet {} elementsides {} ".format(str(set_id), str(2*len(side_set.sides))))
+        f.write(''.join('{} {}'.format(k.elem, k.side) for k in side_set.sides)[:-1])
+        f.write("\n")
+
     # Node sets
     for node_set_name, node_set in mesh.node_sets.iteritems():
         set_id += 1
-        f.write("\n# " + node_set_name)
+        f.write("# " + node_set_name)
         f.write("\nSet {} nodes {} ".format(str(set_id), str(len(node_set.ids))))
         f.write(''.join('{} '.format(k) for k in node_set.ids)[:-1])
+        f.write("\n")
 
 
     # For testing
