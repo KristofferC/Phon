@@ -117,25 +117,25 @@ def _merge_mesh(mesh, grainmesh, grainid):
         # Check for surfaces, and if so, add them to a set
         # TODO: Need to differentiate between grainid-grainid here and create different sets
         # Right now, I just add triangular elements.
-        if v1[0] in node_merge_list and v1[1] in node_merge_list && v1[3] in node_merge_list:
+        if v1[0] in node_merge_list and v1[1] in node_merge_list and v1[3] in node_merge_list:
             s1 = 1
             e2 = iter(set(e[0]) & set(e[1]) & set(e[2])).next()
             surfelem = Element("CPE3", [v2[0], v2[1], v2[3]])
             elemcount += 1
             mesh.elements[elemcount] = surfelem
-        if v1[0] in node_merge_list and v1[2] in node_merge_list && v1[1] in node_merge_list:
+        if v1[0] in node_merge_list and v1[2] in node_merge_list and v1[1] in node_merge_list:
             s1 = 2
             e2 = iter(set(e[0]) & set(e[2]) & set(e[1])).next()
             surfelem = Element("CPE3", [v2[0], v2[2], v2[1]])
             elemcount += 1
             mesh.elements[elemcount] = surfelem
-        if v1[0] in node_merge_list and v1[3] in node_merge_list && v1[2] in node_merge_list:
+        if v1[0] in node_merge_list and v1[3] in node_merge_list and v1[2] in node_merge_list:
             s1 = 3
             e2 = iter(set(e[0]) & set(e[3]) & set(e[2])).next()
             surfelem = Element("CPE3", [v2[0], v2[3], v2[2]])
             elemcount += 1
             mesh.elements[elemcount] = surfelem
-        if v1[1] in node_merge_list and v1[2] in node_merge_list && v1[3] in node_merge_list:
+        if v1[1] in node_merge_list and v1[2] in node_merge_list and v1[3] in node_merge_list:
             s1 = 4
             e2 = iter(set(e[1]) & set(e[2]) & set(e[3])).next()
             surfelem = Element("CPE3", [v2[1], v2[2], v2[3]])
@@ -174,8 +174,8 @@ def _read_nodes(f, mesh, verbose):
 
         words = line.split()
         num = int(words[0])
-        coord = list(map(float, words[2:])
-        node = Node(num, coord[0], coord[1], coord[2])
+        coord = list(map(float, words[2:]))
+        node = Node(*coord)
         mesh.nodes[num] = node
 
 def _read_elements(f, mesh, verbose):
@@ -197,7 +197,7 @@ def _read_elements(f, mesh, verbose):
 
         words = line.split()
         num = int(words[0])
-        elem_nodes = list(map(int, words[-3:])
+        elem_nodes = list(map(int, words[-3:]))
         element = Element("CS4", elem_nodes)
         mesh.elements[num] = element
 

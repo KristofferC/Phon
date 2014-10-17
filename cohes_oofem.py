@@ -1,4 +1,5 @@
 import sys
+from phon.io.read.read_from_gmsh_inp import read_from_gmsh_inp
 from phon.io.read.read_from_neper_inp import read_from_neper_inp
 from phon.io.write.export_to_oofem import export_to_oofem
 from phon.io.write.export_to_abaqus import export_to_abaqus
