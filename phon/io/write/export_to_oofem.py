@@ -73,13 +73,13 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
     f.write("\n");
 
     # Write nodes
-    for node_id, node in mesh.nodes.iteritems():
+    for node_id, node in mesh.nodes.items():
         f.write("node {0:d} ".format(node_id))
         f.write("coords 3 {0:.12e} {1:.12e} {2:.12e} ".format(node.x, node.y, node.z))
         f.write("\n")
 
     #  Elements
-    for element_id, element in mesh.elements.iteritems():
+    for element_id, element in mesh.elements.items():
         if (write_2d_elements is False) and \
                 (element_dictionary_inverse[(element.elem_type, "abaqus")] in elements_2d):
             continue
@@ -93,7 +93,7 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
 
     # Crosssections
     cs_id = 0
-    for element_set_name, element_set in mesh.element_sets.iteritems():
+    for element_set_name, element_set in mesh.element_sets.items():
         if element_set_name[:4] == "poly":
             cs_id += 1
             f.write("SimpleCS {} material {} set {}\n".format(str(cs_id), str(cs_id), element_set_name[4:]))
@@ -108,7 +108,7 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
     # Sets
     set_id = 0
     # Element sets
-    for element_set_name, element_set in mesh.element_sets.iteritems():
+    for element_set_name, element_set in mesh.element_sets.items():
         if (write_2d_elements is False) and (element_set.dimension == 2):
             continue
         set_id += 1
@@ -118,7 +118,7 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
         f.write("\n")
 
     # Element side sets
-    for side_set_name, side_set in mesh.element_side_sets.iteritems():
+    for side_set_name, side_set in mesh.element_side_sets.items():
         set_id += 1
         f.write("# " + side_set_name)
         f.write("\nSet {} elementsides {} ".format(str(set_id), str(2*len(side_set.sides))))
@@ -126,7 +126,7 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
         f.write("\n")
 
     # Node sets
-    for node_set_name, node_set in mesh.node_sets.iteritems():
+    for node_set_name, node_set in mesh.node_sets.items():
         set_id += 1
         f.write("# " + node_set_name)
         f.write("\nSet {} nodes {} ".format(str(set_id), str(len(node_set.ids))))

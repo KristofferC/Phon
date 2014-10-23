@@ -19,7 +19,7 @@ create_cohesive_elements(mesh)
 mesh.renumber_nodes()
 
 # Rescale the RVE:
-for node_id, node in mesh.nodes.iteritems():
+for node_id, node in mesh.nodes.items():
     node.x *= scale
     node.y *= scale
     node.z *= scale

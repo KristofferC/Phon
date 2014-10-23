@@ -156,7 +156,7 @@ def create_cohesive_elements(mesh):
             new_node_id_1 = node_id + n_nodes * grain_id_1
             new_node_id_2 = node_id + n_nodes * grain_id_2
 
-            for node_set_name, node_set in mesh.node_sets.iteritems():
+            for node_set_name, node_set in mesh.node_sets.items():
                 if node_id in node_set.ids:
                     #node_set.ids.remove(node_id)
                     #if node_id in mesh.nodes:
@@ -206,7 +206,7 @@ def get_nodes_in_all_face_sets(mesh):
     :rtype: list[ints]
     """
     nodes_in_face_sets = set()
-    for element_set_name, element_set in mesh.element_sets.iteritems():
+    for element_set_name, element_set in mesh.element_sets.items():
         if not element_set_name.startswith("face"):
             continue
         nodes_in_face_sets.add(element_set.get_all_node_ids(mesh))
@@ -234,6 +234,11 @@ def get_grains_connected_to_face(mesh, face_set, node_id_grain_lut):
     """
 
     grains_connected_to_face = []
+
+    grains = face_set.name[4:].split("_")
+    if len(grains) == 2:
+        return [int(g) for g in grains]
+
     triangle_element = mesh.elements[face_set.ids[0]]
 
     for node_id in triangle_element.vertices:
@@ -255,7 +260,7 @@ def get_node_id_grain_lut(mesh):
     :rtype: defaultdict
     """
     d = defaultdict(set)
-    for element_set_name, element_set in mesh.element_sets.iteritems():
+    for element_set_name, element_set in mesh.element_sets.items():
         if not element_set_name.startswith("poly"):
             continue
         for element_id in element_set.ids:
@@ -281,7 +286,7 @@ def get_grains_containing_node_id(mesh, node_id, original_n_nodes):
 
     grain_ids_with_node_id = []
 
-    for element_set_name, element_set in mesh.element_sets.iteritems():
+    for element_set_name, element_set in mesh.element_sets.items():
         if not element_set_name[0:4] == "poly":
             continue
         for element_id in element_set.ids:

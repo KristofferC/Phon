@@ -91,7 +91,7 @@ def create_element_sides(mesh):
     for element_set_name, element_set in mesh.element_sets.iteritems():
         if not element_set_name.startswith("poly"):
             continue
-	grain = int(element_set_name[4:])
+        grain = int(element_set_name[4:])
         for el_num in element_set.ids:
             element_to_grain[el_num-1] = grain
             for n in mesh.elements[el_num].vertices:
