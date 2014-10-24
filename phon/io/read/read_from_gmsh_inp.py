@@ -80,12 +80,18 @@ def read_from_gmsh_inp(basename, ngrains, verbose=0):
 
 
 def _create_bc_sets(mesh):
+    max_coord = [0., 0., 0.]
+    for node in mesh.nodes.values():
+        max_coord[0] = max(max_coord[0], node.x)
+        max_coord[1] = max(max_coord[1], node.y)
+        max_coord[2] = max(max_coord[2], node.z)
+
     mesh.node_sets["z0"] = NodeSet("z0")
     mesh.node_sets["z1"] = NodeSet("z1")
     for n_id, node in mesh.nodes.items():
         if node.z <= 1e-6:
             mesh.node_sets["z0"].ids.append(n_id)
-        elif node.z >= 1.0 - 1e-6:
+        elif node.z >= max_coord[2] - 1e-6:
             mesh.node_sets["z1"].ids.append(n_id)
 
 
@@ -101,7 +107,7 @@ def _construct_node2element(mesh):
 
 def _merge_mesh(mesh, elem2grain, grainmesh, grainid):
     # Create element sets for all potential faces:
-    for i in range(1, grainid+1):
+    for i in range(1, grainid):
         mesh.element_sets["face"+ str(i) + "_" + str(grainid)] = ElementSet("face"+ str(i) + "_" + str(grainid), 2)
 
     node2node, node_merge_list = _find_duplicate_nodes(mesh, grainmesh)
@@ -143,6 +149,12 @@ def _merge_mesh(mesh, elem2grain, grainmesh, grainid):
         mesh.elements[elemcount] = elem1
         mesh.element_sets["poly"+str(grainid)].ids.append(elemcount)
         elem2grain[elemcount] = grainid  # Need to have this map for keeping track of surfaces
+
+    # Create element sets for all potential faces:
+    for i in range(1, grainid):
+        setname = "face"+ str(i) + "_" + str(grainid)
+        if len(mesh.element_sets[setname].ids) == 0:
+            del mesh.element_sets[setname]
 
 
 def _find_duplicate_nodes(mesh, grainmesh):

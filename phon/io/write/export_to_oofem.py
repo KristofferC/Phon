@@ -48,28 +48,37 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
     else:
         n_elements = mesh.get_number_of_3d_elements()
 
+    n_cs = 0
+    n_set = len(mesh.node_sets) + len(mesh.element_side_sets)
+    for element_set_name, element_set in mesh.element_sets.items():
+        if (write_2d_elements is False) and (element_set.dimension == 2):
+            continue
+        n_set += 1
+        if element_set_name[:4] == "poly" or element_set_name[:5] == "cohes":
+            n_cs += 1
+
     # Output file record
-    f.write(filename + ".out\n")
+    #f.write(filename + ".out\n")
 
     # Job description record
-    f.write("{}\n".format(mesh.name))
+    #f.write("{}\n".format(mesh.name))
 
     # Analysis record
     #f.write("StaticStructural 1 nsteps 1 nmodules 1\n")
     #f.write("vtkxml tstep_all domain_all primvars 1 1 cellvars 4 1 2 4 5\n")
     # Domain record
-    #f.write("domain 3d\n")
+    f.write("domain 3d\n")
 
     # Output manager record
-    #f.write("OutputManager\n")
+    f.write("OutputManager\n")
 
     # Components size record
-    f.write("ncrosssect " + str(len(mesh.element_sets)) + " ")
+    f.write("ncrosssect " + str(n_cs) + " ")
     f.write("ndofman " + str(len(mesh.nodes)) + " ")
     f.write("nelem " + str(n_elements) + " ")
-    f.write("nset " + str(len(mesh.element_sets) + len(mesh.element_side_sets) + len(mesh.node_sets)) + " ");
-    f.write("nmat " + str(len(mesh.element_sets)) + " ")
-    f.write("nbc ? nic 0 nltf ? ") # Should should be left for the resp of the input file to decide
+    f.write("nset " + str(n_set) + " ");
+    f.write("nmat " + str(n_cs) + " ")
+    f.write("nbc 2 nic 0 nltf 2")
     f.write("\n");
 
     # Write nodes
@@ -115,10 +124,13 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
         count += 1
         if element_set_name[:4] == "poly":
             mat_id += 1
-            f.write("IsoLE {} d 1.0 E {} nu {} tAlpha 0.\n".format(count, 250.e9, 0.3))
+            if mat_id == 1:
+                f.write("IsoLE {} d 1.0 E {} n {} tAlpha 0.\n".format(count, 209.e9, 0.31))
+            else:
+                f.write("IsoLE {} d 1.0 E {} n {} tAlpha 0.\n".format(count, 250.e9, 0.3))
         elif element_set_name[:5] == "cohes":
             mat_id += 1
-            f.write("IntMatIsoDamage {} kn {} ks {} ft {} gf {}\n".format(count, 1e5, 1e5, 1e20, 1.))
+            f.write("IntMatIsoDamage {} kn {} ks {} ft {} gf {}\n".format(count, 12e19, 5.2e19, 23e9, 1.))
     f.write("######### Boundary conditions here\n")
     f.write("BoundaryCondition 1 loadTimeFunction 1 values 3 0. 0. 0. dofs 3 1 2 3 set 0\n")
     f.write("BoundaryCondition 2 loadTimeFunction 2 values 3 0. 0. 1. dofs 3 1 2 3 set 0\n")
