@@ -130,10 +130,13 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
                 f.write("IsoLE {} d 1.0 E {:.5e} n {} tAlpha 0.\n".format(count, 250.e9, 0.3))
         elif element_set_name[:5] == "cohes":
             mat_id += 1
-            f.write("IntMatIsoDamage {} kn {} ks {} ft {} gf {}\n".format(count, 12e19, 5.2e19, 23e9, 1.))
+            f.write("IntMatIsoDamage {} kn {:e} ks {:e} ft {:e} gf {:e}\n".format(count, 12e19, 5.2e19, 23e9, 1.))
     f.write("######### Boundary conditions here\n")
-    f.write("BoundaryCondition 1 loadTimeFunction 1 values 3 0. 0. 0. dofs 3 1 2 3 set 0\n")
-    f.write("BoundaryCondition 2 loadTimeFunction 2 values 3 0. 0. 1. dofs 3 1 2 3 set 0\n")
+    disp_z = 0
+    for n in mesh.nodes.values():
+        disp_z = max(disp_z, n.z)
+    f.write("BoundaryCondition 1 loadTimeFunction 1 values 3 0. 0. 0. dofs 3 1 2 3 set {}\n".format(0))
+    f.write("BoundaryCondition 2 loadTimeFunction 2 values 3 0. 0. {:e} dofs 3 1 2 3 set {}\n".format(disp_z, 0))
     f.write("######### Load time functions here\n")
     f.write("ConstantFunction 1 f(t) 0.\n")
     f.write("PiecewiseLinFunction 2 npoints 2  f(t) 2 0. 1.   t 2 0. 1.\n")
