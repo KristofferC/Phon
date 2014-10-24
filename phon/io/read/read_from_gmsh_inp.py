@@ -80,19 +80,40 @@ def read_from_gmsh_inp(basename, ngrains, verbose=0):
 
 
 def _create_bc_sets(mesh):
+    min_coord = [0., 0., 0.]
     max_coord = [0., 0., 0.]
     for node in mesh.nodes.values():
         max_coord[0] = max(max_coord[0], node.x)
         max_coord[1] = max(max_coord[1], node.y)
         max_coord[2] = max(max_coord[2], node.z)
+        min_coord[0] = min(min_coord[0], node.x)
+        min_coord[1] = min(min_coord[1], node.y)
+        min_coord[2] = min(min_coord[2], node.z)
 
     mesh.node_sets["z0"] = NodeSet("z0")
     mesh.node_sets["z1"] = NodeSet("z1")
     for n_id, node in mesh.nodes.items():
-        if node.z <= 1e-6:
+        if node.z <= min_coord[2] + 1e-6:
             mesh.node_sets["z0"].ids.append(n_id)
         elif node.z >= max_coord[2] - 1e-6:
             mesh.node_sets["z1"].ids.append(n_id)
+
+    mesh.element_side_sets["surface"] = ElementSideSet("surface")
+    surf_ids = [[0, 2, 1], [0, 1, 3], [1, 2, 3], [0, 3, 2]]
+    for e_id, elem in mesh.elements.items():
+        v = elem.vertices
+        if len(v) < 4:
+            continue
+        for s_id, s in enumerate(surf_ids):
+            ns = [mesh.nodes[v[x]] for x in s]
+            ax = all([n.x <= min_coord[0] + 1e-6 for n in ns])
+            ay = all([n.y <= min_coord[1] + 1e-6 for n in ns])
+            az = all([n.z <= min_coord[2] + 1e-6 for n in ns])
+            bx = all([n.x >= max_coord[0] - 1e-6 for n in ns])
+            by = all([n.y >= max_coord[1] - 1e-6 for n in ns])
+            bz = all([n.z >= max_coord[2] - 1e-6 for n in ns])
+            if any([ax, ay, az, bx, by, bz]):
+                mesh.element_side_sets["surface"].sides.append(ElementSide(e_id, s_id+1))
 
 
 def _construct_node2element(mesh):
@@ -118,11 +139,11 @@ def _merge_mesh(mesh, elem2grain, grainmesh, grainid):
     if len(mesh.elements) > 0:
         elemcount = max(mesh.elements.keys())
 
-    surf_ids = [[0, 1, 3], [0,2,1], [0,3,2], [1,2,3]]
+    surf_ids = [[0, 2, 1], [0, 1, 3], [1, 2, 3], [0, 3, 2]]
     # Find only elements in grainmesh that should have a matching surface;
     for e1, elem1 in grainmesh.elements.items():
-        v1 = elem1.vertices # Nodes numbers in "grainmesh"
-        v2 = [node2node[v] for v in v1] # Node numbers in "mesh"
+        v1 = elem1.vertices  # Nodes numbers in "grainmesh"
+        v2 = [node2node[v] for v in v1]  # Node numbers in "mesh"
 
         # Check for surfaces, and if so, add them to a set
         # Right now, I just add triangular elements.

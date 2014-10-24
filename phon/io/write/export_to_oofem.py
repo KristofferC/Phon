@@ -84,7 +84,7 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
     # Write nodes
     for node_id, node in mesh.nodes.items():
         f.write("node {0:d} ".format(node_id))
-        f.write("coords 3 {0:.12e} {1:.12e} {2:.12e} ".format(node.x, node.y, node.z))
+        f.write("coords 3 {:.12e} {:.12e} {:.12e} ".format(node.x, node.y, node.z))
         f.write("\n")
 
     #  Elements
@@ -125,9 +125,9 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
         if element_set_name[:4] == "poly":
             mat_id += 1
             if mat_id == 1:
-                f.write("IsoLE {} d 1.0 E {} n {} tAlpha 0.\n".format(count, 209.e9, 0.31))
+                f.write("IsoLE {} d 1.0 E {:.5e} n {} tAlpha 0.\n".format(count, 209.e9, 0.31))
             else:
-                f.write("IsoLE {} d 1.0 E {} n {} tAlpha 0.\n".format(count, 250.e9, 0.3))
+                f.write("IsoLE {} d 1.0 E {:.5e} n {} tAlpha 0.\n".format(count, 250.e9, 0.3))
         elif element_set_name[:5] == "cohes":
             mat_id += 1
             f.write("IntMatIsoDamage {} kn {} ks {} ft {} gf {}\n".format(count, 12e19, 5.2e19, 23e9, 1.))
@@ -154,8 +154,8 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
     for side_set_name, side_set in mesh.element_side_sets.items():
         set_id += 1
         f.write("# " + side_set_name)
-        f.write("\nSet {} elementsides {} ".format(str(set_id), str(2*len(side_set.sides))))
-        f.write(''.join('{} {}'.format(k.elem, k.side) for k in side_set.sides)[:-1])
+        f.write("\nSet {} elementboundaries {} ".format(str(set_id), str(2*len(side_set.sides))))
+        f.write(''.join('{} {}  '.format(k.elem, k.side) for k in side_set.sides)[:-1])
         f.write("\n")
 
     # Node sets

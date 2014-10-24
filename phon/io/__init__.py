@@ -34,13 +34,13 @@ element_dictionary = {("CPE3", "abaqus"): "CPE3",
                       ("C3D10", "abaqus"): "C3D10",
                       ("C3D10", "oofem"): "QTRSpace",
                       ("COH3D6", "abaqus"): "COH3D6",
-                      ("COH3D6", "oofem"): "Interface3dtrlin",
+                      ("COH3D6", "oofem"): "IntElSurfTr1",
                       ("STRI65", "abaqus"): "STRI65",
                       ("STRI65", "oofem"): "tr2shell7",
                       ("CPS4R", "abaqus"): "CPS4R",
                       ("CPS4R", "oofem"): "tr2shell7",
                       ("COH3D12", "abaqus"): "COH3D12",
-                      ("COH3D12", "oofem"): "Interface3dtrquad"}
+                      ("COH3D12", "oofem"): "IntElSurfTr2"}
 
 # Translates between (external_name, software) to internal_name.
 element_dictionary_inverse = {("CPE3", "abaqus"): "CPE3",
@@ -52,13 +52,13 @@ element_dictionary_inverse = {("CPE3", "abaqus"): "CPE3",
                               ("C3D10", "abaqus"): "C3D10",
                               ("QTRSpace", "oofem"): "C3D10",
                               ("COH3D6", "abaqus"): "COH3D6",
-                              ("Interface3dtrlin", "oofem"): "COH3D6",
+                              ("IntElSurfTr1", "oofem"): "COH3D6",
                               ("STRI65", "abaqus"): "STRI65",
                               ("tr2shell7", "oofem"): "STRI65",
                               ("CPS4R", "abaqus"): "CPS4R",
                               ("tr2shell7", "oofem"): "CPS4R",
                               ("COH3D12", "abaqus"): "COH3D12",
-                              ("Interface3dtrquad", "oofem"): "COH3D12"}
+                              ("IntElSurfTr2", "oofem"): "COH3D12"}
 
 # Dimension of elements.
 elements_2d = ["CPE3", "STRI65", "CPS4R", "CPE6"]
