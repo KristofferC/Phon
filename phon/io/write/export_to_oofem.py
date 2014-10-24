@@ -93,17 +93,38 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
 
     # Crosssections
     cs_id = 0
+    count = 0
     for element_set_name, element_set in mesh.element_sets.items():
+        if (write_2d_elements is False) and (element_set.dimension == 2):
+            continue
+        count += 1
         if element_set_name[:4] == "poly":
             cs_id += 1
-            f.write("SimpleCS {} material {} set {}\n".format(str(cs_id), str(cs_id), element_set_name[4:]))
-        elif element_set_name[:4] == "coh":
+            f.write("SimpleCS {} material {} set {}\n".format(str(cs_id), str(cs_id), count))
+        elif element_set_name[:5] == "cohes":
             cs_id += 1
-            f.write("InterfaceCS {} material {} set {}\n".format(str(cs_id), str(cs_id), element_set_name[4:]))
+            f.write("InterfaceCS {} material {} set {}\n".format(str(cs_id), str(cs_id), count))
 
+    # Materials
     f.write("######### Materials here\n")
+    mat_id = 0
+    count = 0
+    for element_set_name, element_set in mesh.element_sets.items():
+        if (write_2d_elements is False) and (element_set.dimension == 2):
+            continue
+        count += 1
+        if element_set_name[:4] == "poly":
+            mat_id += 1
+            f.write("IsoLE {} d 1.0 E {} nu {} tAlpha 0.\n".format(count, 250.e9, 0.3))
+        elif element_set_name[:5] == "cohes":
+            mat_id += 1
+            f.write("IntMatIsoDamage {} kn {} ks {} ft {} gf {}\n".format(count, 1e5, 1e5, 1e20, 1.))
     f.write("######### Boundary conditions here\n")
+    f.write("BoundaryCondition 1 loadTimeFunction 1 values 3 0. 0. 0. dofs 3 1 2 3 set 0\n")
+    f.write("BoundaryCondition 2 loadTimeFunction 2 values 3 0. 0. 1. dofs 3 1 2 3 set 0\n")
     f.write("######### Load time functions here\n")
+    f.write("ConstantFunction 1 f(t) 0.\n")
+    f.write("PiecewiseLinFunction 2 npoints 2  f(t) 2 0. 1.   t 2 0. 1.\n")
 
     # Sets
     set_id = 0
