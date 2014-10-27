@@ -90,14 +90,14 @@ def _create_bc_sets(mesh):
         min_coord[1] = min(min_coord[1], node.y)
         min_coord[2] = min(min_coord[2], node.z)
 
-    mesh.node_sets["z0"] = NodeSet("z0")
-    mesh.node_sets["z1"] = NodeSet("z1")
-    for n_id, node in mesh.nodes.items():
-        if node.z <= min_coord[2] + 1e-6:
-            mesh.node_sets["z0"].ids.append(n_id)
-        elif node.z >= max_coord[2] - 1e-6:
-            mesh.node_sets["z1"].ids.append(n_id)
+    mesh.node_sets["x0y0z0"] = NodeSet("x0y0z0")
+    for n_id, n in mesh.nodes.items():
+        if n.x <= min_coord[0] + 1e-6 and n.y <= min_coord[0] + 1e-6:
+            mesh.node_sets["x0y0z0"].ids.append(n_id)
+            break
 
+    mesh.element_side_sets["z0"] = ElementSideSet("z0")
+    mesh.element_side_sets["z1"] = ElementSideSet("z1")
     mesh.element_side_sets["surface"] = ElementSideSet("surface")
     surf_ids = [[0, 2, 1], [0, 1, 3], [1, 2, 3], [0, 3, 2]]
     for e_id, elem in mesh.elements.items():
@@ -114,6 +114,10 @@ def _create_bc_sets(mesh):
             bz = all([n.z >= max_coord[2] - 1e-6 for n in ns])
             if any([ax, ay, az, bx, by, bz]):
                 mesh.element_side_sets["surface"].sides.append(ElementSide(e_id, s_id+1))
+            if az:
+                mesh.element_side_sets["z0"].sides.append(ElementSide(e_id, s_id+1))
+            elif bz:
+                mesh.element_side_sets["z1"].sides.append(ElementSide(e_id, s_id+1))
 
 
 def _construct_node2element(mesh):
