@@ -36,6 +36,8 @@ from phon.mesh_objects.element_side_set import ElementSideSet
 from phon.mesh_objects.element_side_set import ElementSide
 from phon.mesh_objects.node_set import NodeSet
 
+from phon.mesh_tools.octree import Octree
+
 import numpy.linalg
 
 
@@ -195,21 +197,24 @@ def _find_duplicate_nodes(mesh, grainmesh):
     if len(mesh.nodes) > 0:
         nodecount = max(mesh.nodes.keys())
 
+    node_tree = Octree(3)  # For faster spatial lookup
+    for node_id2, node2 in mesh.nodes.items():
+        node_tree.insert(node_id2, numpy.array([node2.x, node2.y, node2.z]))
+
     node_merge_list = dict()
     node2node = dict()
     for node_id1, node1 in grainmesh.nodes.items():
+        coord = numpy.array([node1.x, node1.y, node1.z])  # TODO Make node coords numpy arrays
+        nodes_id2 = node_tree.get_objects_within(coord - 1e-5, coord + 1e-5)
         found = False
-        for node_id2, node2 in mesh.nodes.items():
-            dist = numpy.linalg.norm([node1.x - node2.x, node1.y - node2.y, node1.z - node2.z])
-            if dist < 1e-6:
-                node_merge_list[node_id1] = node_id2
+        for n_id, n_coord in nodes_id2:
+            if numpy.linalg.norm(n_coord - coord) < 1e-6:
                 found = True
-                break
-        if found:
-            node2node[node_id1] = node_merge_list[node_id1]
-        else:
+                node2node[node_id1] = node_merge_list[node_id1] = n_id
+        if not found:
             nodecount += 1
             node2node[node_id1] = nodecount
+
     return node2node, node_merge_list
 
 
