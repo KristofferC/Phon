@@ -130,7 +130,7 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
                 f.write("IsoLE {} d 1.0 E {:.5e} n {} tAlpha 0.\n".format(count, 250.e9, 0.3))
         elif element_set_name[:5] == "cohes":
             mat_id += 1
-            f.write("IntMatIsoDamage {} kn {:e} ks {:e} ft {:e} gf {:e}\n".format(count, 12e19, 5.2e19, 23e9, 1.))
+            f.write("IntMatIsoDamage {} kn {:e} ks {:e} ft {:e} gf {:e}\n".format(count, 12e19, 5.2e19, 23e9, 15.))
     f.write("######### Boundary conditions here\n")
     disp_z = 0
     for n in mesh.nodes.values():

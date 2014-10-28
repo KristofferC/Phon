@@ -94,6 +94,16 @@ def export_to_abaqus(filename, mesh, write_2d_elements=False, f=None):
         f.write("\n*Nset, nset=" + node_set_name + "\n")
         write_column_broken_array(node_set.ids, f)
 
+    # Surfacecd p sets
+    for element_side_name, element_side_set in mesh.element_side_sets.items():
+        f.write("\n*SURFACE, type=Element, NAME=" + element_side_name + "\n")
+        for element_side in element_side_set.sides:
+            # Tet side order:
+            # [[0, 2, 1], [0, 1, 3], [1, 2, 3], [0, 3, 2]]
+            # 1,2,3     1, 2, 4,    2, 3, 4,    1, 4, 3
+            # Seems to match with the def. in abq, so here we go:
+            f.write("{}, S{}\n".format(element_side.elem, element_side.side))
+
     f.write("*End Part")
     f.close()
 
