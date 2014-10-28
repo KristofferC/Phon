@@ -80,8 +80,8 @@ def create_cohesive_elements(mesh):
             original_node = mesh.nodes[node_id]
             new_node_id_1 = node_id + n_nodes * grain_id_1
             new_node_id_2 = node_id + n_nodes * grain_id_2
-            mesh.nodes[new_node_id_1] = Node(original_node.x, original_node.y, original_node.z)
-            mesh.nodes[new_node_id_2] = Node(original_node.x, original_node.y, original_node.z)
+            mesh.nodes[new_node_id_1] = Node(original_node.c)
+            mesh.nodes[new_node_id_2] = Node(original_node.c)
 
             # Reconnect the tetrahedron with a vertex in the node that is being duplicated
             # to one of the new nodes.
@@ -181,11 +181,7 @@ def _calculate_normal(mesh, node_id_1, node_id_2, node_id_3):
     node_2 = mesh.nodes[node_id_2]
     node_3 = mesh.nodes[node_id_3]
 
-    point_1 = np.array([node_1.x, node_1.y, node_1.z])
-    point_2 = np.array([node_2.x, node_2.y, node_2.z])
-    point_3 = np.array([node_3.x, node_3.y, node_3.z])
-
-    crs = np.cross(point_2 - point_1, point_3 - point_1)
+    crs = np.cross(node_2.c - node_1.c, node_3.c - node_1.c)
     return crs / np.linalg.norm(crs)
 
 

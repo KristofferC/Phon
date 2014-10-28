@@ -60,7 +60,7 @@ def export_to_abaqus(filename, mesh, write_2d_elements=False, f=None):
     f.write('\n*Node\n')
     for node_id, node in mesh.nodes.items():
         f.write("{0:d}, ".format(node_id))
-        f.write("{0:.12e}, {1:.12e}, {2:.12e}\n".format(node.x, node.y, node.z))
+        f.write("{0:.12e}, {1:.12e}, {2:.12e}\n".format(node.c[0], node.c[1], node.c[2]))
 
     # Recreate element indices
     element_indices = defaultdict(lambda:[],OrderedDict())

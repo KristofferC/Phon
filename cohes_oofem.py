@@ -20,9 +20,7 @@ mesh.renumber_nodes()
 
 # Rescale the RVE:
 for node_id, node in mesh.nodes.items():
-    node.x *= scale
-    node.y *= scale
-    node.z *= scale
+    node.c *= scale
 
 export_to_oofem("n10-id1_coh.in", mesh, False)
 export_to_abaqus("n10-id1_coh.inp", mesh, False)

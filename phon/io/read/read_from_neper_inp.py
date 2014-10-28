@@ -36,6 +36,7 @@ from phon.mesh_objects.element_side_set import ElementSideSet
 from phon.mesh_objects.element_side_set import ElementSide
 from phon.mesh_objects.node_set import NodeSet
 
+import numpy
 
 def read_from_neper_inp(filename, verbose=0):
     """
@@ -190,7 +191,7 @@ def _read_nodes(f, mesh, verbose):
         if verbose == 1:
             print ("\rReading nodes, %d nodes read" % num_nodes),
         node_numbers = [to_number(x) for x in line.strip().split(',')]
-        node = Node(*node_numbers[1:])
+        node = Node(numpy.array(node_numbers[1:]))
         mesh.nodes[node_numbers[0]] = node
         if verbose == 2:
             print ("Read {0}.\n".format(node))

@@ -84,7 +84,7 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
     # Write nodes
     for node_id, node in mesh.nodes.items():
         f.write("node {0:d} ".format(node_id))
-        f.write("coords 3 {:.12e} {:.12e} {:.12e} ".format(node.x, node.y, node.z))
+        f.write("coords 3 {:.12e} {:.12e} {:.12e} ".format(node.c[0], node.c[1], node.c[2]))
         f.write("\n")
 
     #  Elements
@@ -134,7 +134,7 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
     f.write("######### Boundary conditions here\n")
     disp_z = 0
     for n in mesh.nodes.values():
-        disp_z = max(disp_z, n.z)
+        disp_z = max(disp_z, n.c[2])
     f.write("BoundaryCondition 1 loadTimeFunction 1 values 3 0. 0. 0. dofs 3 1 2 3 set {}\n".format(0))
     f.write("BoundaryCondition 2 loadTimeFunction 2 values 3 0. 0. {:e} dofs 3 1 2 3 set {}\n".format(disp_z, 0))
     f.write("######### Load time functions here\n")

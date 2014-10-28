@@ -82,28 +82,24 @@ def read_from_gmsh_inp(basename, ngrains, verbose=0):
 
 
 def _create_bc_sets(mesh):
-    min_coord = [0., 0., 0.]
-    max_coord = [0., 0., 0.]
+    min_coord = numpy.zeros(3)
+    max_coord = numpy.zeros(3)
     for node in mesh.nodes.values():
-        max_coord[0] = max(max_coord[0], node.x)
-        max_coord[1] = max(max_coord[1], node.y)
-        max_coord[2] = max(max_coord[2], node.z)
-        min_coord[0] = min(min_coord[0], node.x)
-        min_coord[1] = min(min_coord[1], node.y)
-        min_coord[2] = min(min_coord[2], node.z)
+        max_coord = numpy.maximum(max_coord, node.c)
+        min_coord = numpy.minimum(min_coord, node.c)
 
     mesh.node_sets["x0y0z0"] = NodeSet("x0y0z0")
     mesh.node_sets["x0y1z0"] = NodeSet("x0y1z0")
     mesh.node_sets["n_z0"] = NodeSet("n_z0")
     mesh.node_sets["n_z1"] = NodeSet("n_z1")
     for n_id, n in mesh.nodes.items():
-        if n.x <= min_coord[0] + 1e-6 and n.y <= min_coord[1] + 1e-6 and n.z <= min_coord[2] + 1e-6:
+        if n.c[0] <= min_coord[0] + 1e-6 and n.c[1] <= min_coord[1] + 1e-6 and n.c[2] <= min_coord[2] + 1e-6:
             mesh.node_sets["x0y0z0"].ids.append(n_id)
-        if n.x <= min_coord[0] + 1e-6 and n.y >= max_coord[1] - 1e-6 and n.z <= min_coord[2] + 1e-6:
+        if n.c[0] <= min_coord[0] + 1e-6 and n.c[1] >= max_coord[1] - 1e-6 and n.c[2] <= min_coord[2] + 1e-6:
             mesh.node_sets["x0y1z0"].ids.append(n_id)
-        if n.z >= max_coord[2] - 1e-6:
+        if n.c[2] >= max_coord[2] - 1e-6:
             mesh.node_sets["n_z1"].ids.append(n_id)
-        if n.z <= min_coord[2] + 1e-6:
+        if n.c[2] <= min_coord[2] + 1e-6:
             mesh.node_sets["n_z0"].ids.append(n_id)
 
     mesh.element_side_sets["z0"] = ElementSideSet("z0")
@@ -116,12 +112,12 @@ def _create_bc_sets(mesh):
             continue
         for s_id, s in enumerate(surf_ids):
             ns = [mesh.nodes[v[x]] for x in s]
-            ax = all([n.x <= min_coord[0] + 1e-6 for n in ns])
-            ay = all([n.y <= min_coord[1] + 1e-6 for n in ns])
-            az = all([n.z <= min_coord[2] + 1e-6 for n in ns])
-            bx = all([n.x >= max_coord[0] - 1e-6 for n in ns])
-            by = all([n.y >= max_coord[1] - 1e-6 for n in ns])
-            bz = all([n.z >= max_coord[2] - 1e-6 for n in ns])
+            ax = all([n.c[0] <= min_coord[0] + 1e-6 for n in ns])
+            ay = all([n.c[1] <= min_coord[1] + 1e-6 for n in ns])
+            az = all([n.c[2] <= min_coord[2] + 1e-6 for n in ns])
+            bx = all([n.c[0] >= max_coord[0] - 1e-6 for n in ns])
+            by = all([n.c[1] >= max_coord[1] - 1e-6 for n in ns])
+            bz = all([n.c[2] >= max_coord[2] - 1e-6 for n in ns])
             if any([ax, ay, az, bx, by, bz]):
                 mesh.element_side_sets["surface"].sides.append(ElementSide(e_id, s_id+1))
             if az:
@@ -199,12 +195,12 @@ def _find_duplicate_nodes(mesh, grainmesh):
 
     node_tree = Octree(3)  # For faster spatial lookup
     for node_id2, node2 in mesh.nodes.items():
-        node_tree.insert(node_id2, numpy.array([node2.x, node2.y, node2.z]))
+        node_tree.insert(node_id2, node2.c)
 
     node_merge_list = dict()
     node2node = dict()
     for node_id1, node1 in grainmesh.nodes.items():
-        coord = numpy.array([node1.x, node1.y, node1.z])  # TODO Make node coords numpy arrays
+        coord = node1.c
         nodes_id2 = node_tree.get_objects_within(coord - 1e-5, coord + 1e-5)
         found = False
         for n_id, n_coord in nodes_id2:
@@ -228,7 +224,7 @@ def _read_nodes(f, mesh):
         words = line.split()
         num = int(words[0])
         coord = list(map(float, words[1:]))
-        node = Node(*coord)
+        node = Node(numpy.array(coord))
         mesh.nodes[num] = node
 
 
