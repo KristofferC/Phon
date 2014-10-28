@@ -91,10 +91,18 @@ def _create_bc_sets(mesh):
         min_coord[2] = min(min_coord[2], node.z)
 
     mesh.node_sets["x0y0z0"] = NodeSet("x0y0z0")
+    mesh.node_sets["x0y1z0"] = NodeSet("x0y1z0")
+    mesh.node_sets["n_z0"] = NodeSet("n_z0")
+    mesh.node_sets["n_z1"] = NodeSet("n_z1")
     for n_id, n in mesh.nodes.items():
-        if n.x <= min_coord[0] + 1e-6 and n.y <= min_coord[0] + 1e-6:
+        if n.x <= min_coord[0] + 1e-6 and n.y <= min_coord[1] + 1e-6 and n.z <= min_coord[2] + 1e-6:
             mesh.node_sets["x0y0z0"].ids.append(n_id)
-            break
+        if n.x <= min_coord[0] + 1e-6 and n.y >= max_coord[1] - 1e-6 and n.z <= min_coord[2] + 1e-6:
+            mesh.node_sets["x0y1z0"].ids.append(n_id)
+        if n.z >= max_coord[2] - 1e-6:
+            mesh.node_sets["n_z1"].ids.append(n_id)
+        if n.z <= min_coord[2] + 1e-6:
+            mesh.node_sets["n_z0"].ids.append(n_id)
 
     mesh.element_side_sets["z0"] = ElementSideSet("z0")
     mesh.element_side_sets["z1"] = ElementSideSet("z1")
@@ -133,7 +141,7 @@ def _construct_node2element(mesh):
 def _merge_mesh(mesh, elem2grain, grainmesh, grainid):
     # Create element sets for all potential faces:
     for i in range(1, grainid):
-        mesh.element_sets["face"+ str(i) + "_" + str(grainid)] = ElementSet("face"+ str(i) + "_" + str(grainid), 2)
+        mesh.element_sets["face" + str(i) + "_" + str(grainid)] = ElementSet("face"+ str(i) + "_" + str(grainid), 2)
 
     node2node, node_merge_list = _find_duplicate_nodes(mesh, grainmesh)
 
