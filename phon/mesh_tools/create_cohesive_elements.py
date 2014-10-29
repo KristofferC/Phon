@@ -263,34 +263,6 @@ def get_node_id_grain_lut(mesh):
     return d
 
 
-def get_grains_containing_node_id(mesh, node_id, original_n_nodes):
-    """
-    This function finds all the grains that contain the
-    node with node identifier node_id.
-
-    :param mesh: The mesh
-    :type: mesh: :class:`Mesh`
-    :param node_id: The identifier of the node
-    :type node_id: int
-    :param original_n_nodes: The number of nodes in the mesh before any duplication
-                             of nodes has taken place.
-    :type original_n_nodes: int
-    """
-
-    grain_ids_with_node_id = []
-
-    for element_set_name, element_set in mesh.element_sets.items():
-        if not element_set_name[0:4] == "poly":
-            continue
-        for element_id in element_set.ids:
-            vert_mod = [x % original_n_nodes for x in mesh.elements[element_id].vertices]
-            if node_id in vert_mod:
-                grain_ids_with_node_id.append(int(element_set_name[4:]))
-                break
-    grain_ids_with_node_id = list(set(grain_ids_with_node_id))
-    return grain_ids_with_node_id
-
-
 def get_tetra_in_grain_containing_triangle(mesh, cohesive, grain):
     """
     Find the tetrahedron that contains the triangle and sits in the
