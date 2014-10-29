@@ -127,7 +127,7 @@ def create_cohesive_elements(mesh):
                 norm_tetra = _calculate_normal(mesh, tetra.vertices[1], tetra.vertices[2], tetra.vertices[3])
 
             norm_cohes = _calculate_normal(mesh, cohesive_element.vertices[0], cohesive_element.vertices[1],
-                                        cohesive_element.vertices[2])
+                                           cohesive_element.vertices[2])
 
             # Normals are in opposite direction -> flip element
             if np.dot(norm_tetra, norm_cohes) < 0:
@@ -222,9 +222,6 @@ def get_grains_connected_to_face(mesh, face_set, node_id_grain_lut):
     :type mesh: :class:`Mesh`
     :param face_set: The face set to find grains connected to
     :type: face_set: :class:`ElementSet`
-    :param node_id_grain_LUT: Lookup table to find what grains contain
-                              what nodes.
-    :type node_id_grain_LUT: defaultdict
     :return: The grain identifiers that intersect the face.
     :rtype: list of ints
     """
@@ -293,6 +290,7 @@ def get_grains_containing_node_id(mesh, node_id, original_n_nodes):
     grain_ids_with_node_id = list(set(grain_ids_with_node_id))
     return grain_ids_with_node_id
 
+
 def get_tetra_in_grain_containing_triangle(mesh, cohesive, grain):
     """
     Find the tetrahedron that contains the triangle and sits in the
@@ -305,7 +303,6 @@ def get_tetra_in_grain_containing_triangle(mesh, cohesive, grain):
         element = mesh.elements[element_id]
         if all(nodes in element.vertices for nodes in cohesive.vertices[0:3]):
             return element_id, element
-
 
 
 def get_tetra_and_grain_with_node_id(mesh, node_id, grain_id_1, grain_id_2):
