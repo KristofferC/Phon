@@ -11,14 +11,14 @@ setup(name='phon',
       download_url='https://github.com/KristofferC/phon',
       description='Insertion of cohesive elements between polyhedral grains',
       long_description=open('README.rst').read(),
-      packages=['phon', 'phon.io', 'phon.mesh_objects', 'phon.mesh_tools'],
+      packages=['phon', 'phon.io', 'phon.io.read','phon.io.write',
+                'phon.mesh_objects', 'phon.mesh_tools'],
       keywords='neper voronoi mesh cohesive oofem polycrystalline',
       license='The MIT License (MIT)',
-      classifiers=['Development Status :: 2 - Pre-Alpha',
+      classifiers=['Development Status :: 4 - Beta',
                    'Intended Audience :: Developers',
                    'Natural Language :: English',
                    'Operating System :: OS Independent',
                    'Programming Language :: Python :: 2',
-                   'Topic :: Scientific/Engineering :: GIS'],
-      install_requires=['Numpy']
+                   'Topic :: Scientific/Engineering :: GIS']
       )
