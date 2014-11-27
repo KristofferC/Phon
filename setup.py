@@ -6,7 +6,7 @@ sys.path.append('phon')
 setup(name='phon',
       version='0.1.0',
       author='Kristoffer Carlsson',
-      author_email='kcarlsson89@gmail.com',
+      author_email='kristoffer.carlsson@chalmers.se',
       url='https://github.com/KristofferC/phon',
       download_url='https://github.com/KristofferC/phon',
       description='Insertion of cohesive elements between polyhedral grains',
