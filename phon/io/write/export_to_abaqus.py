@@ -58,17 +58,17 @@ def export_to_abaqus(filename, mesh, write_2d_elements=False, f=None):
 
     # Write nodes
     f.write('\n*Node\n')
-    for node_id, node in mesh.nodes.iteritems():
+    for node_id, node in mesh.nodes.items():
         f.write("{0:d}, ".format(node_id))
-        f.write("{0:.12f}, {1:.12f}, {2:.12f}\n".format(node.x, node.y, node.z))
+        f.write("{0:.12e}, {1:.12e}, {2:.12e}\n".format(node.c[0], node.c[1], node.c[2]))
 
     # Recreate element indices
     element_indices = defaultdict(lambda:[],OrderedDict())
-    for i, element in mesh.elements.iteritems():
+    for i, element in mesh.elements.items():
         element_indices[element.elem_type].append(i)
 
     # Elements
-    for element_type, elements in element_indices.iteritems():
+    for element_type, elements in element_indices.items():
         if ((write_2d_elements is False) and
                 (element_dictionary_inverse[(element_type, "abaqus")] in elements_2d)):
             continue
@@ -82,7 +82,7 @@ def export_to_abaqus(filename, mesh, write_2d_elements=False, f=None):
             f.write("\n")
 
     # Element sets
-    for element_set_name, element_set in mesh.element_sets.iteritems():
+    for element_set_name, element_set in mesh.element_sets.items():
         if ((write_2d_elements is False) and
                 (mesh.element_sets[element_set_name].dimension == 2)):
             continue
@@ -90,9 +90,19 @@ def export_to_abaqus(filename, mesh, write_2d_elements=False, f=None):
         write_column_broken_array(element_set.ids, f)
 
     # Node sets
-    for node_set_name, node_set in mesh.node_sets.iteritems():
+    for node_set_name, node_set in mesh.node_sets.items():
         f.write("\n*Nset, nset=" + node_set_name + "\n")
         write_column_broken_array(node_set.ids, f)
+
+    # Surfacecd p sets
+    for element_side_name, element_side_set in mesh.element_side_sets.items():
+        f.write("\n*SURFACE, type=Element, NAME=" + element_side_name + "\n")
+        for element_side in element_side_set.sides:
+            # Tet side order:
+            # [[0, 2, 1], [0, 1, 3], [1, 2, 3], [0, 3, 2]]
+            # 1,2,3     1, 2, 4,    2, 3, 4,    1, 4, 3
+            # Seems to match with the def. in abq, so here we go:
+            f.write("{}, S{}\n".format(element_side.elem, element_side.side))
 
     f.write("*End Part")
     f.close()

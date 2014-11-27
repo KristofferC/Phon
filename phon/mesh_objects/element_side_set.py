@@ -20,25 +20,34 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
+class ElementSide:
+    def __init__(self, elemnum, sidenum):
+        self.elem = elemnum
+        self.side = sidenum
 
-class Node:
-    """ Represents a node."""
+    def __str__(self):
+         return ("Side {} of element {}".format(self.side, self.elem))
 
-    def __init__(self, c):
+class ElementSideSet:
+    """ Represents a set of element sides """
+
+    def __init__(self, name):
         """
-        :param c: The coordinates
-        :type x: numpy array
-
+        :param name: Name of the set.
+        :type name: str
+        :param dimension: The dimension of the elements in the set
         """
-        self.c = c
+        self.name = name
+        self.sides = []
 
     def __str__(self):
         """
-        Returns a string representation of the node.
+        Returns a string representation of the element set.
 
-        :return: The string representation.
+        :return: The string representation
         :rtype: str
 
         """
-        return "Node located at (%f, %f, %f):" % (self.c[0], self.c[1], self.c[2])
+        return ("Element side set with name {0} containing elements with the "
+                "following ids {1}".format(self.name, self.sides))
 
