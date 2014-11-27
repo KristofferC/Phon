@@ -28,6 +28,12 @@ Element sets
 .. automodule:: phon.mesh_objects.element_set
     :members:
 
+.. _element_side_sets:
+Element side sets
+============
+.. automodule:: phon.mesh_objects.element_side_set
+    :members:
+
 .. _node_sets:
 Node sets
 =========

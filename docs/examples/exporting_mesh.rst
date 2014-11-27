@@ -35,13 +35,6 @@ A mesh object can be exported to OOFEM as follows::
 The generated file only contains the parts of the file relevant to the mesh. The rest of the
 analysis records must be manually added in order to perform analyses.
 
-.. figure:: ..\figures\oofem.png
-    :width: 800
-    :align: center
-
-    Resulting stress in a crystal plasticity model exposed to uniaxial tensilie loading,
-    analyzed in OOFEM.
-
 
 .. _OOFEM: http://www.oofem.org/en/oofem.html
 .. _Abaqus: http://www.3ds.com/products/simulia/portfolio/abaqus/
