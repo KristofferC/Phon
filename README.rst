@@ -10,9 +10,6 @@ features:
 * Can insert cohesive elements between grains in a Voronoi tessellated mesh.
 * Can currently export the mesh to formats readable by Abaqus and OOFEM.
 
-Phon is a very recent project and is therefore being changed and updated frequently. No regards
-are taken to keep any backwards compatibility.
-
 Documentation
 =============
 Documentation can either be built from source or found
