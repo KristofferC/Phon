@@ -17,9 +17,8 @@ at http://web.student.chalmers.se/~kricarl/phon/_build/html/.
 
 Contact Information
 ====================
-Author: Kristoffer Carlsson
-
-E-mail: kristoffer.carlsson@chalmers.se
+Kristoffer Carlsson - kristoffer.carlsson@chalmers.se
+Mikael Öhman
 
 Copyright and Licensing
 =======================
