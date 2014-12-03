@@ -40,7 +40,7 @@ def create_matrix(mesh, thickness):
 
     """
 
-    print("create_matris is EXPERIMENTAL!")
+    print("create_matrix is EXPERIMENTAL!")
 
     corner_sets = ["x0y0z0", "x0y0z1", "x0y1z0", "x0y1z1",
                    "x1y0z0", "x1y0z1", "x1y1z0", "x1y1z1"]
