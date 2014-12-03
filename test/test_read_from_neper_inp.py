@@ -33,13 +33,13 @@ class Test(unittest.TestCase):
         self.mesh = read_from_neper_inp("n10-id1.inp", verbose = 0)
 
     def test_read_from_neper_inp(self):
-        """Test Phons reader for neper inp files."""
+        """Test Phons reader for Neper inp files."""
 
         # Test nodes
         self.assertEqual(len(self.mesh.nodes), 289)
-        self.assertTrue(self.mesh.nodes[287].x - 0.91031946481 < 10E-9)
-        self.assertTrue(self.mesh.nodes[1].y - 0.0 < 10E-9)
-        self.assertTrue(self.mesh.nodes[289].z - 0.886838138103 < 10E-9)
+        self.assertTrue(self.mesh.nodes[287].c[0] - 0.91031946481 < 10E-9)
+        self.assertTrue(self.mesh.nodes[1].c[1] - 0.0 < 10E-9)
+        self.assertTrue(self.mesh.nodes[289].c[2] - 0.886838138103 < 10E-9)
 
         # Test elements
         self.assertEqual(len(self.mesh.elements), 1683)

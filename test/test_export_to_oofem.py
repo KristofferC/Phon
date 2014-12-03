@@ -35,12 +35,11 @@ class Test(unittest.TestCase):
 
     def test_export_to_oofem(self):
         """Test Phons exporter for oofem files."""
-        export_to_oofem("test_file.oof", self.mesh, write_2d_elements=True)
+        export_to_oofem("test_file.in", self.mesh, write_2d_elements=True)
     
     def tearDown(self):
-        pass
-        #if os.path.isfile("test_file.inp"):
-        #    os.remove("test_file.inp")
+        if os.path.isfile("test_file.in"):
+            os.remove("test_file.in")
 
 if __name__ == "__main__":
     unittest.main()
