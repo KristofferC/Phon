@@ -37,6 +37,7 @@ class Mesh:
                  nodes=None,
                  elements=None,
                  element_sets=None,
+                 element_side_sets=None,
                  node_sets=None):
         """
         :param name: Name of the mesh.
@@ -47,6 +48,8 @@ class Mesh:
         :type elements: dict of format {element_id (int) : :class:`Element`}
         :param element_sets: Different element sets
         :type element_sets: dict of format {element_set (string) : [element_ids (int)]}
+        :param element_side_sets: Different element side sets
+        :type element_side_sets: dict of format {element_set (string) : [element_ids (int)]}
         :param node_sets:
         :type node_sets: dict of format {node_set (string) : [node_ids (int)]}
 
@@ -66,6 +69,10 @@ class Mesh:
             element_sets = OrderedDict()
         self.element_sets = element_sets
 
+        if element_side_sets is None:
+            element_side_sets = OrderedDict()
+        self.element_side_sets = element_side_sets
+
         if node_sets is None:
             node_sets = OrderedDict()
         self.node_sets = node_sets
@@ -82,6 +89,8 @@ class Mesh:
 
         """
 
+        raise("This method does not work reliably")
+
         # Create dictionary of old and renumbered node identifiers
         node_renumber_dict = {}
         new_nodes_dict = {}
@@ -92,15 +101,14 @@ class Mesh:
         self.nodes = new_nodes_dict
 
         # Update node identifiers in elements
-        for element_id, element in self.elements.iteritems():
-            # Don't reorder 2d elements for now.
-            if (element_dictionary_inverse[(element.elem_type, "abaqus")] in elements_2d):
+        for element_id, element in self.elements.items():
+             if (element_dictionary_inverse[(element.elem_type, "abaqus")] in elements_2d):
                 continue
-            for i, node_id in enumerate(element.vertices):
-                element.vertices[i] = node_renumber_dict[node_id]
+            #for i, node_id in enumerate(element.vertices):
+            #    element.vertices[i] = node_renumber_dict[node_id]
 
         # Update node identifiers in node sets
-        for node_set_name, node_set in self.node_sets.iteritems():
+        for node_set_name, node_set in self.node_sets.items():
             for i, node_id in enumerate(node_set.ids):
                 node_set.ids[i] = node_renumber_dict[node_id]
 

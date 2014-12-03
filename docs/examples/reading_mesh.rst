@@ -21,11 +21,6 @@ for information about the mesh. A few example follows here:
     >>> print len(mesh.nodes)
     289
 
-* The identifier of elements with a certain type::
-
-    >>> print mesh.element_indices["C3D4"]
-    [685, 686, 687, 688, ...]
-
 * A node set with a certain name::
 
     >>> print mesh.node_sets["x0y0"]

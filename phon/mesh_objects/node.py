@@ -24,19 +24,13 @@ THE SOFTWARE.
 class Node:
     """ Represents a node."""
 
-    def __init__(self, x, y=0, z=0):
+    def __init__(self, c):
         """
-        :param x: The x coordinate of the node.
-        :type x: float
-        :param y:  The x coordinate of the node.
-        :type y: float
-        :param z:  The x coordinate of the node.
-        :type z: float
+        :param c: The coordinates
+        :type x: numpy array
 
         """
-        self.x = x
-        self.y = y
-        self.z = z
+        self.c = c
 
     def __str__(self):
         """
@@ -46,5 +40,5 @@ class Node:
         :rtype: str
 
         """
-        return ("Node located at (%f, %f, %f):" % (self.x,
-                self.y, self.z))
+        return "Node located at (%f, %f, %f):" % (self.c[0], self.c[1], self.c[2])
+

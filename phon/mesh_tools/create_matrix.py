@@ -40,6 +40,8 @@ def create_matrix(mesh, thickness):
 
     """
 
+    print("create_matrix is EXPERIMENTAL!")
+
     corner_sets = ["x0y0z0", "x0y0z1", "x0y1z0", "x0y1z1",
                    "x1y0z0", "x1y0z1", "x1y1z0", "x1y1z1"]
 
@@ -110,8 +112,6 @@ def find_displacement_vector(mesh, node_id, corner_sets, edge_sets, face_sets, n
 
     for node_set_name in face_sets:
         if node_id in mesh.node_sets[node_set_name].ids:
-            if node_id == 2942:
-                print "hejj"
             return project_on_plane(node_set_name, normal_vec, thickness)
 
 

@@ -76,13 +76,12 @@ def create_cohesive_elements(mesh):
         mesh.element_sets[face_set_coh_name_2] = face_set_coh_2
 
         # For each node in face make two new at the same place
-        #print face_set.get_all_node_ids(mesh)
         for node_id in face_set.get_all_node_ids(mesh):
             original_node = mesh.nodes[node_id]
             new_node_id_1 = node_id + n_nodes * grain_id_1
             new_node_id_2 = node_id + n_nodes * grain_id_2
-            mesh.nodes[new_node_id_1] = Node(original_node.x, original_node.y, original_node.z)
-            mesh.nodes[new_node_id_2] = Node(original_node.x, original_node.y, original_node.z)
+            mesh.nodes[new_node_id_1] = Node(original_node.c)
+            mesh.nodes[new_node_id_2] = Node(original_node.c)
 
             # Reconnect the 3d element with vertices in the node that is being duplicated
             # to one of the new nodes.
@@ -144,8 +143,6 @@ def create_cohesive_elements(mesh):
 
 
 
-
-
             norm_cohes = _calculate_normal(mesh, cohesive_element.vertices[0], cohesive_element.vertices[1],
                                            cohesive_element.vertices[2])
 
@@ -176,7 +173,7 @@ def create_cohesive_elements(mesh):
             new_node_id_1 = node_id + n_nodes * grain_id_1
             new_node_id_2 = node_id + n_nodes * grain_id_2
 
-            for node_set_name, node_set in mesh.node_sets.iteritems():
+            for node_set_name, node_set in mesh.node_sets.items():
                 if node_id in node_set.ids:
                     node_set.ids.remove(node_id)
                     if node_id in mesh.nodes:
@@ -187,7 +184,7 @@ def create_cohesive_elements(mesh):
                         node_set.ids.extend([new_node_id_2])
 
     # Finish of with renumbering the nodes so the node ids are not spread out.
-    mesh.renumber_nodes()
+    #mesh.renumber_nodes()
 
 
 def _calculate_normal(mesh, node_id_1, node_id_2, node_id_3):
@@ -208,11 +205,7 @@ def _calculate_normal(mesh, node_id_1, node_id_2, node_id_3):
     node_2 = mesh.nodes[node_id_2]
     node_3 = mesh.nodes[node_id_3]
 
-    point_1 = np.array([node_1.x, node_1.y, node_1.z])
-    point_2 = np.array([node_2.x, node_2.y, node_2.z])
-    point_3 = np.array([node_3.x, node_3.y, node_3.z])
-
-    crs = np.cross(point_2 - point_1, point_3 - point_1)
+    crs = np.cross(node_2.c - node_1.c, node_3.c - node_1.c)
     return crs / np.linalg.norm(crs)
 
 
@@ -233,7 +226,7 @@ def get_nodes_in_all_face_sets(mesh):
     :rtype: list[ints]
     """
     nodes_in_face_sets = set()
-    for element_set_name, element_set in mesh.element_sets.iteritems():
+    for element_set_name, element_set in mesh.element_sets.items():
         if not element_set_name.startswith("face"):
             continue
         nodes_in_face_sets.add(element_set.get_all_node_ids(mesh))
@@ -253,14 +246,16 @@ def get_grains_connected_to_face(mesh, face_set, node_id_grain_lut):
     :type mesh: :class:`Mesh`
     :param face_set: The face set to find grains connected to
     :type: face_set: :class:`ElementSet`
-    :param node_id_grain_LUT: Lookup table to find what grains contain
-                              what nodes.
-    :type node_id_grain_LUT: defaultdict
     :return: The grain identifiers that intersect the face.
     :rtype: list of ints
     """
 
     grains_connected_to_face = []
+
+    grains = face_set.name[4:].split("_")
+    if len(grains) == 2:
+        return [int(g) for g in grains]
+
     triangle_element = mesh.elements[face_set.ids[0]]
 
     for node_id in triangle_element.vertices:
@@ -284,7 +279,7 @@ def get_node_id_grain_lut(mesh):
     :rtype: defaultdict
     """
     d = defaultdict(set)
-    for element_set_name, element_set in mesh.element_sets.iteritems():
+    for element_set_name, element_set in mesh.element_sets.items():
         if not element_set_name.startswith("poly"):
             continue
         for element_id in element_set.ids:
@@ -325,16 +320,12 @@ def get_grains_containing_node_id(mesh, node_id, original_n_nodes):
 
 def get_ele_in_grain_containing_face_ele(mesh, cohesive, grain):
     """
-    Find the three d element that contains the two d element and sits in the
+    Find the 3 d element that contains the 2d element and sits in the
     grain given as argument.
-
     """
-
-
 
     for element_id in mesh.element_sets["poly" + str(grain)].ids:
         element = mesh.elements[element_id]
-
 
         if all(nodes in element.vertices for nodes in cohesive.vertices[0:len(cohesive.vertices)/2]):
             return element_id, element
