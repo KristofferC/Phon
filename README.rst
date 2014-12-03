@@ -15,9 +15,10 @@ Documentation
 Documentation can either be built from source or found
 at http://web.student.chalmers.se/~kricarl/phon/_build/html/.
 
-Contact Information
+Authors
 ====================
 Kristoffer Carlsson - kristoffer.carlsson@chalmers.se
+
 Mikael Öhman
 
 Copyright and Licensing
