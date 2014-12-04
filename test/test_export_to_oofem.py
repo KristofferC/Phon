@@ -25,17 +25,26 @@ import os
 
 from phon.io.read.read_from_neper_inp import read_from_neper_inp
 from phon.io.write.export_to_oofem import export_to_oofem
+from phon.mesh_tools.create_cohesive_elements import create_cohesive_elements
+
+__location__ = os.path.realpath(
+    os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
 
 class Test(unittest.TestCase):
     """Unit tests for export_to_oofem."""
 
     def setUp(self):
-        self.mesh = read_from_neper_inp("n10-id1.inp")
+        self.mesh = read_from_neper_inp(os.path.join(__location__, "n10-id1.inp"))
 
     def test_export_to_oofem(self):
         """Test Phons exporter for oofem files."""
         export_to_oofem("test_file.in", self.mesh, write_2d_elements=True)
+        export_to_oofem("test_file.in", self.mesh, write_2d_elements=False)
+
+        create_cohesive_elements(self.mesh)
+        export_to_oofem("test_file.in", self.mesh, write_2d_elements=True)
+        export_to_oofem("test_file.in", self.mesh, write_2d_elements=False)
     
     def tearDown(self):
         if os.path.isfile("test_file.in"):
