@@ -24,7 +24,9 @@ THE SOFTWARE.
 # This stuff here need to be done in a better way...
 
 # Translates between (internal_name, "software) to external_name.
-element_dictionary = {("CPE3", "abaqus"): "CPE3",
+element_dictionary = {("T3D2", "abaqus"): "T3D2",
+                      ("T3D2", "oofem"): "T3D2",
+                      ("CPE3", "abaqus"): "CPE3",
                       ("CPE3", "oofem"): "TrPlaneStress2d",
                       ("CPE6", "abaqus"): "CPE6",
                       ("CPE6", "oofem"): "QTrPlStr",
@@ -40,11 +42,15 @@ element_dictionary = {("CPE3", "abaqus"): "CPE3",
                       ("CPS4R", "oofem"): "tr2shell7",
                       ("C3D8", "abaqus"): "C3D8",
                       ("COH3D8", "abaqus"): "COH3D8",
+                      ("COH2D4", "abaqus"): "COH2D4",
+                      ("COH2D4", "oofem"): "COH2D4",
                       ("S4R", "abaqus"): "S4R",
                       ("COH3D12", "oofem"): "IntElSurfTr2"}
 
 # Translates between (external_name, software) to internal_name.
-element_dictionary_inverse = {("CPE3", "abaqus"): "CPE3",
+element_dictionary_inverse = {("T3D2", "abaqus"): "T3D2",
+                              ("T3D2", "oofem"): "T3D2",
+                              ("CPE3", "abaqus"): "CPE3",
                               ("TrPlaneStress2d", "oofem"): "CPE3",
                               ("CPE6", "abaqus"): "CPE6",
                               ("QTrPlStr", "oofem"): "CPE6",
@@ -61,9 +67,11 @@ element_dictionary_inverse = {("CPE3", "abaqus"): "CPE3",
                               ("COH3D12", "abaqus"): "COH3D12",
                               ("C3D8", "abaqus"): "C3D8",
                               ("COH3D8", "abaqus"): "COH3D8",
+                              ("COH2D4", "abaqus"): "COH2D4",
                               ("S4R", "abaqus"): "S4R",
                               ("IntElSurfTr2", "oofem"): "COH3D12"}
 
 # Dimension of elements.
-elements_2d = ["CPE3", "STRI65", "CPS4R", "CPE6", "S4R"]
+elements_1d = ["T3D2"]
+elements_2d = ["CPE3", "STRI65", "CPS4R", "CPE6", "S4R", "COH2D4"]
 elements_3d = ["C3D4", "C3D10", "C3D10", "COH3D6", "COH3D12", "COH3D8"]

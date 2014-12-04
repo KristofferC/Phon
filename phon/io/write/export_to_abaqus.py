@@ -31,6 +31,7 @@ from collections import OrderedDict
 from phon.mesh_objects.mesh import Mesh
 from phon.io import element_dictionary
 from phon.io import element_dictionary_inverse
+from phon.io import elements_1d
 from phon.io import elements_2d
 
 
@@ -49,6 +50,8 @@ def export_to_abaqus(filename, mesh, write_2d_elements=False, f=None):
               instead of opening a new one.
     :type f:  file object
     """
+
+    write_1d_elements = False
 
     if f is None:
         f = open(filename, 'w')
@@ -69,9 +72,15 @@ def export_to_abaqus(filename, mesh, write_2d_elements=False, f=None):
 
     # Elements
     for element_type, elements in element_indices.items():
+        
+        if ((write_1d_elements is False) and
+                (element_dictionary_inverse[(element_type, "abaqus")] in elements_1d)):
+            continue
+
         if ((write_2d_elements is False) and
                 (element_dictionary_inverse[(element_type, "abaqus")] in elements_2d)):
             continue
+
         element_name = element_dictionary[(element_type, "abaqus")]
         f.write("\n*Element, type=" + element_name + "\n")
         for element_id in elements:
@@ -83,9 +92,21 @@ def export_to_abaqus(filename, mesh, write_2d_elements=False, f=None):
 
     # Element sets
     for element_set_name, element_set in mesh.element_sets.items():
+
+        if ((write_1d_elements is False) and
+                (element_dictionary_inverse[(element_type, "abaqus")] in elements_1d)):
+            continue
+
         if ((write_2d_elements is False) and
                 (mesh.element_sets[element_set_name].dimension == 2)):
             continue
+
+        if element_set_name[0:4] == "edge":
+            continue
+
+        if len(element_set.ids) == 0:
+            continue
+
         f.write("\n*Elset, elset=" + element_set_name + "\n")
         write_column_broken_array(element_set.ids, f)
 

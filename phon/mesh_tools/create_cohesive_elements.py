@@ -28,7 +28,7 @@ from phon.mesh_objects.element_set import ElementSet
 from phon.mesh_objects.node import Node
 
 
-def create_cohesive_elements(mesh):
+def create_cohesive_elements(mesh, mesh_dimension=3):
     """
     Creates and inserts cohesive elements between the grains in the mesh.
     The element sets, ordering of vertices in elements etc etc need to
@@ -36,15 +36,27 @@ def create_cohesive_elements(mesh):
 
     :param mesh: The mesh
     :type mesh: :class:`Mesh`
+    :param mesh_dimension: Dimension of the bulk elements in the mesh. Default is 3d.
+    :type mesh_dimension: int
     """
+
+    if mesh_dimension == 3:
+        set_type_bulk = "poly"
+        set_type_interface = "face"
+    elif mesh_dimension == 2:
+        set_type_bulk = "face"
+        set_type_interface = "edge"
+    else:
+        print 'Unsupported dimension for creation of cohesive elements: ', mesh_dimension
+        return
 
     n_nodes = len(mesh.nodes)
     cohesive_id_offset = max(mesh.elements.keys()) + 1
 
-    node_id_grain_lut = get_node_id_grain_lut(mesh)
+    node_id_grain_lut = get_node_id_grain_lut(mesh, set_type_bulk)
 
     for element_set_name in mesh.element_sets.keys():
-        if not element_set_name[0:4] == "face":
+        if not element_set_name[0:4] == set_type_interface:
             continue
         face_set = mesh.element_sets[element_set_name]
         grains_connected_to_face = get_grains_connected_to_face(mesh,
@@ -60,17 +72,17 @@ def create_cohesive_elements(mesh):
 
         cohesive_set_name = ("cohes" + str(grain_id_1) + "_" +
                              str(grain_id_2))
-        cohesive_set = ElementSet(cohesive_set_name, dimension=3)
+        cohesive_set = ElementSet(cohesive_set_name, dimension=mesh_dimension)
         mesh.element_sets[cohesive_set_name] = cohesive_set
 
         # Create two new element sets that will represent the triangles
-        # in the new faces. This is not strictly needed but is usefull
+        # in the new faces. This is not strictly needed but is useful
         # information to have.
         face_set_coh_name_1 = "coh_face_" + str(grain_id_1) + "_" + str(grain_id_2) + "_1"
         face_set_coh_name_2 = "coh_face_" + str(grain_id_1) + "_" + str(grain_id_2) + "_2"
 
-        face_set_coh_1 = ElementSet(face_set_coh_name_1, dimension=2)
-        face_set_coh_2 = ElementSet(face_set_coh_name_2, dimension=2)
+        face_set_coh_1 = ElementSet(face_set_coh_name_1, dimension=mesh_dimension-1)
+        face_set_coh_2 = ElementSet(face_set_coh_name_2, dimension=mesh_dimension-1)
 
         mesh.element_sets[face_set_coh_name_1] = face_set_coh_1
         mesh.element_sets[face_set_coh_name_2] = face_set_coh_2
@@ -85,7 +97,7 @@ def create_cohesive_elements(mesh):
 
             # Reconnect the 3d element with vertices in the node that is being duplicated
             # to one of the new nodes.
-            grain_ids, element_id = get_ele_and_grain_with_node_id(mesh, node_id, grain_id_1, grain_id_2)
+            grain_ids, element_id = get_ele_and_grain_with_node_id(mesh, node_id, grain_id_1, grain_id_2, set_type_bulk)
             for grain_id, element_id in zip(grain_ids, element_id):
                 idx = mesh.elements[element_id].vertices.index(node_id)
                 mesh.elements[element_id].vertices[idx] = node_id + n_nodes * grain_id
@@ -96,7 +108,7 @@ def create_cohesive_elements(mesh):
             two_d_element = mesh.elements[two_d_element_id]
             num_t_nodes = len(two_d_element.vertices)
 
-            element_name = "COH3D" + str(num_t_nodes*2)  # e.g. "COH3D6"
+            element_name = "COH" + str(mesh_dimension) + "D" + str(num_t_nodes*2)  # e.g. "COH3D6"
 
 
             vertices_cohesive = [0] * num_t_nodes * 2
@@ -113,50 +125,52 @@ def create_cohesive_elements(mesh):
             # inside out. This can be done by comparing the normal of the face of
             # the cohesive element to the normal to the element it is connected to.
             # If these are in the same direction we need to flip the element.
-            element_id, element = get_ele_in_grain_containing_face_ele(mesh, cohesive_element, grain_id_1)
+            element_id, element = get_ele_in_grain_containing_face_ele(mesh, cohesive_element, grain_id_1, set_type_bulk)
             idxs = find_index(element, cohesive_element)
 
+            if mesh_dimension == 3:
+                # Based on the index, find the corresponding face of the tetrahedron, then compute the normal of that face
+                if num_t_nodes == 3 or num_t_nodes == 6:
+                    if {0, 1, 3}.issubset(set(idxs)):
+                        norm_tetra = _calculate_normal(mesh, element.vertices[0], element.vertices[1], element.vertices[3])
+                    elif {0, 2, 1}.issubset(set(idxs)):
+                        norm_tetra = _calculate_normal(mesh, element.vertices[0], element.vertices[2], element.vertices[1])
+                    elif {0, 3, 2}.issubset(set(idxs)):
+                        norm_tetra = _calculate_normal(mesh, element.vertices[0], element.vertices[3], element.vertices[2])
+                    elif {1, 2, 3}.issubset(set(idxs)):
+                        norm_tetra = _calculate_normal(mesh, element.vertices[1], element.vertices[2], element.vertices[3])
+                elif num_t_nodes == 4 or num_t_nodes == 8:
+                    if {0, 1, 2, 3}.issubset(set(idxs)):
+                        norm_tetra = _calculate_normal(mesh, element.vertices[0], element.vertices[3], element.vertices[2])
+                    elif {1, 5, 6, 2}.issubset(set(idxs)):
+                        norm_tetra = _calculate_normal(mesh, element.vertices[1], element.vertices[2], element.vertices[6])
+                    elif {3, 2, 6, 7} .issubset(set(idxs)):
+                        norm_tetra = _calculate_normal(mesh, element.vertices[2], element.vertices[3], element.vertices[7])
+                    elif {0, 3, 7, 4}.issubset(set(idxs)):
+                        norm_tetra = _calculate_normal(mesh, element.vertices[3], element.vertices[0], element.vertices[4])
+                    elif {1, 5, 4, 0}.issubset(set(idxs)):
+                        norm_tetra = _calculate_normal(mesh, element.vertices[1], element.vertices[5], element.vertices[4])
+                    elif {4, 5, 6, 7}.issubset(set(idxs)):
+                        norm_tetra = _calculate_normal(mesh, element.vertices[4], element.vertices[5], element.vertices[6])
 
-            # Based on the index, find the corresponding face of the tetrahedron, then compute the normal of that face
-            if num_t_nodes == 3 or num_t_nodes == 6:
-                if {0, 1, 3}.issubset(set(idxs)):
-                    norm_tetra = _calculate_normal(mesh, element.vertices[0], element.vertices[1], element.vertices[3])
-                elif {0, 2, 1}.issubset(set(idxs)):
-                    norm_tetra = _calculate_normal(mesh, element.vertices[0], element.vertices[2], element.vertices[1])
-                elif {0, 3, 2}.issubset(set(idxs)):
-                    norm_tetra = _calculate_normal(mesh, element.vertices[0], element.vertices[3], element.vertices[2])
-                elif {1, 2, 3}.issubset(set(idxs)):
-                    norm_tetra = _calculate_normal(mesh, element.vertices[1], element.vertices[2], element.vertices[3])
-            elif num_t_nodes == 4 or num_t_nodes == 8:
-                if {0, 1, 2, 3}.issubset(set(idxs)):
-                    norm_tetra = _calculate_normal(mesh, element.vertices[0], element.vertices[3], element.vertices[2])
-                elif {1, 5, 6, 2}.issubset(set(idxs)):
-                    norm_tetra = _calculate_normal(mesh, element.vertices[1], element.vertices[2], element.vertices[6])
-                elif {3, 2, 6, 7} .issubset(set(idxs)):
-                    norm_tetra = _calculate_normal(mesh, element.vertices[2], element.vertices[3], element.vertices[7])
-                elif {0, 3, 7, 4}.issubset(set(idxs)):
-                    norm_tetra = _calculate_normal(mesh, element.vertices[3], element.vertices[0], element.vertices[4])
-                elif {1, 5, 4, 0}.issubset(set(idxs)):
-                    norm_tetra = _calculate_normal(mesh, element.vertices[1], element.vertices[5], element.vertices[4])
-                elif {4, 5, 6, 7}.issubset(set(idxs)):
-                    norm_tetra = _calculate_normal(mesh, element.vertices[4], element.vertices[5], element.vertices[6])
-
-
-
-            norm_cohes = _calculate_normal(mesh, cohesive_element.vertices[0], cohesive_element.vertices[1],
+                norm_cohes = _calculate_normal(mesh, cohesive_element.vertices[0], cohesive_element.vertices[1],
                                            cohesive_element.vertices[2])
 
-            # Normals are in opposite direction -> flip element
-            if np.dot(norm_tetra, norm_cohes) < 0:
-                for i, node_id in enumerate(two_d_element.vertices):
-                    vertices_cohesive[i] = node_id + n_nodes * grain_id_2
-                    vertices_cohesive[i + num_t_nodes] = node_id + n_nodes * grain_id_1
+                # Normals are in opposite direction -> flip element
+                if np.dot(norm_tetra, norm_cohes) < 0:
+                    for i, node_id in enumerate(two_d_element.vertices):
+                        vertices_cohesive[i] = node_id + n_nodes * grain_id_2
+                        vertices_cohesive[i + num_t_nodes] = node_id + n_nodes * grain_id_1
+
+    #        elif mesh_dimension == 2:
+    #            # TODO: Check normals for the 2d case.
+    #            print 'Skipping check for flipped normals because it is not yet implemented for 2d.'
 
     # Delete the old nodes from the mesh and from the node sets.
     # Currently the 2d elements that are used to create the cohesive sets are not
     # deleted. After this they therefore have deleted nodes as vertices.
     for element_set_name in mesh.element_sets.keys():
-        if not element_set_name[0:4] == "face":
+        if not element_set_name[0:4] == set_type_interface:
             continue
         face_set = mesh.element_sets[element_set_name]
         grains_connected_to_face = get_grains_connected_to_face(mesh,
@@ -269,7 +283,7 @@ def get_grains_connected_to_face(mesh, face_set, node_id_grain_lut):
     return list(set.intersection(*grains_connected_to_face))
 
 
-def get_node_id_grain_lut(mesh):
+def get_node_id_grain_lut(mesh, set_type="poly"):
     """
     This function creates a (default) dictionary that
     works as a lookup table for what grains contain
@@ -277,13 +291,15 @@ def get_node_id_grain_lut(mesh):
 
     :param: mesh: The mesh
     :type: mesh: :class:`Mesh`
+    :param set_type: Type of elements, poly for 3d and face for 2d
+    :type set_type: string
     :return: Dictionary d where d[node_id] gives a set of the grain identifiers
              that contain the node.
     :rtype: defaultdict
     """
     d = defaultdict(set)
     for element_set_name, element_set in mesh.element_sets.items():
-        if not element_set_name.startswith("poly"):
+        if not element_set_name.startswith(set_type):
             continue
         for element_id in element_set.ids:
             vertices = mesh.elements[element_id].vertices
@@ -323,20 +339,24 @@ def get_grains_containing_node_id(mesh, node_id, original_n_nodes):
     return grain_ids_with_node_id
 
 
-def get_ele_in_grain_containing_face_ele(mesh, cohesive, grain):
+def get_ele_in_grain_containing_face_ele(mesh, cohesive, grain, set_type="poly"):
     """
     Find the 3 d element that contains the 2d element and sits in the
     grain given as argument.
+
+    :param set_type: Type of elements, poly for 3d and face for 2d
+    :type set_type: string
+
     """
 
-    for element_id in mesh.element_sets["poly" + str(grain)].ids:
+    for element_id in mesh.element_sets[set_type + str(grain)].ids:
         element = mesh.elements[element_id]
 
         if all(nodes in element.vertices for nodes in cohesive.vertices[0:len(cohesive.vertices)/2]):
             return element_id, element
 
 
-def get_ele_and_grain_with_node_id(mesh, node_id, grain_id_1, grain_id_2):
+def get_ele_and_grain_with_node_id(mesh, node_id, grain_id_1, grain_id_2, set_type="poly"):
     """
     Find the element that has vertices with the node identifier node_id
     and if it belongs to grain with identifier grain_id_1 or grain_id_2
@@ -349,6 +369,8 @@ def get_ele_and_grain_with_node_id(mesh, node_id, grain_id_1, grain_id_2):
     :type grain_id_1: int
     :param grain_id_2: Identifier for the second grain.
     :type grain_id_2: int
+    :param set_type: Type of elements, poly for 3d and face for 2d
+    :type set_type: string
     :return: Returns a tuple of the grain identifier the element is
              in and the identifier of the element.
     :rtype: tuple (int, int)
@@ -358,10 +380,12 @@ def get_ele_and_grain_with_node_id(mesh, node_id, grain_id_1, grain_id_2):
     grains = []
 
     for grain_id in [grain_id_1, grain_id_2]:
-        for element_id in mesh.element_sets["poly" + str(grain_id)].ids:
+        for element_id in mesh.element_sets[set_type + str(grain_id)].ids:
             element = mesh.elements[element_id]
             if node_id in element.vertices:
                 three_d_element.append(element_id)
                 grains.append(grain_id)
 
     return grains, three_d_element
+
+
