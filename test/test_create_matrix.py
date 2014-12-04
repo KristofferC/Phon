@@ -27,12 +27,15 @@ from phon.io.read.read_from_neper_inp import read_from_neper_inp
 from phon.io.write.export_to_abaqus import export_to_abaqus
 from phon.mesh_tools.create_matrix import create_matrix
 
+__location__ = os.path.realpath(
+    os.path.join(os.getcwd(), os.path.dirname(__file__)))
+
 
 class Test(unittest.TestCase):
     """Unit tests for test_create_matrix."""
 
     def setUp(self):
-        self.mesh = read_from_neper_inp("n10-id1.inp", verbose=0)
+        self.mesh = read_from_neper_inp(os.path.join(__location__, "n10-id1.inp"), verbose=0)
         #self.mesh_order_2 = read_from_neper_inp("n10-id1_order_2.inp", verbose=0)
 
     # TODO: Right now only testing runtime errors... Add real tests
@@ -46,7 +49,7 @@ class Test(unittest.TestCase):
     def tearDown(self):
         if os.path.isfile("n10-id1_fence.inp"):
             os.remove("n10-id1_fence.inp")
-        pass
+
     # TODO: Add tests for the helper functions.
 
 if __name__ == "__main__":

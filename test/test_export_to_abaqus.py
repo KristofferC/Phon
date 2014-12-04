@@ -27,12 +27,15 @@ import filecmp
 from phon.io.read.read_from_neper_inp import read_from_neper_inp
 from phon.io.write.export_to_abaqus import export_to_abaqus
 
+__location__ = os.path.realpath(
+    os.path.join(os.getcwd(), os.path.dirname(__file__)))
+
 
 class Test(unittest.TestCase):
     """Unit tests for export_to_abaqus."""
 
     def setUp(self):
-        self.mesh = read_from_neper_inp("n10-id1.inp")
+        self.mesh = read_from_neper_inp(os.path.join(__location__, "n10-id1.inp"))
 
     def test_export_to_abaqus(self):
         """Test Phons reader for neper inp files."""
