@@ -183,7 +183,8 @@ def create_cohesive_elements(mesh):
                     if new_node_id_2 not in node_set.ids:
                         node_set.ids.extend([new_node_id_2])
 
-    # Finish of with renumbering the nodes so the node ids are not spread out.
+    # Finish of with renumbering the nodes so the node ids are not spread out
+    # Or maybe not, unnecessary side effect. Let user decide.
     #mesh.renumber_nodes()
 
 
@@ -219,6 +220,8 @@ def find_index(element, cohesive_element):
 
 def get_nodes_in_all_face_sets(mesh):
     """
+    CURRENTLY UNUSED
+
     This function finds all nodes that sits in a face.
     :param mesh:
     :type mesh: :class:`Mesh`
@@ -292,6 +295,8 @@ def get_node_id_grain_lut(mesh):
 
 def get_grains_containing_node_id(mesh, node_id, original_n_nodes):
     """
+    CURRENTLY UNUSED
+
     This function finds all the grains that contain the
     node with node identifier node_id.
 
