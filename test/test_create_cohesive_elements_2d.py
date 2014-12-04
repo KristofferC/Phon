@@ -28,15 +28,17 @@ from phon.io.write.export_to_abaqus import export_to_abaqus
 __location__ = os.path.realpath(
     os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
+
 class Test(unittest.TestCase):
     """Unit tests for test_create_cohesive_elements_2d."""
 
     def setUp(self):
-        self.mesh = read_from_neper_inp(os.path.join(__location__,"mesh2El2d.inp"),verbose=0,mesh_dimension=2)
+        self.mesh = read_from_neper_inp(os.path.join(__location__,"mesh2El2d.inp"),
+                                        verbose=0, mesh_dimension=2)
 
     def test_create_cohesive_elements(self):
-        meshDim = 2
-        create_cohesive_elements(self.mesh,meshDim)
+        mesh_dim = 2
+        create_cohesive_elements(self.mesh, mesh_dim)
 
         # One cohesive zone element should be created
         self.assertEqual(len(self.mesh.element_sets["cohes1_2"].ids), 1)
@@ -44,9 +46,9 @@ class Test(unittest.TestCase):
         # There should be six nodes (2 nodes duplicated)
         self.assertEqual(len(self.mesh.nodes), 6)
 
-    def test_export_toabaqus(self):
-        write2dEl = True
-        export_to_abaqus("test2El2dCZ.inp", self.mesh, write2dEl)
+    def test_export_to_abaqus(self):
+        write_2d_el = True
+        export_to_abaqus("test2El2dCZ.inp", self.mesh, write_2d_el)
     
     def tearDown(self):
         if os.path.isfile("test2El2dCZ.inp"):

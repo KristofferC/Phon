@@ -47,7 +47,7 @@ def create_cohesive_elements(mesh, mesh_dimension=3):
         set_type_bulk = "face"
         set_type_interface = "edge"
     else:
-        print 'Unsupported dimension for creation of cohesive elements: ',mesh_dimension
+        print 'Unsupported dimension for creation of cohesive elements: ', mesh_dimension
         return
 
     n_nodes = len(mesh.nodes)
@@ -76,7 +76,7 @@ def create_cohesive_elements(mesh, mesh_dimension=3):
         mesh.element_sets[cohesive_set_name] = cohesive_set
 
         # Create two new element sets that will represent the triangles
-        # in the new faces. This is not strictly needed but is usefull
+        # in the new faces. This is not strictly needed but is useful
         # information to have.
         face_set_coh_name_1 = "coh_face_" + str(grain_id_1) + "_" + str(grain_id_2) + "_1"
         face_set_coh_name_2 = "coh_face_" + str(grain_id_1) + "_" + str(grain_id_2) + "_2"
@@ -128,7 +128,6 @@ def create_cohesive_elements(mesh, mesh_dimension=3):
             element_id, element = get_ele_in_grain_containing_face_ele(mesh, cohesive_element, grain_id_1, set_type_bulk)
             idxs = find_index(element, cohesive_element)
 
-
             if mesh_dimension == 3:
                 # Based on the index, find the corresponding face of the tetrahedron, then compute the normal of that face
                 if num_t_nodes == 3 or num_t_nodes == 6:
@@ -154,8 +153,6 @@ def create_cohesive_elements(mesh, mesh_dimension=3):
                     elif {4, 5, 6, 7}.issubset(set(idxs)):
                         norm_tetra = _calculate_normal(mesh, element.vertices[4], element.vertices[5], element.vertices[6])
 
-
-
                 norm_cohes = _calculate_normal(mesh, cohesive_element.vertices[0], cohesive_element.vertices[1],
                                            cohesive_element.vertices[2])
 
@@ -168,7 +165,6 @@ def create_cohesive_elements(mesh, mesh_dimension=3):
     #        elif mesh_dimension == 2:
     #            # TODO: Check normals for the 2d case.
     #            print 'Skipping check for flipped normals because it is not yet implemented for 2d.'
-
 
     # Delete the old nodes from the mesh and from the node sets.
     # Currently the 2d elements that are used to create the cohesive sets are not
