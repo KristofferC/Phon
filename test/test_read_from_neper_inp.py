@@ -21,51 +21,66 @@ THE SOFTWARE.
 """
 
 import unittest
+import os
 
 from phon.io.read.read_from_neper_inp import read_from_neper_inp
 from phon.io.read.read_from_neper_inp import to_number
+
+__location__ = os.path.realpath(
+    os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
 
 class Test(unittest.TestCase):
     """Unit tests for read_from_neper_inp."""
 
     def setUp(self):
-        self.mesh = read_from_neper_inp("n10-id1.inp", verbose = 0)
+        self.mesh = read_from_neper_inp(os.path.join(__location__, "n10-id1.inp"), verbose=0)
+        self.mesh_aba = read_from_neper_inp(os.path.join(__location__, "n10_id1_from_abaq.inp"), verbose=0)
 
     def test_read_from_neper_inp(self):
-        """Test Phons reader for neper inp files."""
+        """Test Phons reader for Neper inp files."""
 
-        # Test nodes
-        self.assertEqual(len(self.mesh.nodes), 289)
-        self.assertTrue(self.mesh.nodes[287].x - 0.91031946481 < 10E-9)
-        self.assertTrue(self.mesh.nodes[1].y - 0.0 < 10E-9)
-        self.assertTrue(self.mesh.nodes[289].z - 0.886838138103 < 10E-9)
+        for mesh in [self.mesh, self.mesh_aba]:
+            # Test nodes
+            self.assertEqual(len(mesh.nodes), 289)
+            self.assertTrue(mesh.nodes[287].c[0] - 0.91031946481 < 10E-9)
+            self.assertTrue(mesh.nodes[1].c[1] - 0.0 < 10E-9)
+            self.assertTrue(mesh.nodes[289].c[2] - 0.886838138103 < 10E-9)
 
-        # Test elements
-        self.assertEqual(len(self.mesh.elements), 1683)
-        self.assertTrue((self.mesh.elements[1].elem_type == "CPE3") or
-                        (self.mesh.elements[1].elem_type == "CPE6"))
-        self.assertEqual(self.mesh.elements[5].vertices, [43, 39, 40])
-        self.assertEqual(self.mesh.elements[684].vertices, [38, 5, 52])
+            # Test elements
+            self.assertEqual(len(mesh.elements), 1683)
+            self.assertTrue((mesh.elements[1].elem_type == "CPE3") or
+                            (mesh.elements[1].elem_type == "CPE6"))
+            self.assertEqual(mesh.elements[5].vertices, [43, 39, 40])
+            self.assertEqual(mesh.elements[684].vertices, [38, 5, 52])
+            self.assertTrue((mesh.elements[686].elem_type == "C3D4") or
+                            (mesh.elements[686].elem_type == "C3D10"))
+            self.assertEqual(mesh.elements[685].vertices, [44, 155, 61, 154])
+            self.assertEqual(mesh.elements[1683].vertices, [283, 127, 246, 284])
 
-        self.assertTrue((self.mesh.elements[686].elem_type == "C3D4") or
-                        (self.mesh.elements[686].elem_type == "C3D10"))
-        self.assertEqual(self.mesh.elements[685].vertices, [44, 155, 61, 154])
-        self.assertEqual(self.mesh.elements[1683].vertices, [283, 127, 246, 284])
+            self.assertEqual(len(mesh.node_sets), 44)
+
+        # We need double tests due for strings due to Abaqus capitalizing things.
 
         # Test element sets
         self.assertEqual(len(self.mesh.element_sets), 66)
         self.assertEqual(self.mesh.element_sets["face22"].name, "face22")
         self.assertEqual(self.mesh.element_sets["face36"].ids[3], 434)
-                         
+        self.assertEqual(self.mesh_aba.element_sets["FACE22"].name, "FACE22")
+        self.assertEqual(self.mesh_aba.element_sets["FACE36"].ids[3], 434)
+
         self.assertEqual(self.mesh.element_sets["poly6"].name, "poly6")
         self.assertEqual(self.mesh.element_sets["poly10"].ids[8], 1584)
+        self.assertEqual(self.mesh_aba.element_sets["POLY6"].name, "POLY6")
+        self.assertEqual(self.mesh_aba.element_sets["POLY10"].ids[8], 1584)
 
         # Test node sets
-        self.assertEqual(len(self.mesh.node_sets), 44)
         self.assertEqual(len(self.mesh.node_sets["z0"].ids), 44)
         self.assertEqual(self.mesh.node_sets["x1z1body"].ids[1], 116)
-        self.assertEqual(self.mesh.node_sets["x1y0z1"].ids, [32])               
+        self.assertEqual(self.mesh.node_sets["x1y0z1"].ids, [32])
+        self.assertEqual(len(self.mesh_aba.node_sets["Z0"].ids), 44)
+        self.assertEqual(self.mesh_aba.node_sets["X1Z1BODY"].ids[1], 116)
+        self.assertEqual(self.mesh_aba.node_sets["X1Y0Z1"].ids, [32])
         
     def test_to_number(self):
         self.assertEqual(to_number("1.3"), 1.3)

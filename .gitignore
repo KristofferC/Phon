@@ -6,3 +6,5 @@
 /docs/_build
 *.db
 /build
+.coverage
+cover/

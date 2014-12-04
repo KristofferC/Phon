@@ -20,7 +20,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
-__all__ = ["element_name_dictionary", "read", "write"]
 
 # This stuff here need to be done in a better way...
 
