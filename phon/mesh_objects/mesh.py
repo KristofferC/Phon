@@ -89,7 +89,7 @@ class Mesh:
 
         """
 
-        raise("This method does not work reliably")
+        #raise("This method does not work reliably")
 
         # Create dictionary of old and renumbered node identifiers
         node_renumber_dict = {}
@@ -100,12 +100,12 @@ class Mesh:
 
         self.nodes = new_nodes_dict
 
-        # Update node identifiers in elements
+        # Update node identifiers in elements (only 3d).
         for element_id, element in self.elements.items():
-             if (element_dictionary_inverse[(element.elem_type, "abaqus")] in elements_2d):
+            if (element_dictionary_inverse[(element.elem_type, "abaqus")] in elements_2d):
                 continue
-            #for i, node_id in enumerate(element.vertices):
-            #    element.vertices[i] = node_renumber_dict[node_id]
+            for i, node_id in enumerate(element.vertices):
+                element.vertices[i] = node_renumber_dict[node_id]
 
         # Update node identifiers in node sets
         for node_set_name, node_set in self.node_sets.items():

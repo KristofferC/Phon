@@ -223,7 +223,7 @@ def _read_nodes(f, mesh):
 
         words = line.split()
         num = int(words[0])
-        coord = list(map(float, words[1:]))
+        coord = [float(x) for x in words[1:]]
         node = Node(numpy.array(coord))
         mesh.nodes[num] = node
 
@@ -249,7 +249,7 @@ def _read_elements(f, mesh):
             continue
         num += 1
         #num = int(words[0])
-        elem_nodes = list(map(int, words[-4:]))
+        elem_nodes = [int(x) for x in  words[-4:]]
         element = Element("C3D4", elem_nodes)
         mesh.elements[num] = element
 

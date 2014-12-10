@@ -29,6 +29,9 @@ from phon.mesh_tools.create_cohesive_elements import create_cohesive_elements
 from phon.mesh_tools.create_cohesive_elements import get_grains_connected_to_face
 from phon.mesh_tools.create_cohesive_elements import get_node_id_grain_lut
 
+__location__ = os.path.realpath(
+    os.path.join(os.getcwd(), os.path.dirname(__file__)))
+
 
 # TODO: Add test for order = 2
 # TODO: Add test for qudraterial elements
@@ -37,7 +40,7 @@ class Test(unittest.TestCase):
     """Unit tests for test_create_cohesive_elements."""
 
     def setUp(self):
-        self.mesh = read_from_neper_inp("n10-id1.inp", verbose=0)
+        self.mesh = read_from_neper_inp(os.path.join(__location__, "n10-id1.inp"), verbose=0)
 
     def test_get_grains_connected_to_face(self):
         node_id_grain_lut = get_node_id_grain_lut(self.mesh)
@@ -57,7 +60,6 @@ class Test(unittest.TestCase):
     def tearDown(self):
         if os.path.isfile("n10-id1_coh.inp"):
             os.remove("n10-id1_coh.inp")
-        pass
 
     # TODO: Add tests for more helper functions.
 

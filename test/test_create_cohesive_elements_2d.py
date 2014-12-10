@@ -1,5 +1,3 @@
-__copyright__ = "Copyright (C) 2013 Kristoffer Carlsson"
-
 __license__ = """
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,31 +22,38 @@ import unittest
 import os
 
 from phon.io.read.read_from_neper_inp import read_from_neper_inp
-from phon.io.write.export_to_oofem import export_to_oofem
 from phon.mesh_tools.create_cohesive_elements import create_cohesive_elements
+from phon.io.write.export_to_abaqus import export_to_abaqus
 
 __location__ = os.path.realpath(
     os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
 
 class Test(unittest.TestCase):
-    """Unit tests for export_to_oofem."""
+    """Unit tests for test_create_cohesive_elements_2d."""
 
     def setUp(self):
-        self.mesh = read_from_neper_inp(os.path.join(__location__, "n10-id1.inp"))
+        self.mesh = read_from_neper_inp(os.path.join(__location__,"mesh2El2d.inp"),
+                                        verbose=0, mesh_dimension=2)
 
-    def test_export_to_oofem(self):
-        """Test Phons exporter for oofem files."""
-        export_to_oofem("test_file.in", self.mesh, write_2d_elements=True)
-        export_to_oofem("test_file.in", self.mesh, write_2d_elements=False)
+    def test_create_cohesive_elements(self):
+        mesh_dim = 2
+        create_cohesive_elements(self.mesh, mesh_dim)
 
-        create_cohesive_elements(self.mesh)
-        export_to_oofem("test_file.in", self.mesh, write_2d_elements=True)
-        export_to_oofem("test_file.in", self.mesh, write_2d_elements=False)
+        # One cohesive zone element should be created
+        self.assertEqual(len(self.mesh.element_sets["cohes1_2"].ids), 1)
+
+        # There should be six nodes (2 nodes duplicated)
+        self.assertEqual(len(self.mesh.nodes), 6)
+
+    def test_export_to_abaqus(self):
+        write_2d_el = True
+        export_to_abaqus("test2El2dCZ.inp", self.mesh, write_2d_el)
     
     def tearDown(self):
-        if os.path.isfile("test_file.in"):
-            os.remove("test_file.in")
+        if os.path.isfile("test2El2dCZ.inp"):
+            os.remove("test2El2dCZ.inp")
 
 if __name__ == "__main__":
     unittest.main()
+
