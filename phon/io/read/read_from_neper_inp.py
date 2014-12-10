@@ -92,7 +92,7 @@ def read_from_neper_inp(filename, verbose=0, mesh_dimension=3):
 def create_element_sides(mesh):
     element_to_grain = [0] * len(mesh.elements)
     node_to_elements = [list() for n in range(0,len(mesh.nodes))]
-    for element_set_name, element_set in mesh.element_sets.iteritems():
+    for element_set_name, element_set in mesh.element_sets.items():
         if not element_set_name.startswith("poly"):
             continue
         grain = int(element_set_name[4:])
@@ -102,7 +102,7 @@ def create_element_sides(mesh):
                 node_to_elements[n-1].append(el_num)
 
     mesh.element_side_sets["outer"] = ElementSideSet("outer")
-    for element_set_name, face_set in mesh.element_sets.iteritems():
+    for element_set_name, face_set in mesh.element_sets.items():
         if not element_set_name[0:4] == "face":
             continue
 
@@ -236,7 +236,7 @@ def _read_elements(f, mesh, num_elems, verbose):
             print ("\rReading element %s, with id %d."
                    % (element_name, num_elems)),
 
-        element_numbers = map(to_number, line.strip().split(','))
+        element_numbers = [to_number(x) for x in line.strip().split(',')]
         element = Element(element_name, element_numbers[1:])
         mesh.elements[element_numbers[0]] = element
 
@@ -277,7 +277,7 @@ def _read_element_set(f, mesh, verbose=0):
         element_set_name = element_set_name[0:-10]
         element_set = ElementSet(element_set_name, dim)
         line = f.readline().strip()
-        generate_info = map(to_number, line.split(','))
+        generate_info = [to_number(x) for x in line.split(',')]
         start, stop, step = generate_info[0], generate_info[1], generate_info[2]
         element_set.ids = range(start, stop+1, step)
         mesh.element_sets[element_set_name] = element_set
@@ -292,7 +292,7 @@ def _read_element_set(f, mesh, verbose=0):
             if line[0] == '*':
                 element_list = full_str.split(',')
                 element_list = [item for item in element_list if item]
-                element_set.ids = map(to_number, element_list)
+                element_set.ids = [to_number(x) for x in element_list]
                 mesh.element_sets[element_set_name] = element_set
                 f.seek(start_of_line)
                 return
@@ -327,7 +327,7 @@ def _read_node_set(f, mesh, verbose=0):
         node_set_name = node_set_name[0:-10]
         node_set = NodeSet(node_set_name)
         line = f.readline().strip()
-        generate_info = map(to_number, line.split(','))
+        generate_info = [to_number(x) for x in line.split(',')]
         start, stop, step = generate_info[0], generate_info[1], generate_info[2]
         node_set.ids = range(start, stop+1, step)
         mesh.node_sets[node_set_name] = node_set
@@ -344,7 +344,7 @@ def _read_node_set(f, mesh, verbose=0):
                 node_list = full_str.split(',')
                  # Remove empty strings
                 node_list = [item for item in node_list if item]
-                node_set.ids = map(to_number, node_list)
+                node_set.ids = [to_number(x) for x in node_list]
                 mesh.node_sets[node_set_name] = node_set
                 f.seek(start_of_line)
                 return

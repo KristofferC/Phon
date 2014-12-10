@@ -47,7 +47,7 @@ def create_cohesive_elements(mesh, mesh_dimension=3):
         set_type_bulk = "face"
         set_type_interface = "edge"
     else:
-        print 'Unsupported dimension for creation of cohesive elements: ', mesh_dimension
+        print('Unsupported dimension for creation of cohesive elements: ', mesh_dimension)
         return
 
     n_nodes = len(mesh.nodes)
@@ -226,7 +226,7 @@ def _calculate_normal(mesh, node_id_1, node_id_2, node_id_3):
 
 def find_index(element, cohesive_element):
     idx = []
-    for node in cohesive_element.vertices[0:len(cohesive_element.vertices)/2]:
+    for node in cohesive_element.vertices[0:len(cohesive_element.vertices)//2]:
         idx.append(element.vertices.index(node))
 
     return idx
@@ -279,7 +279,6 @@ def get_grains_connected_to_face(mesh, face_set, node_id_grain_lut):
         grains_with_node_id = node_id_grain_lut[node_id]
         grains_connected_to_face.append(set(grains_with_node_id))
 
-
     return list(set.intersection(*grains_connected_to_face))
 
 
@@ -327,7 +326,7 @@ def get_grains_containing_node_id(mesh, node_id, original_n_nodes):
 
     grain_ids_with_node_id = []
 
-    for element_set_name, element_set in mesh.element_sets.iteritems():
+    for element_set_name, element_set in mesh.element_sets.items():
         if not element_set_name[0:4] == "poly":
             continue
         for element_id in element_set.ids:
@@ -352,7 +351,7 @@ def get_ele_in_grain_containing_face_ele(mesh, cohesive, grain, set_type="poly")
     for element_id in mesh.element_sets[set_type + str(grain)].ids:
         element = mesh.elements[element_id]
 
-        if all(nodes in element.vertices for nodes in cohesive.vertices[0:len(cohesive.vertices)/2]):
+        if all(nodes in element.vertices for nodes in cohesive.vertices[0:len(cohesive.vertices)//2]):
             return element_id, element
 
 

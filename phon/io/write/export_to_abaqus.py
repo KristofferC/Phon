@@ -115,6 +115,7 @@ def export_to_abaqus(filename, mesh, write_2d_elements=False, f=None):
         f.write("\n*Nset, nset=" + node_set_name + "\n")
         write_column_broken_array(node_set.ids, f)
 
+
     # Surfacecd p sets
     for element_side_name, element_side_set in mesh.element_side_sets.items():
         f.write("\n*SURFACE, type=Element, NAME=" + element_side_name + "\n")
