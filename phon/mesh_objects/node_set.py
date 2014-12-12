@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 
 class NodeSet:
+
     """ Represents a set of nodes """
 
     def __init__(self, name, ids=None):
@@ -49,5 +50,5 @@ class NodeSet:
         :rtype: str
 
         """
-        return("Node set with name {0} containing nodes with the "
-               "following ids {1}".format(self.name, self.ids))
+        return ("Node set with name {0} containing nodes with the "
+                "following ids {1}".format(self.name, self.ids))

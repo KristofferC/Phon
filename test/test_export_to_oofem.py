@@ -27,6 +27,7 @@ from phon.io.read.read_from_neper_inp import read_from_neper_inp
 from phon.io.write.export_to_oofem import export_to_oofem
 from phon.mesh_tools.create_cohesive_elements import create_cohesive_elements
 
+
 __location__ = os.path.realpath(
     os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
@@ -45,10 +46,11 @@ class Test(unittest.TestCase):
         create_cohesive_elements(self.mesh)
         export_to_oofem("test_file.in", self.mesh, write_2d_elements=True)
         export_to_oofem("test_file.in", self.mesh, write_2d_elements=False)
-    
+
     def tearDown(self):
         if os.path.isfile("test_file.in"):
             os.remove("test_file.in")
+
 
 if __name__ == "__main__":
     unittest.main()

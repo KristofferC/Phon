@@ -22,12 +22,13 @@ THE SOFTWARE.
 
 
 class Node:
+
     """ Represents a node."""
 
     def __init__(self, c):
         """
         :param c: The coordinates
-        :type x: numpy array
+        :type c: numpy array
 
         """
         self.c = c
@@ -40,5 +41,5 @@ class Node:
         :rtype: str
 
         """
-        return "Node located at (%f, %f, %f):" % (self.c[0], self.c[1], self.c[2])
-
+        return "Node located at (%f, %f, %f):" % (
+            self.c[0], self.c[1], self.c[2])

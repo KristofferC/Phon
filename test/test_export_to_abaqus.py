@@ -27,6 +27,7 @@ import filecmp
 from phon.io.read.read_from_neper_inp import read_from_neper_inp
 from phon.io.write.export_to_abaqus import export_to_abaqus
 
+
 __location__ = os.path.realpath(
     os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
@@ -43,13 +44,14 @@ class Test(unittest.TestCase):
         read_from_neper_inp("test_file.inp")
         export_to_abaqus("test_file_2.inp", self.mesh, write_2d_elements=True)
 
-        assert(filecmp.cmp("test_file.inp", "test_file_2.inp"))
-    
+        assert (filecmp.cmp("test_file.inp", "test_file_2.inp"))
+
     def tearDown(self):
         if os.path.isfile("test_file.inp"):
             os.remove("test_file.inp")
         if os.path.isfile("test_file_2.inp"):
             os.remove("test_file_2.inp")
+
 
 if __name__ == "__main__":
     unittest.main()

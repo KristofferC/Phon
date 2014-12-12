@@ -26,6 +26,7 @@ import os
 from phon.io.read.read_from_neper_inp import read_from_neper_inp
 from phon.io.read.read_from_neper_inp import to_number
 
+
 __location__ = os.path.realpath(
     os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
@@ -81,10 +82,11 @@ class Test(unittest.TestCase):
         self.assertEqual(len(self.mesh_aba.node_sets["Z0"].ids), 44)
         self.assertEqual(self.mesh_aba.node_sets["X1Z1BODY"].ids[1], 116)
         self.assertEqual(self.mesh_aba.node_sets["X1Y0Z1"].ids, [32])
-        
+
     def test_to_number(self):
         self.assertEqual(to_number("1.3"), 1.3)
         self.assertEqual(to_number("1"), 1)
+
 
 if __name__ == "__main__":
     unittest.main()

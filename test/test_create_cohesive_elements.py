@@ -29,6 +29,7 @@ from phon.mesh_tools.create_cohesive_elements import create_cohesive_elements
 from phon.mesh_tools.create_cohesive_elements import get_grains_connected_to_face
 from phon.mesh_tools.create_cohesive_elements import get_node_id_grain_lut
 
+
 __location__ = os.path.realpath(
     os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
@@ -61,7 +62,8 @@ class Test(unittest.TestCase):
         if os.path.isfile("n10-id1_coh.inp"):
             os.remove("n10-id1_coh.inp")
 
-    # TODO: Add tests for more helper functions.
+            # TODO: Add tests for more helper functions.
+
 
 if __name__ == "__main__":
     unittest.main()

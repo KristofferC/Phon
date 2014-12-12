@@ -39,11 +39,8 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
     """
     f = open(filename, "w")
 
-    # Lengths
-    n_nodes = len(mesh.nodes)
-
     if write_2d_elements:
-        n_elements = (mesh.get_number_of_2d_elements() + 
+        n_elements = (mesh.get_number_of_2d_elements() +
                       mesh.get_number_of_3d_elements())
     else:
         n_elements = mesh.get_number_of_3d_elements()
@@ -58,14 +55,14 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
             n_cs += 1
 
     # Output file record
-    #f.write(filename + ".out\n")
+    # f.write(filename + ".out\n")
 
     # Job description record
-    #f.write("{}\n".format(mesh.name))
+    # f.write("{}\n".format(mesh.name))
 
     # Analysis record
-    #f.write("StaticStructural 1 nsteps 1 nmodules 1\n")
-    #f.write("vtkxml tstep_all domain_all primvars 1 1 cellvars 4 1 2 4 5\n")
+    # f.write("StaticStructural 1 nsteps 1 nmodules 1\n")
+    # f.write("vtkxml tstep_all domain_all primvars 1 1 cellvars 4 1 2 4 5\n")
     # Domain record
     f.write("domain 3d\n")
 
@@ -76,15 +73,16 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
     f.write("ncrosssect " + str(n_cs) + " ")
     f.write("ndofman " + str(len(mesh.nodes)) + " ")
     f.write("nelem " + str(n_elements) + " ")
-    f.write("nset " + str(n_set) + " ");
+    f.write("nset " + str(n_set) + " ")
     f.write("nmat " + str(n_cs) + " ")
     f.write("nbc 2 nic 0 nltf 2")
-    f.write("\n");
+    f.write("\n")
 
     # Write nodes
     for node_id, node in mesh.nodes.items():
         f.write("node {0:d} ".format(node_id))
-        f.write("coords 3 {:.12e} {:.12e} {:.12e} ".format(node.c[0], node.c[1], node.c[2]))
+        f.write("coords 3 {:.12e} {:.12e} {:.12e} ".format(
+            node.c[0], node.c[1], node.c[2]))
         f.write("\n")
 
     #  Elements
@@ -96,7 +94,7 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
         f.write(element_name + " {0:d} ".format(element_id))
         f.write("nodes {} ".format(str(len(element.vertices))))
         # Code below changes "[1,2,3]" to "1 2 3"
-        f.write(''.join('{} '.format(k) 
+        f.write(''.join('{} '.format(k)
                         for k in element.vertices)[:-1])
         f.write("\n")
 
@@ -109,10 +107,12 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
         count += 1
         if element_set_name[:4] == "poly":
             cs_id += 1
-            f.write("SimpleCS {} material {} set {}\n".format(str(cs_id), str(cs_id), count))
+            f.write("SimpleCS {} material {} set {}\n".format(
+                str(cs_id), str(cs_id), count))
         elif element_set_name[:5] == "cohes":
             cs_id += 1
-            f.write("InterfaceCS {} material {} set {}\n".format(str(cs_id), str(cs_id), count))
+            f.write("InterfaceCS {} material {} set {}\n".format(
+                str(cs_id), str(cs_id), count))
 
     # Materials
     f.write("######### Materials here\n")
@@ -125,18 +125,23 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
         if element_set_name[:4] == "poly":
             mat_id += 1
             if mat_id == 1:
-                f.write("IsoLE {} d 1.0 E {:.5e} n {} tAlpha 0.\n".format(count, 209.e9, 0.31))
+                f.write(
+                    "IsoLE {} d 1.0 E {:.5e} n {} tAlpha 0.\n".format(count, 209.e9, 0.31))
             else:
-                f.write("IsoLE {} d 1.0 E {:.5e} n {} tAlpha 0.\n".format(count, 250.e9, 0.3))
+                f.write(
+                    "IsoLE {} d 1.0 E {:.5e} n {} tAlpha 0.\n".format(count, 250.e9, 0.3))
         elif element_set_name[:5] == "cohes":
             mat_id += 1
-            f.write("IntMatIsoDamage {} kn {:e} ks {:e} ft {:e} gf {:e}\n".format(count, 12e19, 5.2e19, 23e9, 15.))
+            f.write("IntMatIsoDamage {} kn {:e} ks {:e} ft {:e} gf {:e}\n".format(
+                count, 12e19, 5.2e19, 23e9, 15.))
     f.write("######### Boundary conditions here\n")
     disp_z = 0
     for n in mesh.nodes.values():
         disp_z = max(disp_z, n.c[2])
-    f.write("BoundaryCondition 1 loadTimeFunction 1 values 3 0. 0. 0. dofs 3 1 2 3 set {}\n".format(0))
-    f.write("BoundaryCondition 2 loadTimeFunction 2 values 3 0. 0. {:e} dofs 3 1 2 3 set {}\n".format(disp_z, 0))
+    f.write(
+        "BoundaryCondition 1 loadTimeFunction 1 values 3 0. 0. 0. dofs 3 1 2 3 set {}\n".format(0))
+    f.write("BoundaryCondition 2 loadTimeFunction 2 values 3 0. 0. {:e} dofs 3 1 2 3 set {}\n".format(
+        disp_z, 0))
     f.write("######### Load time functions here\n")
     f.write("ConstantFunction 1 f(t) 0.\n")
     f.write("PiecewiseLinFunction 2 npoints 2  f(t) 2 0. 1.   t 2 0. 1.\n")
@@ -149,7 +154,8 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
             continue
         set_id += 1
         f.write("# " + element_set_name)
-        f.write("\nSet {} elements {} ".format(str(set_id), str(len(element_set.ids))))
+        f.write("\nSet {} elements {} ".format(
+            str(set_id), str(len(element_set.ids))))
         f.write(''.join('{} '.format(k) for k in element_set.ids)[:-1])
         f.write("\n")
 
@@ -157,21 +163,23 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
     for side_set_name, side_set in mesh.element_side_sets.items():
         set_id += 1
         f.write("# " + side_set_name)
-        f.write("\nSet {} elementboundaries {} ".format(str(set_id), str(2*len(side_set.sides))))
-        f.write(''.join('{} {}  '.format(k.elem, k.side) for k in side_set.sides)[:-1])
+        f.write("\nSet {} elementboundaries {} ".format(
+            str(set_id), str(2 * len(side_set.sides))))
+        f.write(''.join('{} {}  '.format(k.elem, k.side)
+                        for k in side_set.sides)[:-1])
         f.write("\n")
 
     # Node sets
     for node_set_name, node_set in mesh.node_sets.items():
         set_id += 1
         f.write("# " + node_set_name)
-        f.write("\nSet {} nodes {} ".format(str(set_id), str(len(node_set.ids))))
+        f.write("\nSet {} nodes {} ".format(
+            str(set_id), str(len(node_set.ids))))
         f.write(''.join('{} '.format(k) for k in node_set.ids)[:-1])
         f.write("\n")
 
-
-    # For testing
-    #f.write("\nSimpleCS 1\n")
-    #f.write("IsoLE 1 d 1. E 30.e6 n 0.2 tAlpha 1.2e-5\n")
-    #f.write("BoundaryCondition  1 loadTimeFunction 1 prescribedvalue 0.0\n")
-    #f.write("PeakFunction 1 t 1.0 f(t) 1.\n")
+        # For testing
+        # f.write("\nSimpleCS 1\n")
+        # f.write("IsoLE 1 d 1. E 30.e6 n 0.2 tAlpha 1.2e-5\n")
+        # f.write("BoundaryCondition  1 loadTimeFunction 1 prescribedvalue 0.0\n")
+        # f.write("PeakFunction 1 t 1.0 f(t) 1.\n")
