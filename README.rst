@@ -1,6 +1,9 @@
 Phon
 ----
 
+[![Build Status](https://travis-ci.org/KristofferC/Phon.svg?branch=master)](https://travis-ci.org/KristofferC/Phon) [![Coverage Status](https://coveralls.io/repos/KristofferC/Phon/badge.png)](https://coveralls.io/r/KristofferC/Phon)
+
+
 This is a Python package that provides the functionality to read
 and export mesh files to different software's. It has the following
 features:
