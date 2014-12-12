@@ -6,10 +6,13 @@ python:
   - "3.4"
 # command to install dependencies
 install:
-  - "pip install coveralls"
-  - "pip install numpy"
+  - pip install python-coveralls
+  - pip install coverage
+  - pip install numpy
 # command to run tests
-script: nosetests --with-coverage --cover-package=Phon
+script: 
+  - python setup.py install
+  - nosetests --with-coverage
 
 after_success:
   - coveralls
