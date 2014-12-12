@@ -1,5 +1,5 @@
 Phon
-----
+=====
 
 [![Build Status](https://travis-ci.org/KristofferC/Phon.svg?branch=master)](https://travis-ci.org/KristofferC/Phon) [![Coverage Status](https://coveralls.io/repos/KristofferC/Phon/badge.png)](https://coveralls.io/r/KristofferC/Phon)
 
@@ -13,19 +13,19 @@ features:
 * Can insert cohesive elements between grains in a Voronoi tessellated mesh.
 * Can currently export the mesh to formats readable by Abaqus and OOFEM.
 
-Documentation
-=============
+### Documentation
+
 Documentation can either be built from source or found
 at http://web.student.chalmers.se/~kricarl/phon/_build/html/.
 
-Authors
-====================
+### Authors
+
 Kristoffer Carlsson - kristoffer.carlsson@chalmers.se
 
 Mikael Öhman
 
-Copyright and Licensing
-=======================
+### Copyright and Licensing
+
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
