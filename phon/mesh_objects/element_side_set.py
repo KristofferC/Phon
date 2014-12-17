@@ -40,6 +40,9 @@ class ElementSideSet:
         self.name = name
         self.sides = []
 
+        # Specific properties assigned to the set, e.g. material properties.
+        self.set_properties = {}
+
     def __str__(self):
         """
         Returns a string representation of the element set.

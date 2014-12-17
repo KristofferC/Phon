@@ -25,7 +25,7 @@ THE SOFTWARE.
 
 # Translates between (internal_name, "software) to external_name.
 element_dictionary = {("T3D2", "abaqus"): "T3D2",
-                      ("T3D2", "oofem"): "T3D2",
+                      ("T3D2", "oofem"): "intelline1",
                       ("CPE3", "abaqus"): "CPE3",
                       ("CPE3", "oofem"): "TrPlaneStress2d",
                       ("CPE6", "abaqus"): "CPE6",
@@ -43,13 +43,13 @@ element_dictionary = {("T3D2", "abaqus"): "T3D2",
                       ("C3D8", "abaqus"): "C3D8",
                       ("COH3D8", "abaqus"): "COH3D8",
                       ("COH2D4", "abaqus"): "COH2D4",
-                      ("COH2D4", "oofem"): "COH2D4",
+                      ("COH2D4", "oofem"): "intelline1",
                       ("S4R", "abaqus"): "S4R",
                       ("COH3D12", "oofem"): "IntElSurfTr2"}
 
 # Translates between (external_name, software) to internal_name.
 element_dictionary_inverse = {("T3D2", "abaqus"): "T3D2",
-                              ("T3D2", "oofem"): "T3D2",
+                              ("intelline1", "oofem"): "T3D2",
                               ("CPE3", "abaqus"): "CPE3",
                               ("TrPlaneStress2d", "oofem"): "CPE3",
                               ("CPE6", "abaqus"): "CPE6",
@@ -68,6 +68,7 @@ element_dictionary_inverse = {("T3D2", "abaqus"): "T3D2",
                               ("C3D8", "abaqus"): "C3D8",
                               ("COH3D8", "abaqus"): "COH3D8",
                               ("COH2D4", "abaqus"): "COH2D4",
+                              ("intelline1", "oofem"): "COH2D4",
                               ("S4R", "abaqus"): "S4R",
                               ("IntElSurfTr2", "oofem"): "COH3D12"}
 

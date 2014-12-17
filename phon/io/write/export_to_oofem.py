@@ -23,9 +23,10 @@ THE SOFTWARE.
 from phon.io import element_dictionary
 from phon.io import element_dictionary_inverse
 from phon.io import elements_2d
+from phon.io import elements_1d
 
 
-def export_to_oofem(filename, mesh, write_2d_elements=False):
+def export_to_oofem(filename, mesh, write_2d_elements=False, mesh_dimension=3):
     """
     Writes a mesh to a file in a format that OOFEM uses.
 
@@ -37,24 +38,46 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
                               element sets should be written to the file.
     :type write_2d_elements: boolean
     """
+
+    if mesh_dimension == 3:
+        set_type_bulk = "poly"
+        set_type_interface = "face"
+    elif mesh_dimension == 2:
+        set_type_bulk = "face"
+        set_type_interface = "edge"
+    else:
+        print 'Unsupported dimension in export_to_oofem: ', mesh_dimension
+        return
+
+    write_crosssections = True
+    write_materials     = True
+    write_bcs           = True
+    write_ltf           = False
+
+    write_1d_elements=False
+
     f = open(filename, "w")
 
     # Lengths
     n_nodes = len(mesh.nodes)
 
+    n_elements = mesh.get_number_of_3d_elements()
+
     if write_2d_elements:
-        n_elements = (mesh.get_number_of_2d_elements() + 
-                      mesh.get_number_of_3d_elements())
-    else:
-        n_elements = mesh.get_number_of_3d_elements()
+        n_elements += mesh.get_number_of_2d_elements()
+
+    if write_1d_elements:
+        n_elements += mesh.get_number_of_1d_elements()
 
     n_cs = 0
     n_set = len(mesh.node_sets) + len(mesh.element_side_sets)
     for element_set_name, element_set in mesh.element_sets.items():
         if (write_2d_elements is False) and (element_set.dimension == 2):
             continue
+        if (write_1d_elements is False) and (element_set.dimension == 1):
+            continue
         n_set += 1
-        if element_set_name[:4] == "poly" or element_set_name[:5] == "cohes":
+        if element_set_name[:4] == set_type_bulk or element_set_name[:5] == "cohes":
             n_cs += 1
 
     # Output file record
@@ -67,18 +90,46 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
     #f.write("StaticStructural 1 nsteps 1 nmodules 1\n")
     #f.write("vtkxml tstep_all domain_all primvars 1 1 cellvars 4 1 2 4 5\n")
     # Domain record
-    f.write("domain 3d\n")
+    if mesh_dimension == 3:
+        f.write("domain 3d\n")
+    elif mesh_dimension == 2:
+        f.write("domain 2dPlaneStress\n")
 
     # Output manager record
     f.write("OutputManager\n")
 
     # Components size record
-    f.write("ncrosssect " + str(n_cs) + " ")
+    if write_crosssections:
+        f.write("ncrosssect " + str(n_cs) + " ")
+    else:
+        f.write("ncrosssect " + str(0) + " ")
+
     f.write("ndofman " + str(len(mesh.nodes)) + " ")
     f.write("nelem " + str(n_elements) + " ")
     f.write("nset " + str(n_set) + " ");
-    f.write("nmat " + str(n_cs) + " ")
-    f.write("nbc 2 nic 0 nltf 2")
+
+    if write_materials:
+        f.write("nmat " + str(n_cs) + " ")
+    else:
+        f.write("nmat " + str(0) + " ")
+
+    if write_bcs:
+        num_bcs = 0
+        for element_set_name, element_set in mesh.element_side_sets.items():
+            if 'boundary_condition_name' in element_set.set_properties and 'boundary_condition_properties' in element_set.set_properties:
+                num_bcs += 1
+        f.write("nbc {} ".format(num_bcs))
+    else:
+        f.write("nbc 0 ")
+
+    f.write("nic 0 ")
+
+    if write_ltf:
+        f.write("nltf 2 ")
+    else:
+        f.write("nltf 0 ")
+
+
     f.write("\n");
 
     # Write nodes
@@ -92,6 +143,9 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
         if (write_2d_elements is False) and \
                 (element_dictionary_inverse[(element.elem_type, "abaqus")] in elements_2d):
             continue
+        if (write_1d_elements is False) and \
+                (element_dictionary_inverse[(element.elem_type, "abaqus")] in elements_1d):
+            continue
         element_name = element_dictionary[(element.elem_type, "oofem")]
         f.write(element_name + " {0:d} ".format(element_id))
         f.write("nodes {} ".format(str(len(element.vertices))))
@@ -101,51 +155,114 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
         f.write("\n")
 
     # Crosssections
-    cs_id = 0
-    count = 0
-    for element_set_name, element_set in mesh.element_sets.items():
-        if (write_2d_elements is False) and (element_set.dimension == 2):
-            continue
-        count += 1
-        if element_set_name[:4] == "poly":
-            cs_id += 1
-            f.write("SimpleCS {} material {} set {}\n".format(str(cs_id), str(cs_id), count))
-        elif element_set_name[:5] == "cohes":
-            cs_id += 1
-            f.write("InterfaceCS {} material {} set {}\n".format(str(cs_id), str(cs_id), count))
+    if write_crosssections:
+        cs_id = 0
+        count = 0
+        for element_set_name, element_set in mesh.element_sets.items():
+            if (write_2d_elements is False) and (element_set.dimension == 2):
+                continue
+            if (write_1d_elements is False) and (element_set.dimension == 1):
+                continue
+
+            count += 1
+            cs_name = 'CROSS_SECTION_NAME'
+
+            if element_set_name[:4] == set_type_bulk:
+                cs_name = 'SimpleCS'
+            elif element_set_name[:5] == "cohes":
+                cs_name = 'InterfaceCS'
+
+            if element_set_name[:4] == set_type_bulk or element_set_name[:5] == "cohes":
+                cs_id += 1
+                
+                if 'cross_section_name' in element_set.set_properties:
+                    cs_name = element_set.set_properties['cross_section_name']
+                    #print 'Found cross_section_name: ', element_set.set_properties['cross_section_name']
+
+                cs_properties = ''
+                if 'cross_section_properties' in element_set.set_properties:
+                    cs_properties = element_set.set_properties['cross_section_properties']
+                    #print 'Found cross_section_properties: ', element_set.set_properties['cross_section_properties']
+
+                f.write("{} {} {} material {} set {}\n".format(cs_name, str(cs_id), cs_properties, str(cs_id), count))
+    else:
+        f.write("######### Crosssections here\n")
 
     # Materials
     f.write("######### Materials here\n")
-    mat_id = 0
-    count = 0
-    for element_set_name, element_set in mesh.element_sets.items():
-        if (write_2d_elements is False) and (element_set.dimension == 2):
-            continue
-        count += 1
-        if element_set_name[:4] == "poly":
-            mat_id += 1
-            if mat_id == 1:
-                f.write("IsoLE {} d 1.0 E {:.5e} n {} tAlpha 0.\n".format(count, 209.e9, 0.31))
-            else:
-                f.write("IsoLE {} d 1.0 E {:.5e} n {} tAlpha 0.\n".format(count, 250.e9, 0.3))
-        elif element_set_name[:5] == "cohes":
-            mat_id += 1
-            f.write("IntMatIsoDamage {} kn {:e} ks {:e} ft {:e} gf {:e}\n".format(count, 12e19, 5.2e19, 23e9, 15.))
+    if write_materials:
+        mat_id = 0
+        count = 0
+        for element_set_name, element_set in mesh.element_sets.items():
+            if (write_2d_elements is False) and (element_set.dimension == 2):
+                continue
+            if (write_1d_elements is False) and (element_set.dimension == 1):
+                continue
+
+            count += 1
+            mat_name = 'MATERIAL_NAME'
+            mat_properties = 'MATERIAL_PROPERTIES'
+
+            if element_set_name[:4] == set_type_bulk:
+                mat_name = 'IsoLE'
+            elif element_set_name[:5] == "cohes":
+                mat_name = 'IntMatIsoDamage'
+
+
+            if element_set_name[:4] == set_type_bulk or element_set_name[:5] == "cohes":
+                mat_id += 1
+
+                if 'material_name' in element_set.set_properties:
+                    mat_name = element_set.set_properties['material_name']
+
+                if 'material_properties' in element_set.set_properties:
+                    mat_properties = element_set.set_properties['material_properties']
+
+                f.write("{} {} {}\n".format(mat_name, count, mat_properties))
+                #f.write("BULK_MATERIAL\n")
+
     f.write("######### Boundary conditions here\n")
-    disp_z = 0
-    for n in mesh.nodes.values():
-        disp_z = max(disp_z, n.c[2])
-    f.write("BoundaryCondition 1 loadTimeFunction 1 values 3 0. 0. 0. dofs 3 1 2 3 set {}\n".format(0))
-    f.write("BoundaryCondition 2 loadTimeFunction 2 values 3 0. 0. {:e} dofs 3 1 2 3 set {}\n".format(disp_z, 0))
+    if write_bcs:
+
+        sets_passed = 0
+        for element_set_name, element_set in mesh.element_sets.items():
+            if (write_2d_elements is False) and (element_set.dimension == 2):
+                continue
+            if (write_1d_elements is False) and (element_set.dimension == 1):
+                continue
+
+            sets_passed += 1
+
+        count = 0
+        bc_ind = 0
+        for element_set_name, element_set in mesh.element_side_sets.items():
+
+            sets_passed += 1
+            count += 1
+            if 'boundary_condition_name' in element_set.set_properties and 'boundary_condition_properties' in element_set.set_properties:
+                bc_ind += 1
+                bc_name = element_set.set_properties['boundary_condition_name']
+                bc_props = element_set.set_properties['boundary_condition_properties']
+                f.write("{} {} set {} {}\n".format(bc_name, bc_ind, sets_passed, bc_props))
+
+        #disp_z = 0
+        #for n in mesh.nodes.values():
+        #    disp_z = max(disp_z, n.c[2])
+        #f.write("BoundaryCondition 1 loadTimeFunction 1 values 3 0. 0. 0. dofs 3 1 2 3 set {}\n".format(0))
+        #f.write("BoundaryCondition 2 loadTimeFunction 2 values 3 0. 0. {:e} dofs 3 1 2 3 set {}\n".format(disp_z, 0))
+
     f.write("######### Load time functions here\n")
-    f.write("ConstantFunction 1 f(t) 0.\n")
-    f.write("PiecewiseLinFunction 2 npoints 2  f(t) 2 0. 1.   t 2 0. 1.\n")
+    if write_ltf:
+        f.write("ConstantFunction 1 f(t) 0.\n")
+        f.write("PiecewiseLinFunction 2 npoints 2  f(t) 2 0. 1.   t 2 0. 1.\n")
 
     # Sets
     set_id = 0
     # Element sets
     for element_set_name, element_set in mesh.element_sets.items():
         if (write_2d_elements is False) and (element_set.dimension == 2):
+            continue
+        if (write_1d_elements is False) and (element_set.dimension == 1):
             continue
         set_id += 1
         f.write("# " + element_set_name)

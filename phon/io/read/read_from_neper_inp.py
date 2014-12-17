@@ -89,11 +89,23 @@ def read_from_neper_inp(filename, verbose=0, mesh_dimension=3):
         return mesh
 
 
-def create_element_sides(mesh):
+def create_element_sides(mesh, mesh_dimension=3):
+
+    if mesh_dimension == 3:
+        set_type_bulk = "poly"
+        set_type_interface = "face"
+    elif mesh_dimension == 2:
+        set_type_bulk = "face"
+        set_type_interface = "edge"
+    else:
+        print 'Unsupported dimension in create_element_sides: ', mesh_dimension
+        return
+
+
     element_to_grain = [0] * len(mesh.elements)
     node_to_elements = [list() for n in range(0,len(mesh.nodes))]
     for element_set_name, element_set in mesh.element_sets.iteritems():
-        if not element_set_name.startswith("poly"):
+        if not element_set_name.startswith(set_type_bulk):
             continue
         grain = int(element_set_name[4:])
         for el_num in element_set.ids:
@@ -103,24 +115,34 @@ def create_element_sides(mesh):
 
     mesh.element_side_sets["outer"] = ElementSideSet("outer")
     for element_set_name, face_set in mesh.element_sets.iteritems():
-        if not element_set_name[0:4] == "face":
+        if not element_set_name[0:4] == set_type_interface:
             continue
+
 
         # We should create a proper element-side-set out of this "face-set", we'll just give it the same name though
         for face_id in face_set.ids:
             connected_tets = []
             face = mesh.elements[face_id]
-            for element_id in node_to_elements[face.vertices[0]]:
+            for element_id in node_to_elements[face.vertices[0]-1]:
                 element = mesh.elements[element_id]
-                # Need to determine which of the faces of the tet are active
-                if set(face.vertices) == {element.vertices[0], element.vertices[1], element.vertices[3]}:
-                    connected_tets.append(ElementSide(element_id, 1))
-                elif set(face.vertices) == {element.vertices[0], element.vertices[2], element.vertices[1]}:
-                    connected_tets.append(ElementSide(element_id, 2))
-                elif set(face.vertices) == {element.vertices[0], element.vertices[3], element.vertices[2]}:
-                    connected_tets.append(ElementSide(element_id, 3))
-                elif set(face.vertices) == {element.vertices[1], element.vertices[2], element.vertices[3]}:
-                    connected_tets.append(ElementSide(element_id, 4))
+
+                if mesh_dimension == 3:
+                    # Need to determine which of the faces of the tet are active
+                    if set(face.vertices) == {element.vertices[0], element.vertices[1], element.vertices[3]}:
+                        connected_tets.append(ElementSide(element_id, 1))
+                    elif set(face.vertices) == {element.vertices[0], element.vertices[2], element.vertices[1]}:
+                        connected_tets.append(ElementSide(element_id, 2))
+                    elif set(face.vertices) == {element.vertices[0], element.vertices[3], element.vertices[2]}:
+                        connected_tets.append(ElementSide(element_id, 3))
+                    elif set(face.vertices) == {element.vertices[1], element.vertices[2], element.vertices[3]}:
+                        connected_tets.append(ElementSide(element_id, 4))
+                elif mesh_dimension == 2:
+                    if set(face.vertices) == {element.vertices[0], element.vertices[1]}:
+                        connected_tets.append(ElementSide(element_id, 1))
+                    elif set(face.vertices) == {element.vertices[1], element.vertices[2]}:
+                        connected_tets.append(ElementSide(element_id, 2))
+                    elif set(face.vertices) == {element.vertices[2], element.vertices[0]}:
+                        connected_tets.append(ElementSide(element_id, 3))
 
             if len(connected_tets) == 1:
                 # Create a set for the entire surrounding domain
@@ -263,7 +285,9 @@ def _read_element_set(f, mesh, verbose=0):
 
     element_set_name = re_element_set.match(line).group(1)
 
-    if element_set_name.startswith("face"):
+    if element_set_name.startswith("edge"):
+        dim = 1
+    elif element_set_name.startswith("face"):
         dim = 2
     elif element_set_name.startswith("poly"):
         dim = 3

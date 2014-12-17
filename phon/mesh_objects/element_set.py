@@ -41,6 +41,9 @@ class ElementSet:
             ids = []
         self.ids = ids
 
+        # Specific properties assigned to the set, e.g. material properties.
+        self.set_properties = {}
+
     def get_dimension(self):
         """
         Get the dimension of the element set.
