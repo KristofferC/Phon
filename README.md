@@ -15,8 +15,7 @@ features:
 
 ### Documentation
 
-Documentation can either be built from source or found
-at http://web.student.chalmers.se/~kricarl/phon/_build/html/.
+Documentation can be found at http://phon.readthedocs.org.
 
 ### Authors
 
