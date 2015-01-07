@@ -180,7 +180,7 @@ def create_cohesive_elements(mesh, mesh_dimension=3):
 
                     norm_cohes = _calculate_normal_2d(mesh, cohesive_element.vertices[0], cohesive_element.vertices[1] )
 
-                if np.dot(norm_tri, norm_cohes) > 0:
+                if np.dot(norm_tri, norm_cohes) < 0.0:
                     #print 'Normal needs flipping.'
                     for i, node_id in enumerate(two_d_element.vertices):
                         vertices_cohesive[i] = node_id + n_nodes * grain_id_2
