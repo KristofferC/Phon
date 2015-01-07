@@ -63,6 +63,7 @@ def create_cohesive_elements(mesh, mesh_dimension=3):
                                                                 face_set,
                                                                 node_id_grain_lut)
 
+
         # Ignore sets at boundary
         if len(grains_connected_to_face) == 1:
             continue
@@ -179,6 +180,21 @@ def create_cohesive_elements(mesh, mesh_dimension=3):
                     #print 'norm_tri: ',norm_tri
 
                     norm_cohes = _calculate_normal_2d(mesh, cohesive_element.vertices[0], cohesive_element.vertices[1] )
+	    	elif num_t_nodes == 3:
+		    #print 'idxs: ', idxs	
+
+
+                    if {0, 3, 1}.issubset(set(idxs)):
+                        norm_tri = _calculate_normal_2d(mesh, element.vertices[0], element.vertices[1])
+                    elif {1,4,2}.issubset(set(idxs)):
+                        norm_tri = _calculate_normal_2d(mesh, element.vertices[1], element.vertices[2])
+                    elif {2,5,0}.issubset(set(idxs)):
+                        norm_tri = _calculate_normal_2d(mesh, element.vertices[2], element.vertices[0])
+                
+                    #print 'norm_tri: ',norm_tri
+
+                    norm_cohes = _calculate_normal_2d(mesh, cohesive_element.vertices[0], cohesive_element.vertices[1] )
+
 
                 if np.dot(norm_tri, norm_cohes) > 0:
                     #print 'Normal needs flipping.'

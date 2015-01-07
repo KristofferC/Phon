@@ -137,12 +137,32 @@ def create_element_sides(mesh, mesh_dimension=3):
                     elif set(face.vertices) == {element.vertices[1], element.vertices[2], element.vertices[3]}:
                         connected_tets.append(ElementSide(element_id, 4))
                 elif mesh_dimension == 2:
-                    if set(face.vertices) == {element.vertices[0], element.vertices[1]}:
-                        connected_tets.append(ElementSide(element_id, 1))
-                    elif set(face.vertices) == {element.vertices[1], element.vertices[2]}:
-                        connected_tets.append(ElementSide(element_id, 2))
-                    elif set(face.vertices) == {element.vertices[2], element.vertices[0]}:
-                        connected_tets.append(ElementSide(element_id, 3))
+		    #print 'face.vertices: ', face.vertices
+	
+		    if len(face.vertices) == 2:
+		    	# Linear element
+                    	if set(face.vertices) == {element.vertices[0], element.vertices[1]}:
+                            connected_tets.append(ElementSide(element_id, 1))
+                    	elif set(face.vertices) == {element.vertices[1], element.vertices[2]}:
+                            connected_tets.append(ElementSide(element_id, 2))
+                    	elif set(face.vertices) == {element.vertices[2], element.vertices[0]}:
+                            connected_tets.append(ElementSide(element_id, 3))
+
+
+		    if len(face.vertices) == 3:
+		        # Quadratic elements
+                    	if set(face.vertices) == {element.vertices[0], element.vertices[3], element.vertices[1]}:
+			    #print 'Found side 1.'
+                            connected_tets.append(ElementSide(element_id, 1))
+                    	elif set(face.vertices) == {element.vertices[1], element.vertices[4], element.vertices[2]}:
+			    #print 'Found side 2.'
+                            connected_tets.append(ElementSide(element_id, 2))
+                    	elif set(face.vertices) == {element.vertices[2], element.vertices[5], element.vertices[0]}:
+			    #print 'Found side 3.'
+                            connected_tets.append(ElementSide(element_id, 3))
+
+
+	    #print 'len(connected_tets): ', len(connected_tets)
 
             if len(connected_tets) == 1:
                 # Create a set for the entire surrounding domain
@@ -258,7 +278,19 @@ def _read_elements(f, mesh, num_elems, verbose):
             print ("\rReading element %s, with id %d."
                    % (element_name, num_elems)),
 
-        element_numbers = map(to_number, line.strip().split(','))
+	numbers_unmod = line.strip().split(',')
+	
+	#print 'element_name: ', element_name
+	numbers_mod = numbers_unmod
+
+	#if element_name == 'CPE6':
+	#    #print 'numbers_unmod: ', numbers_unmod
+	#    numbers_mod[2] = numbers_unmod[4]
+	#    numbers_mod[3] = numbers_unmod[2]
+	#    numbers_mod[4] = numbers_unmod[5]
+	#    numbers_mod[5] = numbers_unmod[3]
+
+        element_numbers = map(to_number, numbers_unmod)
         element = Element(element_name, element_numbers[1:])
         mesh.elements[element_numbers[0]] = element
 
