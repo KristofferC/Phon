@@ -34,8 +34,7 @@ class Test(unittest.TestCase):
     """Unit tests for test_create_cohesive_elements_2d."""
 
     def setUp(self):
-        self.mesh = read_from_neper_inp(os.path.join(__location__, "mesh2El2d.inp"),
-                                        verbose=0, mesh_dimension=2)
+        self.mesh = read_from_neper_inp(os.path.join(__location__, "mesh2El2d.inp"))
 
     def test_create_cohesive_elements(self):
         mesh_dim = 2
