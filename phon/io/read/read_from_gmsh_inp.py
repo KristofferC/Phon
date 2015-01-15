@@ -49,6 +49,7 @@ def read_from_gmsh_inp(basename, ngrains, verbose=0):
     :return: A mesh class containing the read mesh objects.
     :rtype: :class:`Mesh`
     :raises ReadInpFileError: If specific syntax error are found.
+
     """
     elem2grain = dict()
     mesh = Mesh("grains")

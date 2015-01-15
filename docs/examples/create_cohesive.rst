@@ -8,7 +8,7 @@ these elements into a mesh. This is done with the function
 is currently only possible to export a mesh with cohesive elements to the Abaqus format.
 
 The function generates element sets of the cohesive elements. These have the name
-``cohedX_Y`` where X and Y are identifiers to the two grains that share the grain
+``cohesX_Y`` where X and Y are identifiers to the two grains that share the grain
 boundary.
 
 An example of a mesh being read, cohesive elements inserted into it and then getting exported
