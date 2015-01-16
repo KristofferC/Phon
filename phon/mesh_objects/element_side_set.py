@@ -20,22 +20,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
+
 class ElementSide:
+
     def __init__(self, elemnum, sidenum):
         self.elem = elemnum
         self.side = sidenum
 
     def __str__(self):
-         return ("Side {} of element {}".format(self.side, self.elem))
+        return "Side {} of element {}".format(self.side, self.elem)
+
 
 class ElementSideSet:
+
     """ Represents a set of element sides """
 
     def __init__(self, name):
         """
         :param name: Name of the set.
         :type name: str
-        :param dimension: The dimension of the elements in the set
         """
         self.name = name
         self.sides = []
@@ -53,4 +56,3 @@ class ElementSideSet:
         """
         return ("Element side set with name {0} containing elements with the "
                 "following ids {1}".format(self.name, self.sides))
-

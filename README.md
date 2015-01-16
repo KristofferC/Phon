@@ -1,5 +1,8 @@
 Phon
-----
+=====
+
+[![Build Status](https://travis-ci.org/KristofferC/Phon.svg?branch=master)](https://travis-ci.org/KristofferC/Phon) [![Coverage Status](https://coveralls.io/repos/KristofferC/Phon/badge.png?branch=master)](https://coveralls.io/r/KristofferC/Phon?branch=master)
+
 
 This is a Python package that provides the functionality to read
 and export mesh files to different software's. It has the following
@@ -10,19 +13,18 @@ features:
 * Can insert cohesive elements between grains in a Voronoi tessellated mesh.
 * Can currently export the mesh to formats readable by Abaqus and OOFEM.
 
-Documentation
-=============
-Documentation can either be built from source or found
-at http://web.student.chalmers.se/~kricarl/phon/_build/html/.
+### Documentation
 
-Authors
-====================
+Documentation can be found at http://phon.readthedocs.org.
+
+### Authors
+
 Kristoffer Carlsson - kristoffer.carlsson@chalmers.se
 
 Mikael Öhman
 
-Copyright and Licensing
-=======================
+### Copyright and Licensing
+
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights

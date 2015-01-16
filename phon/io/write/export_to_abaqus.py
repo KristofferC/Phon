@@ -63,16 +63,17 @@ def export_to_abaqus(filename, mesh, write_2d_elements=False, f=None):
     f.write('\n*Node\n')
     for node_id, node in mesh.nodes.items():
         f.write("{0:d}, ".format(node_id))
-        f.write("{0:.12e}, {1:.12e}, {2:.12e}\n".format(node.c[0], node.c[1], node.c[2]))
+        f.write("{0:.12e}, {1:.12e}, {2:.12e}\n".format(
+            node.c[0], node.c[1], node.c[2]))
 
     # Recreate element indices
-    element_indices = defaultdict(lambda:[],OrderedDict())
+    element_indices = defaultdict(lambda: [], OrderedDict())
     for i, element in mesh.elements.items():
         element_indices[element.elem_type].append(i)
 
     # Elements
     for element_type, elements in element_indices.items():
-        
+
         if ((write_1d_elements is False) and
                 (element_dictionary_inverse[(element_type, "abaqus")] in elements_1d)):
             continue
@@ -134,8 +135,8 @@ def write_column_broken_array(int_array, f):
     Writes an array to a file and inserts a new line every fifteen element
     as required by Abaqus.
 
-    :param array: The array to write to the file
-    :type array: array
+    :param int_array: The array to write to the file
+    :type int_array: array
     :param f: The file to write the array to
     :type f: file object
 

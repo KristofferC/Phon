@@ -26,7 +26,7 @@ from phon.io import elements_2d
 from phon.io import elements_1d
 
 
-def export_to_oofem(filename, mesh, write_2d_elements=False, mesh_dimension=3):
+def export_to_oofem(filename, mesh, write_2d_elements=False):
     """
     Writes a mesh to a file in a format that OOFEM uses.
 
@@ -38,6 +38,13 @@ def export_to_oofem(filename, mesh, write_2d_elements=False, mesh_dimension=3):
                               element sets should be written to the file.
     :type write_2d_elements: boolean
     """
+
+    mesh_dimension = 1
+    if mesh.get_number_of_2d_elements() > 0:
+        mesh_dimension = 2
+
+    if mesh.get_number_of_3d_elements() > 0:
+        mesh_dimension = 3
 
     if mesh_dimension == 3:
         set_type_bulk = "poly"
@@ -54,41 +61,35 @@ def export_to_oofem(filename, mesh, write_2d_elements=False, mesh_dimension=3):
     write_bcs           = True
     write_ltf           = False
 
-    write_1d_elements=False
 
     f = open(filename, "w")
 
-    # Lengths
-    n_nodes = len(mesh.nodes)
-
-    n_elements = mesh.get_number_of_3d_elements()
-
     if write_2d_elements:
-        n_elements += mesh.get_number_of_2d_elements()
-
-    if write_1d_elements:
-        n_elements += mesh.get_number_of_1d_elements()
+        n_elements = (mesh.get_number_of_2d_elements() +
+                      mesh.get_number_of_3d_elements())
+    else:
+        n_elements = mesh.get_number_of_3d_elements()
 
     n_cs = 0
     n_set = len(mesh.node_sets) + len(mesh.element_side_sets)
     for element_set_name, element_set in mesh.element_sets.items():
         if (write_2d_elements is False) and (element_set.dimension == 2):
             continue
-        if (write_1d_elements is False) and (element_set.dimension == 1):
+        if (element_set.dimension == 1):
             continue
         n_set += 1
         if element_set_name[:4] == set_type_bulk or element_set_name[:5] == "cohes":
             n_cs += 1
 
     # Output file record
-    #f.write(filename + ".out\n")
+    # f.write(filename + ".out\n")
 
     # Job description record
-    #f.write("{}\n".format(mesh.name))
+    # f.write("{}\n".format(mesh.name))
 
     # Analysis record
-    #f.write("StaticStructural 1 nsteps 1 nmodules 1\n")
-    #f.write("vtkxml tstep_all domain_all primvars 1 1 cellvars 4 1 2 4 5\n")
+    # f.write("StaticStructural 1 nsteps 1 nmodules 1\n")
+    # f.write("vtkxml tstep_all domain_all primvars 1 1 cellvars 4 1 2 4 5\n")
     # Domain record
     if mesh_dimension == 3:
         f.write("domain 3d\n")
@@ -106,6 +107,7 @@ def export_to_oofem(filename, mesh, write_2d_elements=False, mesh_dimension=3):
 
     f.write("ndofman " + str(len(mesh.nodes)) + " ")
     f.write("nelem " + str(n_elements) + " ")
+
     f.write("nset " + str(n_set) + " ");
 
     if write_materials:
@@ -135,7 +137,8 @@ def export_to_oofem(filename, mesh, write_2d_elements=False, mesh_dimension=3):
     # Write nodes
     for node_id, node in mesh.nodes.items():
         f.write("node {0:d} ".format(node_id))
-        f.write("coords 3 {:.12e} {:.12e} {:.12e} ".format(node.c[0], node.c[1], node.c[2]))
+        f.write("coords 3 {:.12e} {:.12e} {:.12e} ".format(
+            node.c[0], node.c[1], node.c[2]))
         f.write("\n")
 
     #  Elements
@@ -143,14 +146,13 @@ def export_to_oofem(filename, mesh, write_2d_elements=False, mesh_dimension=3):
         if (write_2d_elements is False) and \
                 (element_dictionary_inverse[(element.elem_type, "abaqus")] in elements_2d):
             continue
-        if (write_1d_elements is False) and \
-                (element_dictionary_inverse[(element.elem_type, "abaqus")] in elements_1d):
+        if (element_dictionary_inverse[(element.elem_type, "abaqus")] in elements_1d):
             continue
         element_name = element_dictionary[(element.elem_type, "oofem")]
         f.write(element_name + " {0:d} ".format(element_id))
         f.write("nodes {} ".format(str(len(element.vertices))))
         # Code below changes "[1,2,3]" to "1 2 3"
-        f.write(''.join('{} '.format(k) 
+        f.write(''.join('{} '.format(k)
                         for k in element.vertices)[:-1])
         f.write("\n")
 
@@ -262,11 +264,11 @@ def export_to_oofem(filename, mesh, write_2d_elements=False, mesh_dimension=3):
     for element_set_name, element_set in mesh.element_sets.items():
         if (write_2d_elements is False) and (element_set.dimension == 2):
             continue
-        if (write_1d_elements is False) and (element_set.dimension == 1):
+        if (element_set.dimension == 1):
             continue
         set_id += 1
         f.write("# " + element_set_name)
-        f.write("\nSet {} elements {} ".format(str(set_id), str(len(element_set.ids))))
+        f.write("\nSet {} elements {} ".format( str(set_id), str(len(element_set.ids))))
         f.write(''.join('{} '.format(k) for k in element_set.ids)[:-1])
         f.write("\n")
 
@@ -274,21 +276,23 @@ def export_to_oofem(filename, mesh, write_2d_elements=False, mesh_dimension=3):
     for side_set_name, side_set in mesh.element_side_sets.items():
         set_id += 1
         f.write("# " + side_set_name)
-        f.write("\nSet {} elementboundaries {} ".format(str(set_id), str(2*len(side_set.sides))))
-        f.write(''.join('{} {}  '.format(k.elem, k.side) for k in side_set.sides)[:-1])
+        f.write("\nSet {} elementboundaries {} ".format(
+            str(set_id), str(2 * len(side_set.sides))))
+        f.write(''.join('{} {}  '.format(k.elem, k.side)
+                        for k in side_set.sides)[:-1])
         f.write("\n")
 
     # Node sets
     for node_set_name, node_set in mesh.node_sets.items():
         set_id += 1
         f.write("# " + node_set_name)
-        f.write("\nSet {} nodes {} ".format(str(set_id), str(len(node_set.ids))))
+        f.write("\nSet {} nodes {} ".format(
+            str(set_id), str(len(node_set.ids))))
         f.write(''.join('{} '.format(k) for k in node_set.ids)[:-1])
         f.write("\n")
 
-
-    # For testing
-    #f.write("\nSimpleCS 1\n")
-    #f.write("IsoLE 1 d 1. E 30.e6 n 0.2 tAlpha 1.2e-5\n")
-    #f.write("BoundaryCondition  1 loadTimeFunction 1 prescribedvalue 0.0\n")
-    #f.write("PeakFunction 1 t 1.0 f(t) 1.\n")
+        # For testing
+        # f.write("\nSimpleCS 1\n")
+        # f.write("IsoLE 1 d 1. E 30.e6 n 0.2 tAlpha 1.2e-5\n")
+        # f.write("BoundaryCondition  1 loadTimeFunction 1 prescribedvalue 0.0\n")
+        # f.write("PeakFunction 1 t 1.0 f(t) 1.\n")

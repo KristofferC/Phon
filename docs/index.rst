@@ -23,7 +23,7 @@ Contents:
 
    Installation <installation/index.rst>
    Examples <examples/index.rst>
-   Library <library/index.rst>
+   Modules <modules.rst>
 
 
 

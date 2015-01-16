@@ -25,6 +25,7 @@ from phon.io.read.read_from_neper_inp import read_from_neper_inp
 from phon.mesh_tools.create_cohesive_elements import create_cohesive_elements
 from phon.io.write.export_to_abaqus import export_to_abaqus
 
+
 __location__ = os.path.realpath(
     os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
@@ -33,8 +34,7 @@ class Test(unittest.TestCase):
     """Unit tests for test_create_cohesive_elements_2d."""
 
     def setUp(self):
-        self.mesh = read_from_neper_inp(os.path.join(__location__,"mesh2El2d.inp"),
-                                        verbose=0, mesh_dimension=2)
+        self.mesh = read_from_neper_inp(os.path.join(__location__, "mesh2El2d.inp"))
 
     def test_create_cohesive_elements(self):
         mesh_dim = 2
@@ -49,10 +49,11 @@ class Test(unittest.TestCase):
     def test_export_to_abaqus(self):
         write_2d_el = True
         export_to_abaqus("test2El2dCZ.inp", self.mesh, write_2d_el)
-    
+
     def tearDown(self):
         if os.path.isfile("test2El2dCZ.inp"):
             os.remove("test2El2dCZ.inp")
+
 
 if __name__ == "__main__":
     unittest.main()

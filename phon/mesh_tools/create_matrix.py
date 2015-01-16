@@ -60,8 +60,8 @@ def create_matrix(mesh, thickness):
         if "coh_face" in element_set_name:
             element_set = mesh.element_sets[element_set_name]
             for element_id in element_set.ids:
-
-                normal_vec[element_id] = _calculate_normal(mesh, mesh.elements[element_id])
+                normal_vec[element_id] = _calculate_normal(
+                    mesh, mesh.elements[element_id])
     for element_set_name in mesh.element_sets.keys():
         if "coh_face" in element_set_name:
             node_already_moved = []
@@ -86,16 +86,16 @@ def create_matrix(mesh, thickness):
                     node.y += r[1]
                     node.z += r[2]
 
-                   # if node.x > 1.0 or node.x < 0.0:
-                   #     node.x -= r[0]
-                   # if abs(node.y) > 1.0 or node.y < 0.0:
-                   #     node.y -= r[1]
-                   # if abs(node.z) > 1.0 or node.z < 0.0:
-                   #     node.z -= r[2]
+                    # if node.x > 1.0 or node.x < 0.0:
+                    # node.x -= r[0]
+                    # if abs(node.y) > 1.0 or node.y < 0.0:
+                    #     node.y -= r[1]
+                    # if abs(node.z) > 1.0 or node.z < 0.0:
+                    #     node.z -= r[2]
 
 
-def find_displacement_vector(mesh, node_id, corner_sets, edge_sets, face_sets, normal_vec, thickness):
-
+def find_displacement_vector(mesh, node_id, corner_sets,
+                             edge_sets, face_sets, normal_vec, thickness):
     # For now ignore projection stuff
     # TODO: Fix
 
@@ -107,7 +107,6 @@ def find_displacement_vector(mesh, node_id, corner_sets, edge_sets, face_sets, n
 
     for node_set_name in edge_sets:
         if node_id in mesh.node_sets[node_set_name].ids:
-
             return project_on_line(node_set_name, normal_vec, thickness)
 
     for node_set_name in face_sets:

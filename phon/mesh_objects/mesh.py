@@ -28,6 +28,7 @@ from phon.io import element_dictionary_inverse
 
 
 class Mesh:
+
     """ Represents a mesh which includes nodes, elements, element sets
     and node sets.
     """
@@ -89,20 +90,21 @@ class Mesh:
 
         """
 
-        #raise("This method does not work reliably")
+        # raise("This method does not work reliably")
 
         # Create dictionary of old and renumbered node identifiers
         node_renumber_dict = {}
         new_nodes_dict = {}
         for i, node in enumerate(self.nodes.keys()):
-            node_renumber_dict[node] = i+1
-            new_nodes_dict[i+1] = self.nodes[node]
+            node_renumber_dict[node] = i + 1
+            new_nodes_dict[i + 1] = self.nodes[node]
 
         self.nodes = new_nodes_dict
 
         # Update node identifiers in elements (only 3d).
         for element_id, element in self.elements.items():
-            if (element_dictionary_inverse[(element.elem_type, "abaqus")] in elements_2d):
+            if (element_dictionary_inverse[
+                    (element.elem_type, "abaqus")] in elements_2d):
                 continue
             for i, node_id in enumerate(element.vertices):
                 element.vertices[i] = node_renumber_dict[node_id]
@@ -122,7 +124,8 @@ class Mesh:
         """
         number_of_2d_elements = 0
         for element in self.elements.values():
-            if element_dictionary_inverse[(element.elem_type, "abaqus")] in elements_2d:
+            if element_dictionary_inverse[
+                    (element.elem_type, "abaqus")] in elements_2d:
                 number_of_2d_elements += 1
         return number_of_2d_elements
 
@@ -136,6 +139,7 @@ class Mesh:
         """
         number_of_3d_elements = 0
         for element in self.elements.values():
-            if element_dictionary_inverse[(element.elem_type, "abaqus")] in elements_3d:
+            if element_dictionary_inverse[
+                    (element.elem_type, "abaqus")] in elements_3d:
                 number_of_3d_elements += 1
         return number_of_3d_elements

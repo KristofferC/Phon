@@ -28,15 +28,3 @@ To update to the latest version, go into your repository and execute::
     $ git pull origin master
 
 and rerun the setup file.
-
-
-Documentation
-=============
-To build the documentation the tool `Sphinx`_ is needed. After it is installed
-execute the command::
-
-     $ make html
-
-to build the html documentation.
-
-.. _Sphinx: http://sphinx-doc.org/

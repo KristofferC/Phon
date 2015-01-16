@@ -7,22 +7,13 @@ The mesh can currently be exported to a format readable by either `Abaqus`_ or `
 Exporting to Abaqus
 ===================
 
-A mesh object can be exported to abaqus as follows::
+A mesh object can be exported to Abaqus as follows::
 
     >>> from phon.io.write.export_to_abaqus import export_to_abaqus
     >>> export_to_abaqus("output_file.inp", mesh)
 
 This file can then be imported into Abaqus CAE.
 
-|
-
-.. figure:: ..\figures\abaq.png
-    :width: 800
-    :align: center
-
-    Mesh were cohesive elements have been inserted
-
-|
 
 Exporting to OOFEM
 ===================

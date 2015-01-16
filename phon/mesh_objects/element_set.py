@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 
 class ElementSet:
+
     """ Represents a set of elements """
 
     def __init__(self, name, dimension, ids=None):

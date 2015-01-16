@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 
 class Element:
+
     """ Represents a finite element. """
 
     def __init__(self, elem_type, vertices):
