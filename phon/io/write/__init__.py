@@ -20,4 +20,4 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
-__all__ = ["export_to_abaqus", "export_to_oofem"]
+# __all__ = ["export_to_abaqus", "export_to_oofem"]

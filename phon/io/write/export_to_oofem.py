@@ -57,10 +57,9 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
         return
 
     write_crosssections = True
-    write_materials     = True
-    write_bcs           = True
-    write_ltf           = False
-
+    write_materials = True
+    write_bcs = True
+    write_ltf = False
 
     f = open(filename, "w")
 
@@ -131,7 +130,6 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
     else:
         f.write("nltf 0 ")
 
-
     f.write("\n");
 
     # Write nodes
@@ -141,12 +139,12 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
             node.c[0], node.c[1], node.c[2]))
         f.write("\n")
 
-    #  Elements
+    # Elements
     for element_id, element in mesh.elements.items():
         if (write_2d_elements is False) and \
                 (element_dictionary_inverse[(element.elem_type, "abaqus")] in elements_2d):
             continue
-        if (element_dictionary_inverse[(element.elem_type, "abaqus")] in elements_1d):
+        if element_dictionary_inverse[(element.elem_type, "abaqus")] in elements_1d:
             continue
         element_name = element_dictionary[(element.elem_type, "oofem")]
         f.write(element_name + " {0:d} ".format(element_id))
@@ -163,7 +161,7 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
         for element_set_name, element_set in mesh.element_sets.items():
             if (write_2d_elements is False) and (element_set.dimension == 2):
                 continue
-            if (element_set.dimension == 1):
+            if element_set.dimension == 1:
                 continue
 
             count += 1
@@ -176,7 +174,7 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
 
             if element_set_name[:4] == set_type_bulk or element_set_name[:5] == "cohes":
                 cs_id += 1
-                
+
                 if 'cross_section_name' in element_set.set_properties:
                     cs_name = element_set.set_properties['cross_section_name']
                     #print 'Found cross_section_name: ', element_set.set_properties['cross_section_name']
@@ -198,7 +196,7 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
         for element_set_name, element_set in mesh.element_sets.items():
             if (write_2d_elements is False) and (element_set.dimension == 2):
                 continue
-            if (element_set.dimension == 1):
+            if element_set.dimension == 1:
                 continue
 
             count += 1
@@ -209,7 +207,6 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
                 mat_name = 'IsoLE'
             elif element_set_name[:5] == "cohes":
                 mat_name = 'IntMatIsoDamage'
-
 
             if element_set_name[:4] == set_type_bulk or element_set_name[:5] == "cohes":
                 mat_id += 1
@@ -268,7 +265,7 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
             continue
         set_id += 1
         f.write("# " + element_set_name)
-        f.write("\nSet {} elements {} ".format( str(set_id), str(len(element_set.ids))))
+        f.write("\nSet {} elements {} ".format(str(set_id), str(len(element_set.ids))))
         f.write(''.join('{} '.format(k) for k in element_set.ids)[:-1])
         f.write("\n")
 
@@ -296,6 +293,5 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
         # f.write("IsoLE 1 d 1. E 30.e6 n 0.2 tAlpha 1.2e-5\n")
         # f.write("BoundaryCondition  1 loadTimeFunction 1 prescribedvalue 0.0\n")
         # f.write("PeakFunction 1 t 1.0 f(t) 1.\n")
-
 
     f.close()

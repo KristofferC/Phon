@@ -88,10 +88,10 @@ def read_from_neper_inp(filename, verbose=0):
 
         return mesh
 
+
 # CURRENTLY UNUSED
 # NO! I use it! /ES
 def create_element_sides(mesh, mesh_dimension=3):
-
     if mesh_dimension == 3:
         set_type_bulk = "poly"
         set_type_interface = "face"
@@ -102,9 +102,8 @@ def create_element_sides(mesh, mesh_dimension=3):
         print('Unsupported dimension in create_element_sides: ', mesh_dimension)
         return
 
-
     element_to_grain = [0] * len(mesh.elements)
-    node_to_elements = [list() for n in range(0,len(mesh.nodes))]
+    node_to_elements = [list() for n in range(0, len(mesh.nodes))]
     for element_set_name, element_set in mesh.element_sets.iteritems():
         if not element_set_name.startswith(set_type_bulk):
             continue
@@ -124,7 +123,7 @@ def create_element_sides(mesh, mesh_dimension=3):
         for face_id in face_set.ids:
             connected_tets = []
             face = mesh.elements[face_id]
-            for element_id in node_to_elements[face.vertices[0]-1]:
+            for element_id in node_to_elements[face.vertices[0] - 1]:
                 element = mesh.elements[element_id]
 
                 if mesh_dimension == 3:
@@ -138,32 +137,31 @@ def create_element_sides(mesh, mesh_dimension=3):
                     elif set(face.vertices) == {element.vertices[1], element.vertices[2], element.vertices[3]}:
                         connected_tets.append(ElementSide(element_id, 4))
                 elif mesh_dimension == 2:
-		            #print 'face.vertices: ', face.vertices
-	
-                    if len(face.vertices) == 2:
-		    	        # Linear element
-                    	if set(face.vertices) == {element.vertices[0], element.vertices[1]}:
-                            connected_tets.append(ElementSide(element_id, 1))
-                    	elif set(face.vertices) == {element.vertices[1], element.vertices[2]}:
-                            connected_tets.append(ElementSide(element_id, 2))
-                    	elif set(face.vertices) == {element.vertices[2], element.vertices[0]}:
-                            connected_tets.append(ElementSide(element_id, 3))
+                    # print 'face.vertices: ', face.vertices
 
+                    if len(face.vertices) == 2:
+                        # Linear element
+                        if set(face.vertices) == {element.vertices[0], element.vertices[1]}:
+                            connected_tets.append(ElementSide(element_id, 1))
+                        elif set(face.vertices) == {element.vertices[1], element.vertices[2]}:
+                            connected_tets.append(ElementSide(element_id, 2))
+                        elif set(face.vertices) == {element.vertices[2], element.vertices[0]}:
+                            connected_tets.append(ElementSide(element_id, 3))
 
                 if len(face.vertices) == 3:
-		                # Quadratic elements
-                    	if set(face.vertices) == {element.vertices[0], element.vertices[3], element.vertices[1]}:
-			            #print 'Found side 1.'
-                            connected_tets.append(ElementSide(element_id, 1))
-                    	elif set(face.vertices) == {element.vertices[1], element.vertices[4], element.vertices[2]}:
-			                #print 'Found side 2.'
-                            connected_tets.append(ElementSide(element_id, 2))
-                    	elif set(face.vertices) == {element.vertices[2], element.vertices[5], element.vertices[0]}:
-			                #print 'Found side 3.'
-                            connected_tets.append(ElementSide(element_id, 3))
+                    # Quadratic elements
+                    if set(face.vertices) == {element.vertices[0], element.vertices[3], element.vertices[1]}:
+                        # print 'Found side 1.'
+                        connected_tets.append(ElementSide(element_id, 1))
+                    elif set(face.vertices) == {element.vertices[1], element.vertices[4], element.vertices[2]}:
+                        # print 'Found side 2.'
+                        connected_tets.append(ElementSide(element_id, 2))
+                    elif set(face.vertices) == {element.vertices[2], element.vertices[5], element.vertices[0]}:
+                        # print 'Found side 3.'
+                        connected_tets.append(ElementSide(element_id, 3))
 
 
-	    #print 'len(connected_tets): ', len(connected_tets)
+            # print 'len(connected_tets): ', len(connected_tets)
 
             if len(connected_tets) == 1:
                 # Create a set for the entire surrounding domain
@@ -324,7 +322,7 @@ def _read_element_set(f, mesh, verbose=0):
         line = f.readline().strip()
         generate_info = [to_number(x) for x in line.split(',')]
         start, stop, step = generate_info[
-            0], generate_info[1], generate_info[2]
+                                0], generate_info[1], generate_info[2]
         element_set.ids = range(start, stop + 1, step)
         mesh.element_sets[element_set_name] = element_set
         return
@@ -375,7 +373,7 @@ def _read_node_set(f, mesh, verbose=0):
         line = f.readline().strip()
         generate_info = [to_number(x) for x in line.split(',')]
         start, stop, step = generate_info[
-            0], generate_info[1], generate_info[2]
+                                0], generate_info[1], generate_info[2]
         node_set.ids = range(start, stop + 1, step)
         mesh.node_sets[node_set_name] = node_set
         return
@@ -399,7 +397,6 @@ def _read_node_set(f, mesh, verbose=0):
 
 
 class ReadInpFileError(Exception):
-
     """
     Base class for errors in the :mod:`read_from_neper_inp` module.
 
