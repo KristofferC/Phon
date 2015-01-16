@@ -65,6 +65,7 @@ def create_cohesive_elements(mesh, mesh_dimension=3):
                                                                 face_set,
                                                                 node_id_grain_lut)
 
+
         # Ignore sets at boundary
         if len(grains_connected_to_face) == 1:
             continue
@@ -185,10 +186,47 @@ def create_cohesive_elements(mesh, mesh_dimension=3):
                         vertices_cohesive[
                             i + num_t_nodes] = node_id + n_nodes * grain_id_1
 
-    # elif mesh_dimension == 2:
-    # TODO: Check normals for the 2d case.
-    # print 'Skipping check for flipped normals because it is not yet
-    # implemented for 2d.'
+            elif mesh_dimension == 2:
+                # TODO: Check normals for the 2d case.
+
+                if num_t_nodes == 2:
+                    #print 'num_t_nodes == 2'
+                    #print 'idxs: ', idxs
+
+                    if {0, 1}.issubset(set(idxs)):
+                        norm_tri = _calculate_normal_2d(mesh, element.vertices[0], element.vertices[1])
+                    elif {1,2}.issubset(set(idxs)):
+                        norm_tri = _calculate_normal_2d(mesh, element.vertices[1], element.vertices[2])
+                    elif {2,0}.issubset(set(idxs)):
+                        norm_tri = _calculate_normal_2d(mesh, element.vertices[2], element.vertices[0])
+                
+                    #print 'norm_tri: ',norm_tri
+
+                    norm_cohes = _calculate_normal_2d(mesh, cohesive_element.vertices[0], cohesive_element.vertices[1] )
+                elif num_t_nodes == 3:
+		            #print 'idxs: ', idxs	
+
+
+                    if {0, 3, 1}.issubset(set(idxs)):
+                        norm_tri = _calculate_normal_2d(mesh, element.vertices[0], element.vertices[1])
+                    elif {1,4,2}.issubset(set(idxs)):
+                        norm_tri = _calculate_normal_2d(mesh, element.vertices[1], element.vertices[2])
+                    elif {2,5,0}.issubset(set(idxs)):
+                        norm_tri = _calculate_normal_2d(mesh, element.vertices[2], element.vertices[0])
+                
+                    #print 'norm_tri: ',norm_tri
+
+                    norm_cohes = _calculate_normal_2d(mesh, cohesive_element.vertices[0], cohesive_element.vertices[1] )
+
+
+                if np.dot(norm_tri, norm_cohes) < 0.0:
+                    #print 'Normal needs flipping.'
+                    for i, node_id in enumerate(two_d_element.vertices):
+                        vertices_cohesive[i] = node_id + n_nodes * grain_id_2
+                        vertices_cohesive[i + num_t_nodes] = node_id + n_nodes * grain_id_1
+
+                #else:
+                #    print 'Normal is ok.'
 
     # Delete the old nodes from the mesh and from the node sets.
     # Currently the 2d elements that are used to create the cohesive sets are not
@@ -246,6 +284,30 @@ def _calculate_normal(mesh, node_id_1, node_id_2, node_id_3):
 
     crs = np.cross(node_2.c - node_1.c, node_3.c - node_1.c)
     return crs / np.linalg.norm(crs)
+
+
+def _calculate_normal_2d(mesh, node_id_1, node_id_2):
+    """
+    Calculates the normal from two node ids.
+
+    :param mesh: The mesh
+    :type mesh: :class:`Mesh`
+    :param node_id_1: Node 1
+    :type node_id_1: Int
+    :param node_id_2: Node 2
+    :type node_id_2: Int
+    """
+
+    node_1 = mesh.nodes[node_id_1]
+    node_2 = mesh.nodes[node_id_2]
+
+    if len(node_1.c == 2):
+        crs = [ (node_2.c[1] - node_1.c[1]), (node_1.c[0] - node_2.c[0]) ]
+        return crs / np.linalg.norm(crs)
+    elif len(node_1.c == 3):
+        crs = [ (node_2.c[1] - node_1.c[1]), (node_1.c[0] - node_2.c[0]), 0.0 ]
+        return crs / np.linalg.norm(crs)
+        
 
 
 def find_index(element, cohesive_element):

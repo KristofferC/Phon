@@ -25,7 +25,9 @@ THE SOFTWARE.
 
 # Translates between (internal_name, "software) to external_name.
 element_dictionary = {("T3D2", "abaqus"): "T3D2",
-                      ("T3D2", "oofem"): "T3D2",
+                      ("T3D2", "oofem"): "intelline1",
+		      ("T3D4", "abaqus"): "T3D4",
+		      ("T3D4", "oofem"): "intelline2B",
                       ("CPE3", "abaqus"): "CPE3",
                       ("CPE3", "oofem"): "TrPlaneStress2d",
                       ("CPE6", "abaqus"): "CPE6",
@@ -43,13 +45,17 @@ element_dictionary = {("T3D2", "abaqus"): "T3D2",
                       ("C3D8", "abaqus"): "C3D8",
                       ("COH3D8", "abaqus"): "COH3D8",
                       ("COH2D4", "abaqus"): "COH2D4",
-                      ("COH2D4", "oofem"): "COH2D4",
+                      ("COH2D4", "oofem"): "intelline1",
+                      ("COH2D6", "abaqus"): "COH2D6",
+                      ("COH2D6", "oofem"): "intelline2",
                       ("S4R", "abaqus"): "S4R",
                       ("COH3D12", "oofem"): "IntElSurfTr2"}
 
 # Translates between (external_name, software) to internal_name.
 element_dictionary_inverse = {("T3D2", "abaqus"): "T3D2",
-                              ("T3D2", "oofem"): "T3D2",
+                              ("intelline1B", "oofem"): "T3D2",
+			      ("T3D4", "abaqus"): "T3D4",
+			      ("intelline2", "oofem"): "T3D4",
                               ("CPE3", "abaqus"): "CPE3",
                               ("TrPlaneStress2d", "oofem"): "CPE3",
                               ("CPE6", "abaqus"): "CPE6",
@@ -68,10 +74,13 @@ element_dictionary_inverse = {("T3D2", "abaqus"): "T3D2",
                               ("C3D8", "abaqus"): "C3D8",
                               ("COH3D8", "abaqus"): "COH3D8",
                               ("COH2D4", "abaqus"): "COH2D4",
+                              ("intelline1", "oofem"): "COH2D4",
+                              ("COH2D6", "abaqus"): "COH2D6",
+                              ("intelline2", "oofem"): "COH2D6",
                               ("S4R", "abaqus"): "S4R",
                               ("IntElSurfTr2", "oofem"): "COH3D12"}
 
 # Dimension of elements.
-elements_1d = ["T3D2"]
-elements_2d = ["CPE3", "STRI65", "CPS4R", "CPE6", "S4R", "COH2D4"]
+elements_1d = ["T3D2", "T3D4"]
+elements_2d = ["CPE3", "STRI65", "CPS4R", "CPE6", "S4R", "COH2D4", "COH2D6"]
 elements_3d = ["C3D4", "C3D10", "C3D10", "COH3D6", "COH3D12", "COH3D8"]
