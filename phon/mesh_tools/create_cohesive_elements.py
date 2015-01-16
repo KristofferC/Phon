@@ -203,8 +203,8 @@ def create_cohesive_elements(mesh, mesh_dimension=3):
                     #print 'norm_tri: ',norm_tri
 
                     norm_cohes = _calculate_normal_2d(mesh, cohesive_element.vertices[0], cohesive_element.vertices[1] )
-	    	elif num_t_nodes == 3:
-		    #print 'idxs: ', idxs	
+                elif num_t_nodes == 3:
+		            #print 'idxs: ', idxs	
 
 
                     if {0, 3, 1}.issubset(set(idxs)):

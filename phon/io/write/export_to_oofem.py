@@ -53,7 +53,7 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
         set_type_bulk = "face"
         set_type_interface = "edge"
     else:
-        print 'Unsupported dimension in export_to_oofem: ', mesh_dimension
+        print('Unsupported dimension in export_to_oofem: ', mesh_dimension)
         return
 
     write_crosssections = True
@@ -296,3 +296,6 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
         # f.write("IsoLE 1 d 1. E 30.e6 n 0.2 tAlpha 1.2e-5\n")
         # f.write("BoundaryCondition  1 loadTimeFunction 1 prescribedvalue 0.0\n")
         # f.write("PeakFunction 1 t 1.0 f(t) 1.\n")
+
+
+    f.close()

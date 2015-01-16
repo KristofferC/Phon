@@ -99,7 +99,7 @@ def create_element_sides(mesh, mesh_dimension=3):
         set_type_bulk = "face"
         set_type_interface = "edge"
     else:
-        print 'Unsupported dimension in create_element_sides: ', mesh_dimension
+        print('Unsupported dimension in create_element_sides: ', mesh_dimension)
         return
 
 
@@ -138,10 +138,10 @@ def create_element_sides(mesh, mesh_dimension=3):
                     elif set(face.vertices) == {element.vertices[1], element.vertices[2], element.vertices[3]}:
                         connected_tets.append(ElementSide(element_id, 4))
                 elif mesh_dimension == 2:
-		    #print 'face.vertices: ', face.vertices
+		            #print 'face.vertices: ', face.vertices
 	
-		    if len(face.vertices) == 2:
-		    	# Linear element
+                    if len(face.vertices) == 2:
+		    	        # Linear element
                     	if set(face.vertices) == {element.vertices[0], element.vertices[1]}:
                             connected_tets.append(ElementSide(element_id, 1))
                     	elif set(face.vertices) == {element.vertices[1], element.vertices[2]}:
@@ -150,16 +150,16 @@ def create_element_sides(mesh, mesh_dimension=3):
                             connected_tets.append(ElementSide(element_id, 3))
 
 
-		    if len(face.vertices) == 3:
-		        # Quadratic elements
+                if len(face.vertices) == 3:
+		                # Quadratic elements
                     	if set(face.vertices) == {element.vertices[0], element.vertices[3], element.vertices[1]}:
-			    #print 'Found side 1.'
+			            #print 'Found side 1.'
                             connected_tets.append(ElementSide(element_id, 1))
                     	elif set(face.vertices) == {element.vertices[1], element.vertices[4], element.vertices[2]}:
-			    #print 'Found side 2.'
+			                #print 'Found side 2.'
                             connected_tets.append(ElementSide(element_id, 2))
                     	elif set(face.vertices) == {element.vertices[2], element.vertices[5], element.vertices[0]}:
-			    #print 'Found side 3.'
+			                #print 'Found side 3.'
                             connected_tets.append(ElementSide(element_id, 3))
 
 
