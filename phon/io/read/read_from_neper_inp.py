@@ -90,7 +90,6 @@ def read_from_neper_inp(filename, verbose=0):
 
 # CURRENTLY UNUSED
 # NO! I use it! /ES
-<<<<<<< HEAD
 def create_element_sides(mesh, mesh_dimension=3):
 
     if mesh_dimension == 3:

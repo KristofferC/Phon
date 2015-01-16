@@ -163,7 +163,7 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
         for element_set_name, element_set in mesh.element_sets.items():
             if (write_2d_elements is False) and (element_set.dimension == 2):
                 continue
-            if (write_1d_elements is False) and (element_set.dimension == 1):
+            if (element_set.dimension == 1):
                 continue
 
             count += 1
@@ -198,7 +198,7 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
         for element_set_name, element_set in mesh.element_sets.items():
             if (write_2d_elements is False) and (element_set.dimension == 2):
                 continue
-            if (write_1d_elements is False) and (element_set.dimension == 1):
+            if (element_set.dimension == 1):
                 continue
 
             count += 1
@@ -230,7 +230,7 @@ def export_to_oofem(filename, mesh, write_2d_elements=False):
         for element_set_name, element_set in mesh.element_sets.items():
             if (write_2d_elements is False) and (element_set.dimension == 2):
                 continue
-            if (write_1d_elements is False) and (element_set.dimension == 1):
+            if (element_set.dimension == 1):
                 continue
 
             sets_passed += 1
