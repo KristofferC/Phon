@@ -27,3 +27,12 @@ phon.mesh_tools.octree module
     :members:
     :undoc-members:
     :show-inheritance:
+
+phon.mesh_tools.create_element_sides module
+-------------------------------------------
+
+.. automodule:: phon.mesh_tools.create_element_sides
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
