@@ -29,7 +29,7 @@ from phon.mesh_objects.element_set import ElementSet
 from phon.mesh_objects.node import Node
 
 
-def create_cohesive_elements(mesh, mesh_dimension=3):
+def create_cohesive_elements(mesh, mesh_dimension):
     """
     Creates and inserts cohesive elements between the grains in the mesh.
     The element sets, ordering of vertices in elements etc etc need to

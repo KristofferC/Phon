@@ -43,7 +43,7 @@ class Test(unittest.TestCase):
         export_to_oofem("test_file.in", self.mesh, write_2d_elements=True)
         export_to_oofem("test_file.in", self.mesh, write_2d_elements=False)
 
-        create_cohesive_elements(self.mesh)
+        create_cohesive_elements(self.mesh, 3)
         export_to_oofem("test_file.in", self.mesh, write_2d_elements=True)
         export_to_oofem("test_file.in", self.mesh, write_2d_elements=False)
 

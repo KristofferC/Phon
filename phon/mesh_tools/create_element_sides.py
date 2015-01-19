@@ -2,7 +2,7 @@ from phon.mesh_objects.element_side_set import ElementSideSet
 from phon.mesh_objects.element_side_set import ElementSide
 
 
-def create_element_sides(mesh, mesh_dimension=3):
+def create_element_sides(mesh, mesh_dimension):
     """
     Creates elements of mesh_dimension - 1 along the interfaces
     between grains.

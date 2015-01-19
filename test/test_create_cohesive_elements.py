@@ -54,7 +54,7 @@ class Test(unittest.TestCase):
 
     # TODO: A little bit too few asserts in this test...
     def test_create_cohesive_elements(self):
-        create_cohesive_elements(self.mesh)
+        create_cohesive_elements(self.mesh, 3)
         export_to_abaqus("n10-id1_coh.inp", self.mesh, False)
         self.assertEqual(len(self.mesh.element_sets["cohes9_2"].ids), 6)
 

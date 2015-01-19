@@ -20,7 +20,7 @@ if len(sys.argv) >= 4:
 else:
     mesh = read_from_neper_inp(inputfile, verbose=0)
 
-create_cohesive_elements(mesh)
+create_cohesive_elements(mesh, 3)
 
 # Rescale the RVE:
 for node_id, node in mesh.nodes.items():
