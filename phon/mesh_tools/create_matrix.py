@@ -42,6 +42,9 @@ def create_matrix(mesh, thickness, mesh_dimension):
 
     print("create_matrix is EXPERIMENTAL!")
 
+    if mesh_dimension == 2:
+        raise UnsupportedDimensionError
+
     corner_sets = ["x0y0z0", "x0y0z1", "x0y1z0", "x0y1z1",
                    "x1y0z0", "x1y0z1", "x1y1z0", "x1y1z1"]
 
@@ -172,3 +175,19 @@ def _calculate_normal(mesh, element):
 
     crs = np.cross(point_2 - point_1, point_3 - point_1)
     return crs / np.linalg.norm(crs)
+
+
+class UnsupportedDimensionError(Exception):
+    """
+    Exception to raise when wrong dimension given to create_element_sides
+
+    """
+
+    def __init__(self, status):
+        """Creates an exception with a status."""
+        Exception.__init__(self, status)
+        self.status = status
+
+    def __str__(self):
+        """Return a string representation of the :exc:`UnsupportedDimensionError`."""
+        return str(self.status)
