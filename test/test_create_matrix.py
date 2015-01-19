@@ -44,7 +44,7 @@ class Test(unittest.TestCase):
         thickness = 0.05
 
         # Test finite thickness cohesive with order 1
-        create_matrix(self.mesh, thickness)
+        create_matrix(self.mesh, thickness, mesh_dimension=3)
         export_to_abaqus("n10-id1_fence.inp", self.mesh)
 
     def tearDown(self):

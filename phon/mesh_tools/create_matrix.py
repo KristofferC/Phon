@@ -26,7 +26,7 @@ from phon.mesh_objects.element import Element
 from phon.mesh_tools.create_cohesive_elements import create_cohesive_elements
 
 
-def create_matrix(mesh, thickness):
+def create_matrix(mesh, thickness, mesh_dimension):
     """
     This method creates elements that are similar to the cohesive
     elements except that they have a finite width. The cohesive
@@ -52,7 +52,7 @@ def create_matrix(mesh, thickness):
     face_sets = ["x0", "x1", "y0", "y1", "z0", "z1"]
 
     # Loop over every cohesive element set:
-    create_cohesive_elements(mesh)
+    create_cohesive_elements(mesh, mesh_dimension)
 
     normal_vec = {}
     # Pre calculate the normals
