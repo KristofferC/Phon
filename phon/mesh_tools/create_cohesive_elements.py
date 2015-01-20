@@ -65,7 +65,6 @@ def create_cohesive_elements(mesh, mesh_dimension):
                                                                 face_set,
                                                                 node_id_grain_lut)
 
-
         # Ignore sets at boundary
         if len(grains_connected_to_face) == 1:
             continue
@@ -112,17 +111,17 @@ def create_cohesive_elements(mesh, mesh_dimension):
                     idx] = node_id + n_nodes * grain_id
 
         # Create the cohesive elements
-        for two_d_element_id in face_set.ids:
+        for interface_element_id in face_set.ids:
 
-            two_d_element = mesh.elements[two_d_element_id]
-            num_t_nodes = len(two_d_element.vertices)
+            interface_element = mesh.elements[interface_element_id]
+            num_t_nodes = len(interface_element.vertices)
 
             element_name = "COH" + \
                            str(mesh_dimension) + "D" + \
                            str(num_t_nodes * 2)  # e.g. "COH3D6"
 
             vertices_cohesive = [0] * num_t_nodes * 2
-            for i, node_id in enumerate(two_d_element.vertices):
+            for i, node_id in enumerate(interface_element.vertices):
                 vertices_cohesive[i] = node_id + n_nodes * grain_id_1
                 vertices_cohesive[
                     i + num_t_nodes] = node_id + n_nodes * grain_id_2
@@ -131,6 +130,10 @@ def create_cohesive_elements(mesh, mesh_dimension):
             mesh.elements[cohesive_id_offset] = cohesive_element
             mesh.element_sets[cohesive_set_name].ids.append(cohesive_id_offset)
             cohesive_id_offset += 1
+
+
+
+
 
             # We need to check that we got the normals right, else elements will be
             # inside out. This can be done by comparing the normal of the face of
@@ -144,91 +147,40 @@ def create_cohesive_elements(mesh, mesh_dimension):
                 # Based on the index, find the corresponding face of the
                 # tetrahedron, then compute the normal of that face
                 if num_t_nodes == 3 or num_t_nodes == 6:
-                    if {0, 1, 3}.issubset(set(idxs)):
-                        norm_tetra = _calculate_normal(mesh, element.vertices[0], element.vertices[1],
-                                                       element.vertices[3])
-                    elif {0, 2, 1}.issubset(set(idxs)):
-                        norm_tetra = _calculate_normal(mesh, element.vertices[0], element.vertices[2],
-                                                       element.vertices[1])
-                    elif {0, 3, 2}.issubset(set(idxs)):
-                        norm_tetra = _calculate_normal(mesh, element.vertices[0], element.vertices[3],
-                                                       element.vertices[2])
-                    elif {1, 2, 3}.issubset(set(idxs)):
-                        norm_tetra = _calculate_normal(mesh, element.vertices[1], element.vertices[2],
-                                                       element.vertices[3])
+                    idx_list = [[0, 1, 3], [0, 2, 1], [0, 3, 2], [1, 2, 3]]
+                    normal_list = idx_list
+
                 elif num_t_nodes == 4 or num_t_nodes == 8:
-                    if {0, 1, 2, 3}.issubset(set(idxs)):
-                        norm_tetra = _calculate_normal(mesh, element.vertices[0], element.vertices[3],
-                                                       element.vertices[2])
-                    elif {1, 5, 6, 2}.issubset(set(idxs)):
-                        norm_tetra = _calculate_normal(mesh, element.vertices[1], element.vertices[2],
-                                                       element.vertices[6])
-                    elif {3, 2, 6, 7}.issubset(set(idxs)):
-                        norm_tetra = _calculate_normal(mesh, element.vertices[2], element.vertices[3],
-                                                       element.vertices[7])
-                    elif {0, 3, 7, 4}.issubset(set(idxs)):
-                        norm_tetra = _calculate_normal(mesh, element.vertices[3], element.vertices[0],
-                                                       element.vertices[4])
-                    elif {1, 5, 4, 0}.issubset(set(idxs)):
-                        norm_tetra = _calculate_normal(mesh, element.vertices[1], element.vertices[5],
-                                                       element.vertices[4])
-                    elif {4, 5, 6, 7}.issubset(set(idxs)):
-                        norm_tetra = _calculate_normal(mesh, element.vertices[4], element.vertices[5],
-                                                       element.vertices[6])
-
-                norm_cohes = _calculate_normal(mesh, cohesive_element.vertices[0], cohesive_element.vertices[1],
-                                               cohesive_element.vertices[2])
-
-                # Normals are in opposite direction -> flip element
-                if np.dot(norm_tetra, norm_cohes) < 0:
-                    for i, node_id in enumerate(two_d_element.vertices):
-                        vertices_cohesive[i] = node_id + n_nodes * grain_id_2
-                        vertices_cohesive[
-                            i + num_t_nodes] = node_id + n_nodes * grain_id_1
+                    idx_list = [[0, 1, 2, 3], [1, 5, 6, 2], [3, 2, 6, 7],
+                                [0, 3, 7, 4], [1, 5, 4, 0], [4, 5, 6, 7]]
+                    normal_list = [[0, 3, 2], [1, 2, 6], [2, 3, 7], [3, 0, 4],
+                                   [1, 5, 4], [4, 5, 6]]
 
             elif mesh_dimension == 2:
-                # TODO: Check normals for the 2d case.
-
                 if num_t_nodes == 2:
-                    # print 'num_t_nodes == 2'
-                    #print 'idxs: ', idxs
+                    idx_list = [[0, 1], [1, 2], [2, 0]]
+                    normal_list = idx_list
 
-                    if {0, 1}.issubset(set(idxs)):
-                        norm_tri = _calculate_normal_2d(mesh, element.vertices[0], element.vertices[1])
-                    elif {1, 2}.issubset(set(idxs)):
-                        norm_tri = _calculate_normal_2d(mesh, element.vertices[1], element.vertices[2])
-                    elif {2, 0}.issubset(set(idxs)):
-                        norm_tri = _calculate_normal_2d(mesh, element.vertices[2], element.vertices[0])
-
-                    #print 'norm_tri: ',norm_tri
-
-                    norm_cohes = _calculate_normal_2d(mesh, cohesive_element.vertices[0], cohesive_element.vertices[1])
                 elif num_t_nodes == 3:
-                    # print 'idxs: ', idxs
+                    idx_list = [[0, 3, 1], [1, 4, 2], [2, 5, 0]]
+                    normal_list = [[0, 1], [1, 2], [2, 0]]
+
+            for idx_set, normal in zip(idx_list, normal_list):
+                    if set(idx_set).issubset(idxs):
+                        nodes_bulk = [element.vertices[i] for i in normal]
+                        norm_bulk = _calculate_normal(mesh, nodes_bulk, mesh_dimension)
 
 
-                    if {0, 3, 1}.issubset(set(idxs)):
-                        norm_tri = _calculate_normal_2d(mesh, element.vertices[0], element.vertices[1])
-                    elif {1, 4, 2}.issubset(set(idxs)):
-                        norm_tri = _calculate_normal_2d(mesh, element.vertices[1], element.vertices[2])
-                    elif {2, 5, 0}.issubset(set(idxs)):
-                        norm_tri = _calculate_normal_2d(mesh, element.vertices[2], element.vertices[0])
+            norm_cohes = _calculate_normal(mesh, cohesive_element.vertices, mesh_dimension)
 
-                    #print 'norm_tri: ',norm_tri
-
-                    norm_cohes = _calculate_normal_2d(mesh, cohesive_element.vertices[0], cohesive_element.vertices[1])
-
-                if np.dot(norm_tri, norm_cohes) < 0.0:
-                    # print 'Normal needs flipping.'
-                    for i, node_id in enumerate(two_d_element.vertices):
-                        vertices_cohesive[i] = node_id + n_nodes * grain_id_2
-                        vertices_cohesive[i + num_t_nodes] = node_id + n_nodes * grain_id_1
-
-                        #else:
-                        #    print 'Normal is ok.'
+            if np.dot(norm_bulk, norm_cohes) < 0.0:
+                # print 'Normal needs flipping.'
+                for i, node_id in enumerate(interface_element.vertices):
+                    vertices_cohesive[i] = node_id + n_nodes * grain_id_2
+                    vertices_cohesive[i + num_t_nodes] = node_id + n_nodes * grain_id_1
 
     # Delete the old nodes from the mesh and from the node sets.
-    # Currently the 2d elements that are used to create the cohesive sets are not
+    # Currently the face/edge elements that are used to create the cohesive sets are not
     # deleted. After this they therefore have deleted nodes as vertices.
     for element_set_name in mesh.element_sets.keys():
         if not element_set_name[0:4] == set_type_interface:
@@ -244,68 +196,48 @@ def create_cohesive_elements(mesh, mesh_dimension):
         grain_id_1 = grains_connected_to_face[0]
         grain_id_2 = grains_connected_to_face[1]
         for node_id in face_set.get_all_node_ids(mesh):
-
             new_node_id_1 = node_id + n_nodes * grain_id_1
             new_node_id_2 = node_id + n_nodes * grain_id_2
-
             for node_set_name, node_set in mesh.node_sets.items():
                 if node_id in node_set.ids:
                     node_set.ids.remove(node_id)
                     if node_id in mesh.nodes:
                         del mesh.nodes[node_id]
+
                     if new_node_id_1 not in node_set.ids:
                         node_set.ids.extend([new_node_id_1])
                     if new_node_id_2 not in node_set.ids:
                         node_set.ids.extend([new_node_id_2])
 
-                        # Finish of with renumbering the nodes so the node ids are not spread out
-                        # Or maybe not, unnecessary side effect. Let user decide.
-                        # mesh.renumber_nodes()
+    # Finish of with renumbering the nodes so the node ids are not spread out
+    # Or maybe not, unnecessary side effect. Let user decide.
+    # mesh.renumber_nodes()
 
 
-def _calculate_normal(mesh, node_id_1, node_id_2, node_id_3):
+def _calculate_normal(mesh, nodes, mesh_dimension):
     """
-    Calculates the normal from three node ids.
+    Calculates the normal from nodes.
 
     :param mesh: The mesh
     :type mesh: :class:`Mesh`
-    :param node_id_1: Node 1
-    :type node_id_1: Int
-    :param node_id_2: Node 2
-    :type node_id_2: Int
-    :param node_id_3: Node 3
-    :type node_id_3: Int
+    :param nodes: list of the nodes
+    :type nodes: list
     """
 
-    node_1 = mesh.nodes[node_id_1]
-    node_2 = mesh.nodes[node_id_2]
-    node_3 = mesh.nodes[node_id_3]
+    node_1 = mesh.nodes[nodes[0]]
+    node_2 = mesh.nodes[nodes[1]]
 
-    crs = np.cross(node_2.c - node_1.c, node_3.c - node_1.c)
+    if mesh_dimension == 3:
+        node_3 = mesh.nodes[nodes[2]]
+        crs = np.cross(node_2.c - node_1.c, node_3.c - node_1.c)
+
+    if mesh_dimension == 2:
+        if len(node_1.c) == 2:
+            crs = [(node_2.c[1] - node_1.c[1]), (node_1.c[0] - node_2.c[0])]
+        elif len(node_1.c) == 3:
+            crs = [(node_2.c[1] - node_1.c[1]), (node_1.c[0] - node_2.c[0]), 0.0]
+
     return crs / np.linalg.norm(crs)
-
-
-def _calculate_normal_2d(mesh, node_id_1, node_id_2):
-    """
-    Calculates the normal from two node ids.
-
-    :param mesh: The mesh
-    :type mesh: :class:`Mesh`
-    :param node_id_1: Node 1
-    :type node_id_1: Int
-    :param node_id_2: Node 2
-    :type node_id_2: Int
-    """
-
-    node_1 = mesh.nodes[node_id_1]
-    node_2 = mesh.nodes[node_id_2]
-
-    if len(node_1.c == 2):
-        crs = [(node_2.c[1] - node_1.c[1]), (node_1.c[0] - node_2.c[0])]
-        return crs / np.linalg.norm(crs)
-    elif len(node_1.c == 3):
-        crs = [(node_2.c[1] - node_1.c[1]), (node_1.c[0] - node_2.c[0]), 0.0]
-        return crs / np.linalg.norm(crs)
 
 
 def find_index(element, cohesive_element):

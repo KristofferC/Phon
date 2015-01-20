@@ -37,7 +37,7 @@ class Test(unittest.TestCase):
 
     def setUp(self):
         self.mesh = read_from_neper_inp(os.path.join(__location__, "n10-id1.inp"), verbose=0)
-        # self.mesh_order_2 = read_from_neper_inp("n10-id1_order_2.inp", verbose=0)
+        self.mesh_2d = read_from_neper_inp("n12-id2_dim2.inp", verbose=0)
 
     # TODO: Right now only testing runtime errors... Add real tests
     def test_create_fence_elements(self):
@@ -45,7 +45,9 @@ class Test(unittest.TestCase):
 
         # Test finite thickness cohesive with order 1
         create_matrix(self.mesh, thickness, mesh_dimension=3)
+        create_matrix(self.mesh_2d, thickness, mesh_dimension=2)
         export_to_abaqus("n10-id1_fence.inp", self.mesh)
+        export_to_abaqus("n12-id2_2d_fence.inp", self.mesh_2d, write_2d_elements=True)
 
     def tearDown(self):
         if os.path.isfile("n10-id1_fence.inp"):

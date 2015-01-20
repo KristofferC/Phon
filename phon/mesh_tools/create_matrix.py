@@ -37,13 +37,12 @@ def create_matrix(mesh, thickness, mesh_dimension):
     :type thickness: Float
     :param mesh: The mesh
     :type mesh: :class:`Mesh`
+    :param mesh_dimension: The dimension of the mesh
+    :type mesh_dimension: Int
 
     """
 
     print("create_matrix is EXPERIMENTAL!")
-
-    if mesh_dimension == 2:
-        raise UnsupportedDimensionError
 
     corner_sets = ["x0y0z0", "x0y0z1", "x0y1z0", "x0y1z1",
                    "x1y0z0", "x1y0z1", "x1y1z0", "x1y1z1"]
@@ -64,7 +63,7 @@ def create_matrix(mesh, thickness, mesh_dimension):
             element_set = mesh.element_sets[element_set_name]
             for element_id in element_set.ids:
                 normal_vec[element_id] = _calculate_normal(
-                    mesh, mesh.elements[element_id])
+                    mesh, mesh.elements[element_id], mesh_dimension)
     for element_set_name in mesh.element_sets.keys():
         if "coh_face" in element_set_name:
             node_already_moved = []
@@ -85,9 +84,7 @@ def create_matrix(mesh, thickness, mesh_dimension):
                     r = find_displacement_vector(mesh, node_id, corner_sets,
                                                  edge_sets, face_sets, normal_vec[element_id], thickness)
 
-                    node.x += r[0]
-                    node.y += r[1]
-                    node.z += r[2]
+                    node.c += r
 
                     # if node.x > 1.0 or node.x < 0.0:
                     # node.x -= r[0]
@@ -154,7 +151,7 @@ def project_on_plane(node_set_name, normal_gb, thickness):
     return projection_normed * length_plane
 
 
-def _calculate_normal(mesh, element):
+def _calculate_normal(mesh, element, mesh_dimension):
     """
     Calculates the normal to a cohesive element normalized
     to a length of 1.
@@ -163,17 +160,24 @@ def _calculate_normal(mesh, element):
     :type element: :class:`Element`
     :return: Array with the normal in the form [x,y,z]
     :rtype: Array with numbers
+    :param mesh_dimension: The dimension of the mesh
+    :type mesh_dimension: Int
+
     """
 
-    node_1 = mesh.nodes[element.vertices[0]]
-    node_2 = mesh.nodes[element.vertices[1]]
-    node_3 = mesh.nodes[element.vertices[2]]
+    if mesh_dimension == 2:
+        node_1 = mesh.nodes[element.vertices[0]]
+        node_2 = mesh.nodes[element.vertices[1]]
 
-    point_1 = np.array([node_1.x, node_1.y, node_1.z])
-    point_2 = np.array([node_2.x, node_2.y, node_2.z])
-    point_3 = np.array([node_3.x, node_3.y, node_3.z])
+        crs = [(node_2.c[1] - node_1.c[1]), (node_1.c[0] - node_2.c[0])]
 
-    crs = np.cross(point_2 - point_1, point_3 - point_1)
+    if mesh_dimension == 3:
+        node_1 = mesh.nodes[element.vertices[0]]
+        node_2 = mesh.nodes[element.vertices[1]]
+        node_3 = mesh.nodes[element.vertices[2]]
+
+        crs = np.cross(node_2.c - node_1.c, node_3.c - node_1.c)
+
     return crs / np.linalg.norm(crs)
 
 
