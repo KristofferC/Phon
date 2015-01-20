@@ -26,7 +26,7 @@ from phon.io import elements_2d
 from phon.io import elements_1d
 
 
-def export_to_oofem(filename, mesh, write_2d_elements=False):
+def export_to_oofem(filename, mesh, write_2d_elements):
     """
     Writes a mesh to a file in a format that OOFEM uses.
 

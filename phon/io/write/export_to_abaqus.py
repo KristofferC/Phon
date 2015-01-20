@@ -35,7 +35,7 @@ from phon.io import elements_1d
 from phon.io import elements_2d
 
 
-def export_to_abaqus(filename, mesh, write_2d_elements=False, f=None):
+def export_to_abaqus(filename, mesh, write_2d_elements, f=None):
     """
     Writes a mesh to a file in a format such that Abaqus can read it.
 
