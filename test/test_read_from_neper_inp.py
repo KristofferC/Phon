@@ -35,8 +35,8 @@ class Test(unittest.TestCase):
     """Unit tests for read_from_neper_inp."""
 
     def setUp(self):
-        self.mesh = read_from_neper_inp(os.path.join(__location__, "n10-id1.inp"), verbose=0)
-        self.mesh_aba = read_from_neper_inp(os.path.join(__location__, "n10_id1_from_abaq.inp"), verbose=0)
+        self.mesh = read_from_neper_inp(os.path.join(__location__, "inp_test_files/n10-id1.inp"), verbose=0)
+        self.mesh_aba = read_from_neper_inp(os.path.join(__location__, "inp_test_files/n10_id1_from_abaq.inp"), verbose=0)
 
     def test_read_from_neper_inp(self):
         """Test Phons reader for Neper inp files."""

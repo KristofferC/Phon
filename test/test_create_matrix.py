@@ -53,7 +53,7 @@ class Test(unittest.TestCase):
         if os.path.isfile("n10-id1_fence.inp"):
             os.remove("n10-id1_fence.inp")
 
-            # TODO: Add tests for the helper functions.
+    # TODO: Add tests for the helper functions.
 
 
 if __name__ == "__main__":
