@@ -23,7 +23,7 @@ THE SOFTWARE.
 
 # This stuff here need to be done in a better way...
 
-# Translates between (internal_name, "software) to external_name.
+# Translates between (internal_name, software) to external_name.
 element_dictionary = {("T3D2", "abaqus"): "T3D2",
                       ("T3D2", "oofem"): "intelline1",
                       ("T3D4", "abaqus"): "T3D4",
@@ -50,6 +50,7 @@ element_dictionary = {("T3D2", "abaqus"): "T3D2",
                       ("COH2D6", "oofem"): "intelline2",
                       ("S4R", "abaqus"): "S4R",
                       ("COH3D12", "oofem"): "IntElSurfTr2"}
+
 
 # Translates between (external_name, software) to internal_name.
 element_dictionary_inverse = {("T3D2", "abaqus"): "T3D2",
@@ -79,6 +80,9 @@ element_dictionary_inverse = {("T3D2", "abaqus"): "T3D2",
                               ("intelline2", "oofem"): "COH2D6",
                               ("S4R", "abaqus"): "S4R",
                               ("IntElSurfTr2", "oofem"): "COH3D12"}
+
+# If different software have different node_order we need to override it in the export.
+node_order_override = {("COH2D4", "abaqus"): [0, 1, 3, 2]}
 
 # Dimension of elements.
 elements_1d = ["T3D2", "T3D4"]

@@ -44,9 +44,11 @@ def create_cohesive_elements(mesh, mesh_dimension):
     if mesh_dimension == 3:
         set_type_bulk = "poly"
         set_type_interface = "face"
+        interface_element_name = "CPE"
     elif mesh_dimension == 2:
         set_type_bulk = "face"
         set_type_interface = "edge"
+        interface_element_name = "T3D"
     else:
         print(
             'Unsupported dimension for creation of cohesive elements: ', mesh_dimension)
@@ -58,7 +60,7 @@ def create_cohesive_elements(mesh, mesh_dimension):
     node_id_grain_lut = get_node_id_grain_lut(mesh, set_type_bulk)
 
     for element_set_name in mesh.element_sets.keys():
-        if not element_set_name[0:4] == set_type_interface:
+        if not element_set_name.startswith(set_type_interface):
             continue
         face_set = mesh.element_sets[element_set_name]
         grains_connected_to_face = get_grains_connected_to_face(mesh,
@@ -98,8 +100,8 @@ def create_cohesive_elements(mesh, mesh_dimension):
             original_node = mesh.nodes[node_id]
             new_node_id_1 = node_id + n_nodes * grain_id_1
             new_node_id_2 = node_id + n_nodes * grain_id_2
-            mesh.nodes[new_node_id_1] = Node(original_node.c)
-            mesh.nodes[new_node_id_2] = Node(original_node.c)
+            mesh.nodes[new_node_id_1] = Node(np.copy(original_node.c))
+            mesh.nodes[new_node_id_2] = Node(np.copy(original_node.c))
 
             # Reconnect the 3d element with vertices in the node that is being duplicated
             # to one of the new nodes.
@@ -116,9 +118,9 @@ def create_cohesive_elements(mesh, mesh_dimension):
             interface_element = mesh.elements[interface_element_id]
             num_t_nodes = len(interface_element.vertices)
 
-            element_name = "COH" + \
-                           str(mesh_dimension) + "D" + \
-                           str(num_t_nodes * 2)  # e.g. "COH3D6"
+            coh_element_name = "COH" + \
+                               str(mesh_dimension) + "D" + \
+                               str(num_t_nodes * 2)  # e.g. "COH3D6"
 
             vertices_cohesive = [0] * num_t_nodes * 2
             for i, node_id in enumerate(interface_element.vertices):
@@ -126,14 +128,10 @@ def create_cohesive_elements(mesh, mesh_dimension):
                 vertices_cohesive[
                     i + num_t_nodes] = node_id + n_nodes * grain_id_2
 
-            cohesive_element = Element(element_name, vertices_cohesive)
+            cohesive_element = Element(coh_element_name, vertices_cohesive)
             mesh.elements[cohesive_id_offset] = cohesive_element
             mesh.element_sets[cohesive_set_name].ids.append(cohesive_id_offset)
             cohesive_id_offset += 1
-
-
-
-
 
             # We need to check that we got the normals right, else elements will be
             # inside out. This can be done by comparing the normal of the face of
@@ -166,18 +164,30 @@ def create_cohesive_elements(mesh, mesh_dimension):
                     normal_list = [[0, 1], [1, 2], [2, 0]]
 
             for idx_set, normal in zip(idx_list, normal_list):
-                    if set(idx_set).issubset(idxs):
-                        nodes_bulk = [element.vertices[i] for i in normal]
-                        norm_bulk = _calculate_normal(mesh, nodes_bulk, mesh_dimension)
-
+                if set(idx_set).issubset(idxs):
+                    nodes_bulk = [element.vertices[i] for i in normal]
+                    norm_bulk = _calculate_normal(mesh, nodes_bulk, mesh_dimension)
 
             norm_cohes = _calculate_normal(mesh, cohesive_element.vertices, mesh_dimension)
 
             if np.dot(norm_bulk, norm_cohes) < 0.0:
-                # print 'Normal needs flipping.'
                 for i, node_id in enumerate(interface_element.vertices):
                     vertices_cohesive[i] = node_id + n_nodes * grain_id_2
                     vertices_cohesive[i + num_t_nodes] = node_id + n_nodes * grain_id_1
+
+            # Adds some support elements used by create_matrix()
+            face_side_1 = Element(interface_element_name + str(num_t_nodes), vertices_cohesive[:num_t_nodes])
+            mesh.elements[cohesive_id_offset] = face_side_1
+            mesh.element_sets[face_set_coh_name_1].ids.append(cohesive_id_offset)
+            cohesive_id_offset += 1
+
+            # Reverse here to change the normal
+            c = vertices_cohesive[num_t_nodes:]
+            c.reverse()
+            face_side_2 = Element(interface_element_name + str(num_t_nodes), c)
+            mesh.elements[cohesive_id_offset] = face_side_2
+            mesh.element_sets[face_set_coh_name_2].ids.append(cohesive_id_offset)
+            cohesive_id_offset += 1
 
     # Delete the old nodes from the mesh and from the node sets.
     # Currently the face/edge elements that are used to create the cohesive sets are not

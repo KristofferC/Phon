@@ -19,11 +19,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
+import logging
 
 import numpy as np
 
 from phon.mesh_objects.element import Element
 from phon.mesh_tools.create_cohesive_elements import create_cohesive_elements
+
+logger = logging.getLogger(__name__)
 
 
 def create_matrix(mesh, thickness, mesh_dimension):
@@ -42,7 +45,9 @@ def create_matrix(mesh, thickness, mesh_dimension):
 
     """
 
-    print("create_matrix is EXPERIMENTAL!")
+    logger.warning("Method does currently only move the nodes in the "
+                   "interface between the grains. This means that excessive thickness "
+                   "will lead to bad mesh quality.")
 
     corner_sets = ["x0y0z0", "x0y0z1", "x0y1z0", "x0y1z1",
                    "x1y0z0", "x1y0z1", "x1y1z0", "x1y1z1"]
@@ -59,7 +64,7 @@ def create_matrix(mesh, thickness, mesh_dimension):
     normal_vec = {}
     # Pre calculate the normals
     for element_set_name in mesh.element_sets.keys():
-        if "coh_face" in element_set_name:
+        if element_set_name.startswith("coh_face"):
             element_set = mesh.element_sets[element_set_name]
             for element_id in element_set.ids:
                 normal_vec[element_id] = _calculate_normal(
@@ -169,7 +174,7 @@ def _calculate_normal(mesh, element, mesh_dimension):
         node_1 = mesh.nodes[element.vertices[0]]
         node_2 = mesh.nodes[element.vertices[1]]
 
-        crs = [(node_2.c[1] - node_1.c[1]), (node_1.c[0] - node_2.c[0])]
+        crs = np.array([node_2.c[1] - node_1.c[1], node_1.c[0] - node_2.c[0], 0.0])
 
     if mesh_dimension == 3:
         node_1 = mesh.nodes[element.vertices[0]]

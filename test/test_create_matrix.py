@@ -36,22 +36,24 @@ class Test(unittest.TestCase):
     """Unit tests for test_create_matrix."""
 
     def setUp(self):
-        self.mesh = read_from_neper_inp(os.path.join(__location__, "n10-id1.inp"), verbose=0)
-        self.mesh_2d = read_from_neper_inp("n12-id2_dim2.inp", verbose=0)
+        self.mesh = read_from_neper_inp(os.path.join(__location__, "inp_test_files/n10-id1.inp"), verbose=0)
+        self.mesh_2d = read_from_neper_inp("inp_test_files/n10-id1_2d.inp", verbose=0)
 
     # TODO: Right now only testing runtime errors... Add real tests
     def test_create_fence_elements(self):
-        thickness = 0.05
+        thickness = 0.01
 
         # Test finite thickness cohesive with order 1
         create_matrix(self.mesh, thickness, mesh_dimension=3)
         create_matrix(self.mesh_2d, thickness, mesh_dimension=2)
-        export_to_abaqus("n10-id1_fence.inp", self.mesh)
-        export_to_abaqus("n12-id2_2d_fence.inp", self.mesh_2d, write_2d_elements=True)
+        export_to_abaqus("n10-id1_fence.inp", self.mesh, write_2d_elements=False)
+        export_to_abaqus("n10-id1_2d_fence.inp", self.mesh_2d, write_2d_elements=True)
 
     def tearDown(self):
         if os.path.isfile("n10-id1_fence.inp"):
             os.remove("n10-id1_fence.inp")
+        if os.path.isfile("n10-id1_2d_fence.inp"):
+           os.remove("n10-id1_2d_fence.inp")
 
     # TODO: Add tests for the helper functions.
 

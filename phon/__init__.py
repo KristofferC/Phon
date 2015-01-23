@@ -19,5 +19,13 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
+import logging
 
 # __all__ = ["mesh_objects", "io", "mesh_tools"]
+
+logging.basicConfig()
+
+#logger = logging.getLogger(__name__)
+
+#logging.basicConfig(filename='example.log', level=logging.CRITICAL)
+#logging.basicConfig(level=logging.DEBUG)

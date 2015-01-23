@@ -31,6 +31,7 @@ from collections import OrderedDict
 from phon.mesh_objects.mesh import Mesh
 from phon.io import element_dictionary
 from phon.io import element_dictionary_inverse
+from phon.io import node_order_override
 from phon.io import elements_1d
 from phon.io import elements_2d
 
@@ -87,22 +88,24 @@ def export_to_abaqus(filename, mesh, write_2d_elements, f=None):
         for element_id in elements:
             f.write("%d, " % element_id)
             # Code below changes "[1,2,3]" to "1, 2, 3"
-            f.write(''.join('{}, '.format(k) for k in
-                            mesh.elements[element_id].vertices)[:-2])
+            if (element_type, "abaqus") in node_order_override:
+                node_order = node_order_override[(element_type, "abaqus")]
+            else:
+                node_order = range(len(mesh.elements[element_id].vertices))
+            # Code below changes "[1,2,3]" to "1, 2, 3"
+            vertices = [mesh.elements[element_id].vertices[x] for x in node_order]
+            f.write(''.join('{}, '.format(k) for k in vertices)[:-2])
             f.write("\n")
 
     # Element sets
     for element_set_name, element_set in mesh.element_sets.items():
 
         if ((write_1d_elements is False) and
-                (element_dictionary_inverse[(element_type, "abaqus")] in elements_1d)):
+                (mesh.element_sets[element_set_name].dimension == 1)):
             continue
 
         if ((write_2d_elements is False) and
                 (mesh.element_sets[element_set_name].dimension == 2)):
-            continue
-
-        if element_set_name[0:4] == "edge":
             continue
 
         if len(element_set.ids) == 0:

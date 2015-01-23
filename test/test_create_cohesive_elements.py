@@ -64,15 +64,15 @@ class Test(unittest.TestCase):
                                     os.path.join(__location__, "inp_test_files/n10-id1_coh_ref.inp")))
 
         create_cohesive_elements(self.mesh_2d, mesh_dimension=2)
-        export_to_abaqus("n10_id1_2d_coh.inp", self.mesh, write_2d_elements=True)
-        self.assertTrue(filecmp.cmp("n10_id1_2d_coh.inp",
+        export_to_abaqus("n10-id1_2d_coh.inp", self.mesh, write_2d_elements=True)
+        self.assertTrue(filecmp.cmp("n10-id1_2d_coh.inp",
                                     os.path.join(__location__, "inp_test_files/n10-id1_2d_coh_ref.inp")))
 
     def tearDown(self):
         if os.path.isfile("n10-id1_coh.inp"):
             os.remove("n10-id1_coh.inp")
-        if os.path.isfile("n10_id1_2d_coh.inp"):
-            os.remove("n10_id1_2d_coh.inp")
+        if os.path.isfile("n10-id1_2d_coh.inp"):
+            os.remove("n10-id1_2d_coh.inp")
 
 
 if __name__ == "__main__":
