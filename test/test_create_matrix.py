@@ -37,7 +37,7 @@ class Test(unittest.TestCase):
 
     def setUp(self):
         self.mesh = read_from_neper_inp(os.path.join(__location__, "inp_test_files/n10-id1.inp"), verbose=0)
-        self.mesh_2d = read_from_neper_inp("inp_test_files/n10-id1_2d.inp", verbose=0)
+        self.mesh_2d = read_from_neper_inp(os.path.join(__location__, "inp_test_files/n10-id1_2d.inp"))
 
     # TODO: Right now only testing runtime errors... Add real tests
     def test_create_fence_elements(self):
