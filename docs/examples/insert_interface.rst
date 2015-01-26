@@ -21,3 +21,5 @@ is shown below.::
     >>> create_cohesive_elements(mesh)
     >>> export_to_abaqus("cohesive_file.inp", mesh)
 
+If you want to insert
+  interface elements in a mesh generated with some other software you need to provide element sets with the same name used by Neper must
