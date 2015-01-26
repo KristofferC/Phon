@@ -23,7 +23,7 @@ THE SOFTWARE.
 import unittest
 import os
 
-from phon.io.read.read_from_neper_inp import read_from_neper_inp
+from phon.io.read.read_from_abaqus_inp import read_from_abaqus_inp
 from phon.io.write.export_to_abaqus import export_to_abaqus
 from phon.mesh_tools.create_matrix import create_matrix
 
@@ -36,8 +36,8 @@ class Test(unittest.TestCase):
     """Unit tests for test_create_matrix."""
 
     def setUp(self):
-        self.mesh = read_from_neper_inp(os.path.join(__location__, "inp_test_files/n10-id1.inp"), verbose=0)
-        self.mesh_2d = read_from_neper_inp(os.path.join(__location__, "inp_test_files/n10-id1_2d.inp"))
+        self.mesh = read_from_abaqus_inp(os.path.join(__location__, "inp_test_files/n10-id1.inp"), verbose=0)
+        self.mesh_2d = read_from_abaqus_inp(os.path.join(__location__, "inp_test_files/n10-id1_2d.inp"))
 
     # TODO: Right now only testing runtime errors... Add real tests
     def test_create_fence_elements(self):

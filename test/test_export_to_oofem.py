@@ -23,7 +23,7 @@ THE SOFTWARE.
 import unittest
 import os
 
-from phon.io.read.read_from_neper_inp import read_from_neper_inp
+from phon.io.read.read_from_abaqus_inp import read_from_abaqus_inp
 from phon.io.write.export_to_oofem import export_to_oofem
 from phon.mesh_tools.create_cohesive_elements import create_cohesive_elements
 
@@ -36,7 +36,7 @@ class Test(unittest.TestCase):
     """Unit tests for export_to_oofem."""
 
     def setUp(self):
-        self.mesh = read_from_neper_inp(os.path.join(__location__, "inp_test_files/n10-id1.inp"))
+        self.mesh = read_from_abaqus_inp(os.path.join(__location__, "inp_test_files/n10-id1.inp"))
 
     def test_export_to_oofem(self):
         """Test Phons exporter for oofem files."""

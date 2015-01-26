@@ -24,7 +24,7 @@ import unittest
 import os
 import filecmp
 
-from phon.io.read.read_from_neper_inp import read_from_neper_inp
+from phon.io.read.read_from_abaqus_inp import read_from_abaqus_inp
 from phon.io.write.export_to_abaqus import export_to_abaqus
 from phon.mesh_tools.create_cohesive_elements import create_cohesive_elements
 from phon.mesh_tools.create_cohesive_elements import get_grains_connected_to_face
@@ -43,8 +43,8 @@ class Test(unittest.TestCase):
     """Unit tests for test_create_cohesive_elements."""
 
     def setUp(self):
-        self.mesh = read_from_neper_inp(os.path.join(__location__, "inp_test_files/n10-id1.inp"), verbose=0)
-        self.mesh_2d = read_from_neper_inp(os.path.join(__location__, "inp_test_files/n10-id1_2d.inp"))
+        self.mesh = read_from_abaqus_inp(os.path.join(__location__, "inp_test_files/n10-id1.inp"), verbose=0)
+        self.mesh_2d = read_from_abaqus_inp(os.path.join(__location__, "inp_test_files/n10-id1_2d.inp"))
 
     def test_get_grains_connected_to_face(self):
         node_id_grain_lut = get_node_id_grain_lut(self.mesh)
