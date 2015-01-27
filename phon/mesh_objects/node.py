@@ -27,8 +27,8 @@ class Node:
 
     def __init__(self, c):
         """
-        :param c: The coordinates
-        :type c: numpy array
+        :param c: The coordinates of the node
+        :type c: ndarray
 
         """
         self.c = c
@@ -41,5 +41,5 @@ class Node:
         :rtype: str
 
         """
-        return "Node located at (%f, %f, %f):" % (
+        return "Node located at (%f, %f, %f)." % (
             self.c[0], self.c[1], self.c[2])

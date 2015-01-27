@@ -21,6 +21,8 @@ THE SOFTWARE.
 """
 import logging
 
+__version__ = 0.4
+
 # __all__ = ["mesh_objects", "io", "mesh_tools"]
 
 logging.basicConfig()
