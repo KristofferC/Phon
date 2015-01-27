@@ -24,7 +24,7 @@ import unittest
 import os
 import filecmp
 
-from phon.io.read.read_from_neper_inp import read_from_neper_inp
+from phon.io.read.read_from_abaqus_inp import read_from_abaqus_inp
 from phon.io.write.export_to_abaqus import export_to_abaqus
 
 
@@ -36,12 +36,12 @@ class Test(unittest.TestCase):
     """Unit tests for export_to_abaqus."""
 
     def setUp(self):
-        self.mesh = read_from_neper_inp(os.path.join(__location__, "inp_test_files/n10-id1.inp"))
+        self.mesh = read_from_abaqus_inp(os.path.join(__location__, "mesh_test_files/n10-id1.inp"))
 
     def test_export_to_abaqus(self):
         """Test Phons reader for neper inp files."""
         export_to_abaqus("test_file.inp", self.mesh, write_2d_elements=True)
-        read_from_neper_inp("test_file.inp")
+        read_from_abaqus_inp("test_file.inp")
         export_to_abaqus("test_file_2.inp", self.mesh, write_2d_elements=True)
 
         assert (filecmp.cmp("test_file.inp", "test_file_2.inp"))
