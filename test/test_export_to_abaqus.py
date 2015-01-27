@@ -36,7 +36,7 @@ class Test(unittest.TestCase):
     """Unit tests for export_to_abaqus."""
 
     def setUp(self):
-        self.mesh = read_from_abaqus_inp(os.path.join(__location__, "inp_test_files/n10-id1.inp"))
+        self.mesh = read_from_abaqus_inp(os.path.join(__location__, "mesh_test_files/n10-id1.inp"))
 
     def test_export_to_abaqus(self):
         """Test Phons reader for neper inp files."""

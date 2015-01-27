@@ -43,8 +43,8 @@ class Test(unittest.TestCase):
     """Unit tests for test_create_cohesive_elements."""
 
     def setUp(self):
-        self.mesh = read_from_abaqus_inp(os.path.join(__location__, "inp_test_files/n10-id1.inp"), verbose=0)
-        self.mesh_2d = read_from_abaqus_inp(os.path.join(__location__, "inp_test_files/n10-id1_2d.inp"))
+        self.mesh = read_from_abaqus_inp(os.path.join(__location__, "mesh_test_files/n10-id1.inp"), verbose=0)
+        self.mesh_2d = read_from_abaqus_inp(os.path.join(__location__, "mesh_test_files/n10-id1_2d.inp"))
 
     def test_get_grains_connected_to_face(self):
         node_id_grain_lut = get_node_id_grain_lut(self.mesh)
@@ -61,12 +61,12 @@ class Test(unittest.TestCase):
         export_to_abaqus("n10-id1_coh.inp", self.mesh, write_2d_elements=False)
         self.assertEqual(len(self.mesh.element_sets["cohes9_2"].ids), 6)
         #self.assertTrue(filecmp.cmp("n10-id1_coh.inp",
-        #                            os.path.join(__location__, "inp_test_files/n10-id1_coh_ref.inp")))
+        #                            os.path.join(__location__, "mesh_test_files/n10-id1_coh_ref.inp")))
 
         create_cohesive_elements(self.mesh_2d, mesh_dimension=2)
         export_to_abaqus("n10-id1_2d_coh.inp", self.mesh_2d, write_2d_elements=True)
         #self.assertTrue(filecmp.cmp("n10-id1_2d_coh.inp",
-        #                            os.path.join(__location__, "inp_test_files/n10-id1_2d_coh_ref.inp")))
+        #                            os.path.join(__location__, "mesh_test_files/n10-id1_2d_coh_ref.inp")))
 
     def tearDown(self):
         pass
