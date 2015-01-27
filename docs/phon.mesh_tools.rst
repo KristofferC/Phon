@@ -12,6 +12,14 @@ phon.mesh_tools.create_cohesive_elements module
     :undoc-members:
     :show-inheritance:
 
+phon.mesh_tools.create_element_sides module
+-------------------------------------------
+
+.. automodule:: phon.mesh_tools.create_element_sides
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 phon.mesh_tools.create_matrix module
 ------------------------------------
 
@@ -28,11 +36,11 @@ phon.mesh_tools.octree module
     :undoc-members:
     :show-inheritance:
 
-phon.mesh_tools.create_element_sides module
--------------------------------------------
 
-.. automodule:: phon.mesh_tools.create_element_sides
+Module contents
+---------------
+
+.. automodule:: phon.mesh_tools
     :members:
     :undoc-members:
     :show-inheritance:
-

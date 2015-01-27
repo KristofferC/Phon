@@ -27,8 +27,6 @@ class NodeSet:
 
     def __init__(self, name, ids=None):
         """
-        Creates a :class:`NodeSet` class.
-
         :param name: The name of the node set.
         :type name: str
         :param ids: The identifiers of the nodes

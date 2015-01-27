@@ -47,7 +47,7 @@ def read_from_abaqus_inp(filename, verbose=0):
     :param verbose: Determines what level of print out to the console.
     :type verbose: 0, 1 or 2
     :return: A mesh class containing the read mesh objects.
-    :rtype: :class:`Mesh`
+    :rtype: :class:`phon.mesh_objects.mesh()`
     :raises ReadInpFileError: If specific syntax error are found.
 
     """
@@ -80,10 +80,6 @@ def read_from_abaqus_inp(filename, verbose=0):
         f.close()
 
         return mesh
-
-
-def delete_fake_elements(mesh):
-    print("Deletion of surface elements not implemented yet...")
 
 
 def _read_part(f, verbose):
@@ -309,7 +305,6 @@ class ReadInpFileError(Exception):
     """
 
     def __init__(self, status):
-        """Creates an exception with a status."""
         Exception.__init__(self, status)
         self.status = status
 

@@ -51,3 +51,12 @@ phon.mesh_objects.node_set module
     :members:
     :undoc-members:
     :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: phon.mesh_objects
+    :members:
+    :undoc-members:
+    :show-inheritance:

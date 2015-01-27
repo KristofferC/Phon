@@ -19,3 +19,12 @@ phon.io.write.export_to_oofem module
     :members:
     :undoc-members:
     :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: phon.io.write
+    :members:
+    :undoc-members:
+    :show-inheritance:

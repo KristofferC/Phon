@@ -8,24 +8,28 @@ Welcome to Phon's documentation!
 
 Phon is a Python library which has the following features:
 
-* Parse meshes created in Abaqus' .inp and Gmsh format and stores it into an internal class based representation.
+* Parse meshes created in Abaqus' .inp and Gmsh format and stores it into an internal
+  class based representation.
   Element and node sets are also parsed and stored.
-* Can out of the box insert interface elements between grains in both 2D and 3D meshes generated with [Neper](http://neper.sourceforge.net/)..
-* Can export back the mesh for analysis to either Abaqus .inp or [OOFEM's](http://www.oofem.org/) .in format.
+* Can out of the box insert interface elements between grains in both 2D and 3D meshes
+  generated with `Neper <http://neper.sourceforge.net/>`_.
+* Can export back the mesh for analysis to either Abaqus .inp or `OOFEM's <http://www.oofem.org/>`_ .in format.
 
 The most common way Phon is used right now is to generate a mesh with Neper, then using Phon the mesh is parsed, interface
- elements are included in the mesh and the resulting mesh is then exported for FE-analysis.
+elements are included and the resulting mesh is then exported for FE-analysis.
 
 This is the central page for all of Phon's documentation.
 
-Contents:
+Contents
+=========
 
 .. toctree::
    :maxdepth: 2
 
    Installation <installation/index.rst>
-   Examples <examples/index.rst>
-   Modules <modules.rst>
+   Usage <examples/index.rst>
+
+.. Modules <modules.rst>
 
 
 

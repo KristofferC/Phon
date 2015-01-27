@@ -3,7 +3,7 @@
 Installation
 ------------
 
-Phon can be installed on most computers with a standard Python installation. [Numpy}(http://www.numpy.org/) is used internally
+Phon can be installed on most computers with a standard Python installation. [Numpy](http://www.numpy.org/) is used internally
 so this needs to be available to the Python installation.
 
 Phon supports Python 2.7, 2.2, 3.3 and 3.4.
@@ -35,4 +35,7 @@ To update to the latest version, go into your repository and execute::
 
 and rerun the setup file.
 
-You can also get the latest version from the projects homepage: http://kristofferc.github.io/Phon/
+Zip and Tar
+===========
+
+You can also get the latest version compressed as a .zip or .tar from the projects homepage: http://kristofferc.github.io/Phon/
