@@ -4,14 +4,15 @@ Phon
 [![Build Status](https://travis-ci.org/KristofferC/Phon.svg?branch=master)](https://travis-ci.org/KristofferC/Phon) [![Coverage Status](https://coveralls.io/repos/KristofferC/Phon/badge.png?branch=master)](https://coveralls.io/r/KristofferC/Phon?branch=master)
 
 
-This is a Python package that provides the functionality to read
-and export mesh files to different software's. It has the following
-features:
+Phon is Python package which main purpose is to insert cohesive elements between grains
+in a given mesh and export the new mesh.
 
-* Parses generated mesh files from Neper (http://neper.sourceforge.net/) and stores it
-  into a class based representation.
-* Can insert cohesive elements between grains in a Voronoi tessellated mesh.
-* Can currently export the mesh to formats readable by Abaqus and OOFEM.
+The workflow with Phon can be summarized as:
+
+* Parse a generated mesh file from ex. Neper (http://neper.sourceforge.net/)
+* Insert cohesive elements between grains in the parsed mesh.
+* Exports the mesh to formats readable by Abaqus and OOFEM.
+* Run FE analysis on the exported mesh.
 
 ### Documentation
 
@@ -20,8 +21,6 @@ Documentation can be found at http://phon.readthedocs.org.
 ### Authors
 
 Kristoffer Carlsson - kristoffer.carlsson@chalmers.se
-
-Mikael Öhman
 
 ### Copyright and Licensing
 
