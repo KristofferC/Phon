@@ -3,6 +3,7 @@ Phon
 
 [![Build Status](https://travis-ci.org/KristofferC/Phon.svg?branch=master)](https://travis-ci.org/KristofferC/Phon) [![Coverage Status](https://coveralls.io/repos/KristofferC/Phon/badge.png?branch=master)](https://coveralls.io/r/KristofferC/Phon?branch=master)
 
+[![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.16711.svg)](http://dx.doi.org/10.5281/zenodo.16711)
 
 Phon is Python package which main purpose is to insert cohesive elements between grains
 in a given mesh and export the new mesh.
