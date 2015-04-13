@@ -32,7 +32,7 @@ is shown below.::
     >>> from phon.io.write.export_to_abaqus import export_to_abaqus
     >>> mesh = read_from_abaqus_inp("n10-id1.inp")
     >>> create_cohesive_elements(mesh, mesh_dimension=3)
-    >>> export_to_abaqus("cohesive_file.inp", mesh)
+    >>> export_to_abaqus("cohesive_file.inp", mesh, write_2d_elements=False)
 
 Opening the generated file in Abaqus shows the generated mesh. An element sets with the cohesive elements is highlighted.
 
