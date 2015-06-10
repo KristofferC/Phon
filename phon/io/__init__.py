@@ -84,7 +84,7 @@ element_dictionary_inverse = {("T3D2", "abaqus"): "T3D2",
                               ("IntElSurfTr2", "oofem"): "COH3D12"}
 
 # If different software have different node_order we need to override it in the export.
-node_order_override = {("COH2D4", "abaqus"): [0, 1, 3, 2]}
+node_order_override = {("COH2D4", "abaqus"): [0, 1, 3, 2], ("CPE3", "abaqus"): [0, 2, 1]}
 
 # Dimension of elements.
 elements_1d = ["T3D2", "T3D4"]
