@@ -103,7 +103,7 @@ def _read_part(f, verbose):
 
     part_name = match.group(1)
     if verbose == 1 or verbose == 2:
-        print("Read part with name " + str(part_name))
+        print("Read part with name " + str(part_name) + "\n")
     # Initiate a mesh class with the same name as the part
     return Mesh(part_name)
 
@@ -137,7 +137,7 @@ def _read_nodes(f, mesh, verbose):
             return
         num_nodes += 1
         if verbose == 1:
-            print ("Reading nodes, %d nodes read" % num_nodes),
+            print ("Reading nodes, %d nodes read\n" % num_nodes),
         node_numbers = [to_number(x) for x in line.strip().split(',')]
         node = Node(numpy.array(node_numbers[1:]))
         mesh.nodes[node_numbers[0]] = node
@@ -176,7 +176,7 @@ def _read_elements(f, mesh, num_elems, verbose):
             return num_elems
         num_elems += 1
         if verbose == 1:
-            print ("Reading element %s, with id %d."
+            print ("Reading element %s, with id %d.\n"
                    % (element_name, num_elems)),
 
         element_numbers = [to_number(x) for x in line.strip().split(',')]
@@ -215,7 +215,7 @@ def _read_element_set(f, mesh, verbose=0):
     else:
         dim = None
     if verbose == 1 or verbose == 2:
-        print ("Reading element set {0:s}.".format(element_set_name)),
+        print ("Reading element set {0:s}.\n".format(element_set_name)),
 
     full_str = ""
     if element_set_name.endswith("generate"):
@@ -267,7 +267,7 @@ def _read_node_set(f, mesh, verbose=0):
                                "nset=X', got '" + line + "'.")
     node_set_name = re_node_set.match(line).group(1)
     if verbose == 1 or verbose == 2:
-        print ("Reading node set {0:s}.".format(node_set_name)),
+        print ("Reading node set {0:s}.\n".format(node_set_name)),
     full_str = ""
     if node_set_name.endswith("generate"):
         node_set_name = node_set_name[0:-10]
