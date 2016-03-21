@@ -180,7 +180,7 @@ def _read_elements(f, mesh, num_elems, verbose):
                    % (element_name, num_elems)),
 
         element_numbers = [to_number(x) for x in line.strip().split(',')]
-        element = Element(element_name, element_numbers[1:])
+        element = Element(element_name.upper(), element_numbers[1:])
         mesh.elements[element_numbers[0]] = element
 
 
