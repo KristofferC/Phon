@@ -61,17 +61,17 @@ def read_from_abaqus_inp(filename, verbose=0):
             keyword = f.readline().strip().split(",")[0]
             f.seek(start_of_line)
 
-            if keyword == "*Part":
+            if keyword.lower() == "*part":
                 mesh = _read_part(f, verbose)
-            elif keyword == "*Node":
+            elif keyword.lower() == "*node":
                 _read_nodes(f, mesh, verbose)
-            elif keyword == "*Element":
+            elif keyword.lower() == "*element":
                 num_elems += _read_elements(f, mesh, num_elems, verbose)
-            elif keyword == "*Elset":
+            elif keyword.lower() == "*elset":
                 _read_element_set(f, mesh, verbose)
-            elif keyword == "*Nset":
+            elif keyword.lower() == "*nset":
                 _read_node_set(f, mesh, verbose)
-            elif keyword == "*End Part":
+            elif keyword.lower() == "*end part":
                 break
             else:
                 f.readline()
@@ -122,7 +122,7 @@ def _read_nodes(f, mesh, verbose):
 
     """
     line = f.readline()
-    if not (line == "*Node\n"):
+    if not (line.lower() == "*node\n"):
         raise ReadInpFileError("\nError parsing file. Expected '*Node',"
                                " read '" + line + "'.")
 
@@ -158,8 +158,8 @@ def _read_elements(f, mesh, num_elems, verbose):
              in the file object f to the line with the next keyword.
 
     """
-    line = f.readline()
-    re_element = re.compile("\*Element, type=(.*)")
+    line = f.readline().lower()
+    re_element = re.compile("\*element, type=(.*)")
     match = re_element.match(line)
     if not match:
         raise ReadInpFileError("\nError parsing file. Expected '*Element, \
@@ -197,8 +197,8 @@ def _read_element_set(f, mesh, verbose=0):
              in the file object f to the line with the next keyword.
 
     """
-    line = f.readline()
-    re_element_set = re.compile("\*Elset, elset=(.*)")
+    line = f.readline().lower()
+    re_element_set = re.compile("\*elset, elset=(.*)")
     match = re_element_set.match(line)
     if not match:
         raise ReadInpFileError("Error parsing file. Expected '*Elset, "
@@ -259,8 +259,8 @@ def _read_node_set(f, mesh, verbose=0):
              in the file object f to the line with the next keyword.
 
     """
-    line = f.readline()
-    re_node_set = re.compile("\*Nset, nset=(.*)")
+    line = f.readline().lower()
+    re_node_set = re.compile("\*nset, nset=(.*)")
     match = re_node_set.match(line)
     if not match:
         raise ReadInpFileError("Error parsing file. Expected '*Nset, "
