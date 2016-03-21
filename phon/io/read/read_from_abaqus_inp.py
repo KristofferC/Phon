@@ -169,7 +169,6 @@ def _read_elements(f, mesh, num_elems, verbose):
     if not match:
         raise ReadInpFileError("\nError parsing file. Expected '*Element, \
         type=XXX', got '" + line + "'.")
-
     element_name = re_element.match(line).group(1)
     while True:
         start_of_line = f.tell()
@@ -238,13 +237,11 @@ def _read_element_set(f, mesh, verbose=0):
         while True:
             start_of_line = f.tell()
             line = f.readline()
-            if line.strip() == '':
+            if line.strip() == '' or line[0] == '*':
                 element_list = full_str.split(',')
                 element_list = [item for item in element_list if item]
                 element_set.ids = [to_number(x) for x in element_list]
                 mesh.element_sets[element_set_name] = element_set
-                break
-            if line[0] == '*':
                 f.seek(start_of_line)
                 return
                 # Read element ids until empty line
