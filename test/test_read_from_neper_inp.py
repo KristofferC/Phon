@@ -67,21 +67,21 @@ class Test(unittest.TestCase):
         self.assertEqual(len(self.mesh.element_sets), 66)
         self.assertEqual(self.mesh.element_sets["face22"].name, "face22")
         self.assertEqual(self.mesh.element_sets["face36"].ids[3], 434)
-        self.assertEqual(self.mesh_aba.element_sets["FACE22"].name, "FACE22")
-        self.assertEqual(self.mesh_aba.element_sets["FACE36"].ids[3], 434)
+        self.assertEqual(self.mesh_aba.element_sets["face22"].name, "face22")
+        self.assertEqual(self.mesh_aba.element_sets["face36"].ids[3], 434)
 
         self.assertEqual(self.mesh.element_sets["poly6"].name, "poly6")
         self.assertEqual(self.mesh.element_sets["poly10"].ids[8], 1584)
-        self.assertEqual(self.mesh_aba.element_sets["POLY6"].name, "POLY6")
-        self.assertEqual(self.mesh_aba.element_sets["POLY10"].ids[8], 1584)
+        self.assertEqual(self.mesh_aba.element_sets["poly6"].name, "poly6")
+        self.assertEqual(self.mesh_aba.element_sets["poly10"].ids[8], 1584)
 
         # Test node sets
         self.assertEqual(len(self.mesh.node_sets["z0"].ids), 44)
         self.assertEqual(self.mesh.node_sets["x1z1body"].ids[1], 116)
         self.assertEqual(self.mesh.node_sets["x1y0z1"].ids, [32])
-        self.assertEqual(len(self.mesh_aba.node_sets["Z0"].ids), 44)
-        self.assertEqual(self.mesh_aba.node_sets["X1Z1BODY"].ids[1], 116)
-        self.assertEqual(self.mesh_aba.node_sets["X1Y0Z1"].ids, [32])
+        self.assertEqual(len(self.mesh_aba.node_sets["z0"].ids), 44)
+        self.assertEqual(self.mesh_aba.node_sets["x1z1body"].ids[1], 116)
+        self.assertEqual(self.mesh_aba.node_sets["x1y0z1"].ids, [32])
 
     def test_to_number(self):
         self.assertEqual(to_number("1.3"), 1.3)
