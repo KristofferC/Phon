@@ -56,13 +56,17 @@ def read_from_abaqus_inp(filename, verbose=0):
 
         # Read mesh objects
         num_elems = 0
+        mesh = Mesh("temp_name")
         while True:
             start_of_line = f.tell()
-            keyword = f.readline().strip().split(",")[0]
+            keyword = f.readline()
+            if f.readline() == "":
+                break
+            keyword = keyword.strip().split(",")[0]
             f.seek(start_of_line)
 
             if keyword.lower() == "*part":
-                mesh = _read_part(f, verbose)
+                _read_part(f, mesh, verbose)
             elif keyword.lower() == "*node":
                 _read_nodes(f, mesh, verbose)
             elif keyword.lower() == "*element":
@@ -75,6 +79,7 @@ def read_from_abaqus_inp(filename, verbose=0):
                 break
             else:
                 f.readline()
+
                 continue
 
         f.close()
@@ -82,7 +87,7 @@ def read_from_abaqus_inp(filename, verbose=0):
         return mesh
 
 
-def _read_part(f, verbose):
+def _read_part(f, mesh, verbose):
     """Reads the part name and creates a mesh with that name.
 
     :param f: The file from where to read the nodes from.
@@ -105,7 +110,7 @@ def _read_part(f, verbose):
     if verbose == 1 or verbose == 2:
         print("Read part with name " + str(part_name) + "\n")
     # Initiate a mesh class with the same name as the part
-    return Mesh(part_name)
+    mesh.name = part_name
 
 
 def _read_nodes(f, mesh, verbose):
@@ -234,12 +239,12 @@ def _read_element_set(f, mesh, verbose=0):
             start_of_line = f.tell()
             line = f.readline()
             if line.strip() == '':
-                continue
-            if line[0] == '*':
                 element_list = full_str.split(',')
                 element_list = [item for item in element_list if item]
                 element_set.ids = [to_number(x) for x in element_list]
                 mesh.element_sets[element_set_name] = element_set
+                break
+            if line[0] == '*':
                 f.seek(start_of_line)
                 return
                 # Read element ids until empty line
