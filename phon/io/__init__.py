@@ -62,6 +62,7 @@ element_dictionary_inverse = {("T3D2", "abaqus"): "T3D2",
                               ("CPE3", "abaqus"): "CPE3",
                               ("TrPlaneStress2d", "oofem"): "CPE3",
                               ("CPE6", "abaqus"): "CPE6",
+                              ("CPE4", "abaqus"): "CPE4",
                               ("QTrPlStr", "oofem"): "CPE6",
                               ("C3D4", "abaqus"): "C3D4",
                               ("LTRSpace", "oofem"): "C3D4",
@@ -88,5 +89,5 @@ node_order_override = {("COH2D4", "abaqus"): [0, 1, 3, 2], ("CPE3", "abaqus"): [
 
 # Dimension of elements.
 elements_1d = ["T3D2", "T3D4"]
-elements_2d = ["CPE3", "STRI65", "CPS4R", "CPE6", "S4R", "COH2D4", "COH2D6"]
+elements_2d = ["CPE3", "STRI65", "CPS4R", "CPE6", "CPE4", "S4R", "COH2D4", "COH2D6"]
 elements_3d = ["C3D4", "C3D10", "C3D10", "COH3D6", "COH3D12", "COH3D8"]
