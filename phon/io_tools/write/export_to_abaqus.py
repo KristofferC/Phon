@@ -29,11 +29,11 @@ from collections import defaultdict
 from collections import OrderedDict
 
 from phon.mesh_objects.mesh import Mesh
-from phon.io import element_dictionary
-from phon.io import element_dictionary_inverse
-from phon.io import node_order_override
-from phon.io import elements_1d
-from phon.io import elements_2d
+from phon.io_tools import element_dictionary
+from phon.io_tools import element_dictionary_inverse
+from phon.io_tools import node_order_override
+from phon.io_tools import elements_1d
+from phon.io_tools import elements_2d
 
 
 def export_to_abaqus(filename, mesh, write_2d_elements, f=None):
