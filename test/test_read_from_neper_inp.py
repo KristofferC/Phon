@@ -23,8 +23,8 @@ THE SOFTWARE.
 import unittest
 import os
 
-from phon.io.read.read_from_abaqus_inp import read_from_abaqus_inp
-from phon.io.read.read_from_abaqus_inp import to_number
+from phon.io_tools.read.read_from_abaqus_inp import read_from_abaqus_inp
+from phon.io_tools.read.read_from_abaqus_inp import to_number
 
 
 __location__ = os.path.realpath(

@@ -23,7 +23,7 @@ import logging
 
 __version__ = 0.4
 
-# __all__ = ["mesh_objects", "io", "mesh_tools"]
+# __all__ = ["mesh_objects", "io_tools", "mesh_tools"]
 
 logging.basicConfig()
 

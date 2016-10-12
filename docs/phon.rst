@@ -6,7 +6,7 @@ Subpackages
 
 .. toctree::
 
-    phon.io
+    phon.io_tools
     phon.mesh_objects
     phon.mesh_tools
 

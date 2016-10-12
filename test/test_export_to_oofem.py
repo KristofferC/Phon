@@ -23,8 +23,8 @@ THE SOFTWARE.
 import unittest
 import os
 
-from phon.io.read.read_from_abaqus_inp import read_from_abaqus_inp
-from phon.io.write.export_to_oofem import export_to_oofem
+from phon.io_tools.read.read_from_abaqus_inp import read_from_abaqus_inp
+from phon.io_tools.write.export_to_oofem import export_to_oofem
 from phon.mesh_tools.create_cohesive_elements import create_cohesive_elements
 
 

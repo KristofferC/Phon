@@ -22,9 +22,9 @@ THE SOFTWARE.
 
 from collections import OrderedDict
 
-from phon.io import elements_2d
-from phon.io import elements_3d
-from phon.io import element_dictionary_inverse
+from phon.io_tools import elements_2d
+from phon.io_tools import elements_3d
+from phon.io_tools import element_dictionary_inverse
 
 
 class Mesh:

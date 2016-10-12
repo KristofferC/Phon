@@ -27,9 +27,9 @@ software you need to make sure the output matches the above.
 An example of a 3D mesh being read, cohesive elements inserted into it and then getting exported
 is shown below.::
 
-    >>> from phon.io.read.read_from_abaqus_inp import read_from_abaqus_inp
+    >>> from phon.io_tools.read.read_from_abaqus_inp import read_from_abaqus_inp
     >>> from phon.mesh_tools.create_cohesive_elements import create_cohesive_elements
-    >>> from phon.io.write.export_to_abaqus import export_to_abaqus
+    >>> from phon.io_tools.write.export_to_abaqus import export_to_abaqus
     >>> mesh = read_from_abaqus_inp("n10-id1.inp")
     >>> create_cohesive_elements(mesh, mesh_dimension=3)
     >>> export_to_abaqus("cohesive_file.inp", mesh, write_2d_elements=False)

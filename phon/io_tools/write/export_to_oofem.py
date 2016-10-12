@@ -20,10 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
-from phon.io import element_dictionary
-from phon.io import element_dictionary_inverse
-from phon.io import elements_2d
-from phon.io import elements_1d
+from phon.io_tools import element_dictionary
+from phon.io_tools import element_dictionary_inverse
+from phon.io_tools import elements_2d
+from phon.io_tools import elements_1d
 
 
 def export_to_oofem(filename, mesh, write_2d_elements):

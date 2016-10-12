@@ -24,8 +24,8 @@ import unittest
 import os
 import filecmp
 
-from phon.io.read.read_from_abaqus_inp import read_from_abaqus_inp
-from phon.io.write.export_to_abaqus import export_to_abaqus
+from phon.io_tools.read.read_from_abaqus_inp import read_from_abaqus_inp
+from phon.io_tools.write.export_to_abaqus import export_to_abaqus
 from phon.mesh_tools.create_cohesive_elements import create_cohesive_elements
 from phon.mesh_tools.create_cohesive_elements import get_grains_connected_to_face
 from phon.mesh_tools.create_cohesive_elements import get_node_id_grain_lut

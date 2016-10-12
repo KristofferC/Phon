@@ -14,7 +14,7 @@ The function to read an Abaqus mesh is  :func:`phon.io.read.read_from_abaqus_inp
 
 To read the mesh, the function is first imported and then used like this::
 
-    >>> from phon.io.read.read_from_abaqus_inp import read_from_abaqus_inp
+    >>> from phon.io_tools.read.read_from_abaqus_inp import read_from_abaqus_inp
     >>> mesh = read_from_abaqus_inp("n10-id1.inp")
 
 The mesh is now stored as an instance of the :class:`phon.mesh_objects.mesh()` class.
@@ -25,13 +25,13 @@ be found `here <https://raw.githubusercontent.com/KristofferC/Phon/8714c92ffadbb
 
 Gmsh
 ====
-The function to read a Gmsh mesh is  :func:`phon.io.read.read_from_gmsh.read_from_gmsh`.
+The function to read a Gmsh mesh is  :func:`phon.io_tools.read.read_from_gmsh.read_from_gmsh`.
 
 It is currently used a bit differently than the function to read from Abaqus meshes. The gmsh reader
 assumes that each grain has a separate mesh file called *fileX.msh* where *file* is the basename and *X* is
 the grain id. The gmsh reader can then be called as::
 
-    >>> from phon.io.read.read_from_gmsh import read_from_gmsh
+    >>> from phon.io_tools.read.read_from_gmsh import read_from_gmsh
     >>> basename = "gmsh_grain_file"
     >>> n_grains = 3
     >>> mesh = read_from_gmsh(base, n_grains)

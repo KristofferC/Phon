@@ -1,4 +1,4 @@
-phon.io.write package
+phon.io_tools.write package
 =====================
 
 Submodules
@@ -7,15 +7,15 @@ Submodules
 phon.io.write.export_to_abaqus module
 -------------------------------------
 
-.. automodule:: phon.io.write.export_to_abaqus
+.. automodule:: phon.io_tools.write.export_to_abaqus
     :members:
     :undoc-members:
     :show-inheritance:
 
-phon.io.write.export_to_oofem module
-------------------------------------
+phon.io_tools.write.export_to_oofem module
+------------------------------------------
 
-.. automodule:: phon.io.write.export_to_oofem
+.. automodule:: phon.io_tools.write.export_to_oofem
     :members:
     :undoc-members:
     :show-inheritance:
@@ -24,7 +24,7 @@ phon.io.write.export_to_oofem module
 Module contents
 ---------------
 
-.. automodule:: phon.io.write
+.. automodule:: phon.io_tools.write
     :members:
     :undoc-members:
     :show-inheritance:
