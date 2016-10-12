@@ -169,7 +169,7 @@ def _read_elements(f, mesh, num_elems, verbose):
     if not match:
         raise ReadInpFileError("\nError parsing file. Expected '*Element, \
         type=XXX', got '" + line + "'.")
-    element_name = re_element.match(line).group(1)
+    element_name = re_element.match(line).group(1).split(",")[0]
     while True:
         start_of_line = f.tell()
         line = f.readline()
